@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{94003B83-A791-4739-894F-6ED6540ADDA2}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HowLeaky</RootNamespace>
+    <AssemblyName>HowLeaky</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CustomAttributes\Input.cs" />
+    <Compile Include="CustomAttributes\Internal.cs" />
+    <Compile Include="CustomAttributes\Output.cs" />
+    <Compile Include="DataModels\ClimateDataModel.cs" />
+    <Compile Include="DataModels\Cover\CoverVegModel.cs" />
+    <Compile Include="DataModels\Cover\LAIVegModel.cs" />
+    <Compile Include="DataModels\Cover\VegModel.cs" />
+    <Compile Include="DataModels\SolutesDataModel.cs" />
+    <Compile Include="DataModels\Tillage\TillageDataModel.cs" />
+    <Compile Include="DataModels\NitrateDataModel.cs" />
+    <Compile Include="DataModels\IrrigationDataModel.cs" />
+    <Compile Include="DataModels\Pesticide\PesticideDataModel.cs" />
+    <Compile Include="DataModels\PhosphorusDataModel.cs" />
+    <Compile Include="DataModels\SoilDataModel.cs" />
+    <Compile Include="Interfaces\IController.cs" />
+    <Compile Include="Interfaces\IDataModel.cs" />
+    <Compile Include="CustomAttributes\Unit.cs" />
+    <Compile Include="ModelControllers\BaseController.cs" />
+    <Compile Include="ModelControllers\ModelOptionsController.cs" />
+    <Compile Include="ModelControllers\SolutesController.cs" />
+    <Compile Include="ModelControllers\TillageController.cs" />
+    <Compile Include="ModelControllers\PesticideController.cs" />
+    <Compile Include="ModelControllers\SoilController.cs" />
+    <Compile Include="ModelControllers\VegetationController.cs" />
+    <Compile Include="ModelControllers\NitrateController.cs" />
+    <Compile Include="ModelControllers\PhosphorusController.cs" />
+    <Compile Include="ModelControllers\IrrigationController.cs" />
+    <Compile Include="ModelControllers\ClimateController.cs" />
+    <Compile Include="ParameterModels\ParameterModelElement.cs" />
+    <Compile Include="SyncModels\CustomSyncModel.cs" />
+    <Compile Include="DataModels\DataModel.cs" />
+    <Compile Include="ErrorLogger\ErrorLogger.cs" />
+    <Compile Include="ParameterModels\ParameterModel.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Project\Project.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulation\Simulation.cs" />
+    <Compile Include="Tools\DataObjects\DayMonthData.cs" />
+    <Compile Include="Tools\DataObjects\OutputParameter.cs" />
+    <Compile Include="Tools\DataObjects\ProfileData.cs" />
+    <Compile Include="Tools\DataObjects\Sequence.cs" />
+    <Compile Include="Tools\DataObjects\TimeSeriesData.cs" />
+    <Compile Include="Tools\Math\Math.cs" />
+    <Compile Include="Tools\CSV\CsvParser.cs" />
+    <Compile Include="Tools\Dates\DateUtilities.cs" />
+    <Compile Include="Tools\Serialiser\Serialiser.cs" />
+    <Compile Include="XmlObjects\IndexData.cs" />
+    <Compile Include="XmlObjects\StateData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
