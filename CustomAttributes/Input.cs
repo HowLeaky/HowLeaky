@@ -9,5 +9,6 @@ namespace HowLeaky.CustomAttributes
     public class Input : Attribute
     {
         //This is just a tag at the moment
+        //
     }
 }
