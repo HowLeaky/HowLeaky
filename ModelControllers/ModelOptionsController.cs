@@ -1,41 +1,29 @@
-﻿using HowLeaky.Tools;
-using HowLeaky.Tools.DataObjects;
-using HowLeaky.Models;
-using System;
-
+﻿using System;
+using HowLeaky.InputModels;
+using System.Collections.Generic;
+using HowLeaky.DataModels;
 
 namespace HowLeaky.ModelControllers
 {
-    public class ModelOptionsController : HLObject
+    public class ModelOptionsController : HLController
     {
-        public bool in_ResetResidueAtDate { get; set; }                    
-        public DayMonthData in_ResetDateForResidue { get; set; }
-        public double in_ResetValueForResidue_kg_per_ha { get; set; }
-        public bool in_ResetSoilWaterAtDate { get; set; }
-        public DayMonthData in_ResetDateForSoilWater { get; set; }
-        public double in_ResetValueForSWAtDate_pc { get; set; }
-        public bool in_ResetSoilWaterAtPlanting { get; set; }
-        public double in_ResetValueForSWAtPlanting_pc { get; set; }
-        public bool in_CanCalculateLateralFlow { get; set; }
-        public bool in_IgnoreCropKill { get; set; }
-        public bool in_UsePERFECTDryMatterFn { get; set; }
-        public bool in_UsePERFECTGroundCovFn { get; set; }
-        public bool in_UsePERFECTSoilEvapFn { get; set; }
-        public bool in_UsePERFECTLeafAreaFn { get; set; }
-        public bool in_UsePERFECTResidueFn { get; set; }
-        public bool in_UsePERFECT_USLE_LS_Fn { get; set; }
-        public int in_UsePERFECTCurveNoFn { get; set; }
-        public double in_InitialPAW { get; set; }
+        public ModelOptionsInputModel DataModel { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public ModelOptionsController() { }
+        public ModelOptionsController(Simulation sim) : base(sim)
+        {
+            DataModel = new ModelOptionsInputModel();
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sim"></param>
-        public ModelOptionsController(Simulation sim) : base(sim) { }
+        public ModelOptionsController(Simulation sim, List<InputModel> inputModels) : this(sim)
+        {
+            DataModel = (ModelOptionsInputModel)inputModels[0];
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -58,27 +46,29 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                if (in_ResetSoilWaterAtDate)
+                if (DataModel.ResetSoilWaterAtDate)
                 {
-                    if (in_ResetDateForSoilWater.MatchesDate(today))
+                    if (DataModel.ResetDateForSoilWater.MatchesDate(today))
                     {
-                        for (int i = 0; i < sim.in_LayerCount; ++i)
-                            sim.SoilWater_rel_wp[i] = (in_ResetValueForSWAtDate_pc / 100.0) * sim.DrainUpperLimit_rel_wp[i];
-                        sim.CalculateInitialValuesOfCumulativeSoilEvaporation();
+                        for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
+                        {
+                            Sim.SoilController.SoilWaterRelWP[i] = (DataModel.ResetValueForSWAtDate / 100.0) * Sim.SoilController.DrainUpperLimitRelWP[i];
+                        }
+                        Sim.SoilController.CalculateInitialValuesOfCumulativeSoilEvaporation();
                     }
                 }
-                if (in_ResetResidueAtDate)
+                if (DataModel.ResetResidueAtDate)
                 {
-                    if (in_ResetDateForResidue.MatchesDate(today))
+                    if (DataModel.ResetDateForResidue.MatchesDate(today))
                     {
-                        sim.total_crop_residue = in_ResetValueForResidue_kg_per_ha;
-                        sim.VegetationController.ResetCropResidue(in_ResetValueForResidue_kg_per_ha);
+                        Sim.SoilController.TotalCropResidue = DataModel.ResetValueForResidue;
+                        Sim.VegetationController.ResetCropResidue(DataModel.ResetValueForResidue);
                     }
                 }
             }
             catch (Exception e)
             {
-                sim.ControlError = "ApplyResetsIfAny";
+                Sim.ControlError = "ApplyResetsIfAny";
                 throw;
             }
         }
@@ -88,7 +78,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public bool UsePerfectCurveNoFn()
         {
-            return ((in_UsePERFECTCurveNoFn == Simulation.PERFECT_CN || in_UsePERFECTCurveNoFn == Simulation.DEFAULT_CN) && !sim.Force2011CurveNoFn);
+            return ((DataModel.UsePERFECTCurveNoFn == Simulation.PERFECT_CN || DataModel.UsePERFECTCurveNoFn == Simulation.DEFAULT_CN) && !Sim.Force2011CurveNoFn);
         }
         /// <summary>
         /// 
@@ -96,7 +86,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public bool CanCalculateLateralFlow()
         {
-            return in_CanCalculateLateralFlow;
+            return DataModel.CanCalculateLateralFlow;
         }
         /// <summary>
         /// 
@@ -104,7 +94,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public double GetInitialPAW()
         {
-            return in_InitialPAW;
+            return DataModel.InitialPAW;
         }
         /// <summary>
         /// 
@@ -112,8 +102,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public bool UsePerfectUSLELSFn()
         {
-            return in_UsePERFECT_USLE_LS_Fn;
+            return DataModel.UsePERFECT_USLE_LS_Fn;
         }
-
     }
 }

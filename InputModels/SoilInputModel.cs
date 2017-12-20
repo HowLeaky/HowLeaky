@@ -1,6 +1,11 @@
 ﻿
+using HowLeaky.Tools.XML;
+using HowLeaky.XmlObjects;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
@@ -12,8 +17,78 @@ namespace HowLeaky.DataModels
         ApsoilApsimFormat
     };
 
-    public class SoilDataModel : DataModel
+    //[Serializable]
+    public class SoilLayers : IXmlSerializable
     {
+        public SoilLayers()
+        {
+            Values = new List<double>();
+        }
+
+        public string Units { get; set; }
+        public List<double> Values;
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            for (int i = 0; i < reader.AttributeCount; i++)
+            {
+                if (reader["value" + (i + 1).ToString()] != null)
+                {
+                    Values.Add(double.Parse(reader["value" + (i + 1).ToString()]));
+                }
+            }
+
+            Units = reader["Units"];
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            return;
+        }
+    }
+
+    [XmlRoot("SoilType")]
+    public class SoilInputModel : InputModel
+    {
+
+        public int HorizonCount { get; set; }
+        [XmlElement("LayerDepth")]
+        public SoilLayers Depths { get; set; }
+        [XmlElement("InSituAirDryMoist")]
+        public SoilLayers AirDry { get; set; }
+        public SoilLayers WiltingPoint { get; set; }
+        public SoilLayers FieldCapacity { get; set; }
+        [XmlElement("SatWaterCont")]
+        public SoilLayers Saturation { get; set; }
+        //public SoilLayers MaxDailyDrainVolume { get; set; }
+        public SoilLayers MaxDailyDrainRate { get; set; }
+        public SoilLayers BulkDensity { get; set; }
+
+        public StateData SoilCrack { get; set; }
+
+        [XmlElement("Stage2SoilEvap_Cona")]
+        public double Stage2SoilEvapCona { get; set; }
+        [XmlElement("Stage1SoilEvap_U")]
+        public double Stage1SoilEvapU { get; set; }
+        public double RunoffCurveNumber { get; set; }
+        public double RedInCNAtFullCover { get; set; }
+        public double MaxRedInCNDueToTill { get; set; }
+        public double RainToRemoveRough { get; set; }
+        [XmlElement("USLE_K")]
+        public double USLEK { get; set; }
+        [XmlElement("USLE_P")]
+        public double USLEP { get; set; }
+        public double FieldSlope { get; set; }
+        public double SlopeLength { get; set; }
+        public double RillRatio { get; set; }
+
+        public double MaxInfiltIntoCracks { get; set; }
+        public double SedDelivRatio { get; set; }
 
         ////public virtual ParameterModel CnReductionAtFullCover { get; set; }
         ////public virtual ParameterModel PAWC { get; set; }
@@ -436,19 +511,5 @@ namespace HowLeaky.DataModels
         ////    }
 
         ////}
-        public XmlSchema GetSchema()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

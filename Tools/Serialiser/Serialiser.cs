@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace HowLeakyModels.Deserialiser
+namespace HowLeaky.Tools.Serialiser
 {
     public class Serialiser
     {
@@ -39,6 +39,34 @@ namespace HowLeakyModels.Deserialiser
             where T : class
         {
             System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(T));
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(fileName);
+            XmlNode node = null;
+            try
+            {
+                node = xmlDoc.GetElementsByTagName(innerTag)[0];
+            }
+            catch (Exception e)
+            {
+                //Throw something here
+                throw new Exception(e.Message);
+            }
+
+            using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(node.OuterXml)))
+                return (T)ser.Deserialize(ms);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fileName"></param>
+        /// <param name="innerTag"></param>
+        /// <returns></returns>
+        public static T Deserialise<T>(string fileName, string innerTag, Type type)
+           where T : class
+        {
+            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(type);
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(fileName);

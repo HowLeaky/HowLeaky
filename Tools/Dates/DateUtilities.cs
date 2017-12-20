@@ -5,12 +5,14 @@
 //Where permission has been granted to modify this file, changes must be clearly identified through adding comments and annotations to the source-code,
 //and a description of the changes (including who has made the changes), must be included after this copyright information.
 
-using HowLeaky.ErrorLogger;
+
 using HowLeaky.Tools.DataObjects;
+using HowLeaky.Loggers;
 
 using System;
+using System.Globalization;
 
-namespace HowLeakyWebsite.Tools.DHMCoreLib.Helpers
+namespace HowLeaky.Tools.Helpers
 {
     public static class DateUtilities
     {
@@ -424,6 +426,26 @@ namespace HowLeakyWebsite.Tools.DHMCoreLib.Helpers
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static DateTime? TryParseDate(string text, string format = "yyyyMMdd")
+        {
+            if (text.Length == format.Length)
+            {
+                DateTime dateTime;
+                if (DateTime.TryParseExact(text, format, CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out dateTime))
+                {
+                    return dateTime;
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -21,7 +21,9 @@ namespace HowLeaky.SyncModels
         /// <summary>
         /// 
         /// </summary>
-        public CustomSyncModel() { }
+        public CustomSyncModel() {
+            Id = Guid.NewGuid();
+        }
         /// <summary>
         /// 
         /// </summary>

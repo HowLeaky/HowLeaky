@@ -11,7 +11,7 @@ namespace HowLeaky.XmlObjects
     public class StateData
     {
         [XmlAttribute]
-        public bool state { get; set; }
+        public bool State { get; set; }
 
         public StateData() { }
     }

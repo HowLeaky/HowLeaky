@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HowLeaky.Tools
+namespace HowLeaky.Tools.Helpers
 {
     class MathTools
     {

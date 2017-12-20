@@ -1,37 +1,42 @@
-﻿using HowLeaky.CustomAttributes;
-using HowLeaky.ModelControllers;
-using HowLeaky.Models;
+﻿
 using HowLeaky.DataModels;
 using System;
 using System.Collections.Generic;
+using HowLeaky.ModelControllers.Pesticide;
 
 namespace HowLeaky.ModelControllers
 {
-    public class PesticideController : HLObject
+    public class PesticideController : HLObjectController
     {
-        public List<PesticideObjectController> Pesticides { get; set; } = new List<PesticideObjectController>();
+        //public List<PesticideObjectController> ChildControllers { get; set; } = new List<PesticideObjectController>();
 
         /// <summary>
         /// 
         /// </summary>
         public PesticideController() { }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sim"></param>
-        public PesticideController(Simulation sim) : base(sim) { }
+        public PesticideController(Simulation sim, List<InputModel> inputModels) : base(sim)
+        {
+            foreach (InputModel im in inputModels)
+            {
+                ChildControllers.Add(new PesticideObjectController(sim, (PesticideObjectDataModel)im));
+            }
+        }
 
         /// <summary>
         /// 
         /// </summary>
         public override void Simulate()
-
         {
             try
             {
                 if (CanSimulatePesticides())
                 {
-                    foreach (PesticideObjectController pesticide in Pesticides)
+                    foreach (PesticideObjectController pesticide in ChildControllers)
                         pesticide.Simulate();
 
                 }
@@ -48,17 +53,17 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         bool CanSimulatePesticides()
         {
-            return Pesticides.Count > 0;
+            return ChildControllers.Count > 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public int GetPesticideCount()
         {
-            return Pesticides.Count;
+            return ChildControllers.Count;
         }
-
 
         /// <summary>
         /// 
@@ -66,25 +71,28 @@ namespace HowLeaky.ModelControllers
         /// <param name="newcount"></param>
         public void SetPesticideCount(int newcount)
         {
-            if (newcount > Pesticides.Count)
+            if (newcount > ChildControllers.Count)
 
+            {
                 AddSomePesticideObjects(newcount);
-            else if (newcount < Pesticides.Count)
-
+            }
+            else if (newcount < ChildControllers.Count)
+            {
                 RemoveSomePesticideObjects(newcount);
-
+            }
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="newcount"></param>
         public void AddSomePesticideObjects(int newcount)
         {
-            int startcount = Pesticides.Count;
+            int startcount = ChildControllers.Count;
             for (int i = startcount; i < newcount; ++i)
             {
-                PesticideObjectController pest = new PesticideObjectController(sim);
-                Pesticides.Add(pest);
+                PesticideObjectController pest = new PesticideObjectController(Sim, null);
+                ChildControllers.Add(pest);
             }
         }
 
@@ -94,10 +102,10 @@ namespace HowLeaky.ModelControllers
         /// <param name="newcount"></param>
         public void RemoveSomePesticideObjects(int newcount)
         {
-            int startcount = Pesticides.Count;
-            for (int i = Pesticides.Count - 1; i >= newcount; --i)
+            int startcount = ChildControllers.Count;
+            for (int i = ChildControllers.Count - 1; i >= newcount; --i)
             {
-                Pesticides.RemoveAt(i);
+                ChildControllers.RemoveAt(i);
             }
         }
 
@@ -108,13 +116,14 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public PesticideObjectController GetPesticide(int index)
         {
-            if (index >= 0 && index < Pesticides.Count)
+            if (index >= 0 && index < ChildControllers.Count)
             {
 
-                return Pesticides[index];
+                return (PesticideObjectController)ChildControllers[index];
             }
             return null;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -122,7 +131,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public int GetPesticideIndex(PesticideObjectController pest)
         {
-            return Pesticides.IndexOf(pest);
+            return ChildControllers.IndexOf(pest);
         }
     }
 }

@@ -1,35 +1,46 @@
-﻿using HowLeaky.CustomAttributes;
-using HowLeaky.Models;
-using HowLeaky.DataModels;
+﻿using HowLeaky.DataModels;
 using System;
 using System.Collections.Generic;
+using HowLeaky.ModelControllers.Tillage;
 
 namespace HowLeaky.ModelControllers
 {
-    public class TillageController : HLObject
+    /// <summary>
+    /// 
+    /// </summary>
+    public class TillageController : HLObjectController
     {
-        public List<TillageObjectController> Tillage { get; set; } = new List<TillageObjectController>();
-
-        public int days_since_tillage { get; set; }
-        public double roughness_ratio { get; set; }
-        public double tillage_residue_reduction { get; set; }
+        public int DaysSinceTillage { get; set; }
+        public double RoughnessRatio { get; set; }
+        public double TillageResidueReduction { get; set; }
 
         public int TillageCount
         {
             get
             {
-                return Tillage.Count;
+                return ChildControllers.Count;
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
-        public TillageController() { }
+        public TillageController(Simulation sim) : base(sim)
+        {
+        }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sim"></param>
-        public TillageController(Simulation sim) : base(sim) { }
+        public TillageController(Simulation sim, List<InputModel> inputModels) : this(sim)
+        {
+            foreach (InputModel im in inputModels)
+            {
+                ChildControllers.Add(new TillageObjectController(sim, (TillageObjectDataModel)im));
+            }
+        }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -39,10 +50,14 @@ namespace HowLeaky.ModelControllers
             {
                 if (CanSimulateTillage())
                 {
-                    if (days_since_tillage != -1)
-                        ++days_since_tillage;
+                    if (DaysSinceTillage != -1)
+                    {
+                        ++DaysSinceTillage;
+                    }
                     for (int i = 0; i < TillageCount; ++i)
-                        Tillage[i].Simulate();
+                    {
+                        ChildControllers[i].Simulate();
+                    }
                 }
             }
             catch (Exception e)
@@ -51,6 +66,7 @@ namespace HowLeaky.ModelControllers
                 throw new Exception(e.Message);
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -59,21 +75,24 @@ namespace HowLeaky.ModelControllers
         {
             return TillageCount > 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         public override void Initialise()
         {
-            days_since_tillage = -1;
+            DaysSinceTillage = -1;
         }
+       
         /// <summary>
         /// 
         /// </summary>
-        public void SetStartOfDayParameters()
+        public override void SetStartOfDayParameters()
         {
-            roughness_ratio = 0.0;
-            tillage_residue_reduction = 0;
+            RoughnessRatio = 0.0;
+            TillageResidueReduction = 0;
         }
+       
         /// <summary>
         /// 
         /// </summary>
@@ -86,7 +105,7 @@ namespace HowLeaky.ModelControllers
                 {
                     for (int i = 0; i < TillageCount; ++i)
                     {
-                        Tillage[i].AdjustKeyDatesForYear(year);
+                        ((TillageObjectController)ChildControllers[i]).AdjustKeyDatesForYear(year);
                     }
                 }
             }
@@ -96,6 +115,7 @@ namespace HowLeaky.ModelControllers
             }
 
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -104,20 +124,19 @@ namespace HowLeaky.ModelControllers
         /// <param name="roughnessratio"></param>
         public void UpdateTillageParameters(ETillageType type, double cresmultipler, double roughnessratio)
         {
-            double initial_crop_residue = sim.total_crop_residue;
-            roughness_ratio = roughnessratio;
-            days_since_tillage = 0;
-            sim.UpdateManagementEventHistory(ManagementEvent.meTillage, 0);
+            double initialCropResidue = Sim.SoilController.TotalCropResidue;
+            RoughnessRatio = roughnessratio;
+            DaysSinceTillage = 0;
+            Sim.UpdateManagementEventHistory(ManagementEvent.Tillage, 0);
 
-            sim.VegetationController.AdjustCropResidue(cresmultipler);
+            Sim.VegetationController.AdjustCropResidue(cresmultipler);
 
-            tillage_residue_reduction = initial_crop_residue - sim.total_crop_residue;
-            if (roughness_ratio > 0.0)
+            TillageResidueReduction = initialCropResidue - Sim.SoilController.TotalCropResidue;
+            if (RoughnessRatio > 0.0)
             {
-                sim.rain_since_tillage = 0.0;
+                Sim.SoilController.rainSinceTillage = 0.0;
             }
         }
-
 
         /// <summary>
         /// 
@@ -125,9 +144,8 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public int GetTillageCount()
         {
-            return Tillage.Count;
+            return ChildControllers.Count;
         }
-
 
         /// <summary>
         /// 
@@ -135,11 +153,11 @@ namespace HowLeaky.ModelControllers
         /// <param name="value"></param>
         public void SetTillageCount(int value)
         {
-            if (value > Tillage.Count)
+            if (value > ChildControllers.Count)
             {
                 AddSomeTillageObjects(value);
             }
-            else if (value < Tillage.Count)
+            else if (value < ChildControllers.Count)
             {
                 RemoveSomeTillageObjects(value);
             }
@@ -151,10 +169,10 @@ namespace HowLeaky.ModelControllers
         /// <param name="value"></param>
         public void AddSomeTillageObjects(int value)
         {
-            for (int i = Tillage.Count; i < value; ++i)
+            for (int i = ChildControllers.Count; i < value; ++i)
             {
-                TillageObjectController pest = new TillageObjectController(sim);
-                Tillage.Add(pest);
+                TillageObjectController till = new TillageObjectController(Sim, null);
+                ChildControllers.Add(till);
             }
         }
 
@@ -164,9 +182,9 @@ namespace HowLeaky.ModelControllers
         /// <param name="index"></param>
         public void RemoveSomeTillageObjects(int index)
         {
-            for (int i = Tillage.Count - 1; i >= index; --i)
+            for (int i = ChildControllers.Count - 1; i >= index; --i)
             {
-                Tillage.RemoveAt(i);
+                ChildControllers.RemoveAt(i);
             }
         }
 
@@ -177,9 +195,9 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public TillageObjectController GetTillage(int index)
         {
-            if (index >= 0 && index < Tillage.Count)
+            if (index >= 0 && index < ChildControllers.Count)
             {
-                return Tillage[index];
+                return (TillageObjectController)ChildControllers[index];
             }
             return null;
         }

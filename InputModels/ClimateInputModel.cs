@@ -4,41 +4,60 @@ using System.IO;
 using Encoding = System.Text.Encoding;
 using System.Globalization;
 using System.Collections.Generic;
+using HowLeaky.Tools.Helpers;
 
 namespace HowLeaky.DataModels
 {
-    public class ClimateDataModel : DataModel
+    public enum EvaporationInputOptions { Use_EPan }
+
+    public class ClimateInputModel : InputModel
 
     {
         public String StationCode { get; set; }
 
         public string Country { get; set; }
-        
+
         public String State { get; set; }
 
         public float Latitude { get; set; }
 
         public float Longitude { get; set; }
-        public DateTime? EndDate { get; set; }
-        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; } = null;
+        public DateTime? StartDate { get; set; } = null;
+
+        public List<double> Rain { get; set; }
+        public List<double> MaxT { get; set; }
+        public List<double> MinT { get; set; }
+        public List<double> PanEvap { get; set; }
+        public List<double> Radiation { get; set; }
+        public List<double> VP { get; set; }
 
         public string ImportedBy { get; set; }
 
         public DateTime? ImportedDate { get; set; }
 
+        public EvaporationInputOptions EvaporationInputOptions { get; set; } = EvaporationInputOptions.Use_EPan;
+        public double PanEvapMultiplier { get; set; } = 1;
+        public double RainfallMultiplier { get; set; } = 1;
+
         /// <summary>
         /// 
         /// </summary>
-        public ClimateDataModel()
+        public ClimateInputModel()
         {
-
+            Rain = new List<double>();
+            MaxT = new List<double>();
+            MinT = new List<double>();
+            PanEvap = new List<double>();
+            Radiation = new List<double>();
+            VP = new List<double>();
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="response"></param>
-        protected void parseDownloadedMetData(string response)
+        protected void ParseDownloadedMetData(string response)
         {
             MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(response));
 
@@ -62,12 +81,12 @@ namespace HowLeaky.DataModels
         /// 
         /// </summary>
         /// <param name="stationNo"></param>
-        public void downloadMetData(int stationNo)
+        public void DownloadMetData(int stationNo)
         {
             //Download the station using SILO API
             string response = "";
 
-            parseDownloadedMetData(response);
+            ParseDownloadedMetData(response);
 
         }
 
@@ -76,19 +95,19 @@ namespace HowLeaky.DataModels
         /// </summary>
         /// <param name="latitude"></param>
         /// <param name="longitude"></param>
-        public void downloadMetData(double latitude, double longitude)
+        public void DownloadMetData(double latitude, double longitude)
         {
             //Download the station using SILO API
             string response = "";
 
-            parseDownloadedMetData(response);
+            ParseDownloadedMetData(response);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="fileName"></param>
-        public ClimateDataModel(string fileName, string userName) : base(Guid.NewGuid(), fileName, userName, DateTime.UtcNow)
+        public ClimateInputModel(string fileName, string userName) : base(Guid.NewGuid(), fileName, userName, DateTime.UtcNow)
         {
             LoadMetaData(fileName);
         }
@@ -108,13 +127,21 @@ namespace HowLeaky.DataModels
 
                 sr.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //Handle exception
                 //Just throw for now
                 throw (new Exception(ex.Message));
             }
 
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void Init()
+        {
+            LoadMetaData(new FileStream(FileName, FileMode.Open));
         }
 
         /// <summary>
@@ -129,89 +156,57 @@ namespace HowLeaky.DataModels
             {
                 string line;
                 bool foundheader = false;
-                bool readfirstdata = false;
-                string lastline;
                 while ((line = reader.ReadLine()) != null)
                 {
+                    List<String> items = new List<String>(line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+
                     if (foundheader == false)
                     {
-                        if (line.Contains("date") && line.Contains("jday"))
-                        {
-                            foundheader = true;
-                        }
-                        else
-                        {
-                            List<String> items = new List<String>(line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries));
-                            if (items.Count() < 8)
-                            {
-                                float lat;
-                                float lon;
-                                if (float.TryParse(items[0], out lat))
-                                {
-                                    Latitude = lat;
-                                }
-                                if (float.TryParse(items[1], out lon))
-                                {
-                                    Latitude = lon;
-                                }
+                        //Parse the header
 
-                                items.RemoveRange(0, 2);
-                                Comments = String.Join(" ", items.ToArray());
-                            }
+                        float lat;
+                        float lon;
+                        if (float.TryParse(items[0], out lat))
+                        {
+                            Latitude = lat;
                         }
+                        if (float.TryParse(items[1], out lon))
+                        {
+                            Latitude = lon;
+                        }
+
+                        items.RemoveRange(0, 2);
+                        Comments = String.Join(" ", items.ToArray());
+
+                        foundheader = true;
+
                     }
                     else
                     {
-                        List<String> items = new List<String>(line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries));
-                        if (!readfirstdata)
+                        if (items.Count() == 8)
                         {
-                            if (items.Count() == 8)
-                            {
 
-                                var date = TryParseDate(items[0]);
-                                if (date != null)
+                            var date = DateUtilities.TryParseDate(items[0]);
+                            if (date != null)
+                            {
+                                if (StartDate == null)
                                 {
                                     StartDate = date;
-                                    readfirstdata = true;
                                 }
-                            }
-                        }
-                        else
-                        {
-                            if (items.Count() == 8)
-                            {
+                                //Parse the met data
+                                EndDate = date;
 
-                                var date = TryParseDate(items[0]);
-                                if (date != null)
-                                {
-                                    EndDate = date;
-                                }
+                                MaxT.Add(double.Parse(items[2]));
+                                MinT.Add(double.Parse(items[3]));
+                                Rain.Add(double.Parse(items[4]));
+                                PanEvap.Add(double.Parse(items[5]));
+                                Radiation.Add(double.Parse(items[6]));
+                                VP.Add(double.Parse(items[7]));
                             }
                         }
                     }
-
-                    lastline = line;
                 }
             }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private DateTime? TryParseDate(string text)
-        {
-            if (text.Length == 8)
-            {
-                DateTime dateTime;
-                if (DateTime.TryParseExact(text, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None,
-                    out dateTime))
-                {
-                    return dateTime;
-                }
-            }
-            return null;
         }
     }
-
 }

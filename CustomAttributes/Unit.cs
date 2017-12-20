@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace HowLeaky.CustomAttributes
 {
     public enum UnitTypes { PerCent, Area, Volume }
+
     public class Unit : Attribute
     {
         public string unit { get; set; }

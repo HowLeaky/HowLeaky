@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace HowLeaky.ErrorLogger
+namespace HowLeaky.Loggers
 {
     public class ErrorLogger
     {

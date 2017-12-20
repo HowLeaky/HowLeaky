@@ -1,53 +1,63 @@
 ﻿using HowLeaky.DataModels;
-using HowLeaky.Tools;
-using HowLeaky.Models;
 using System;
 using System.Collections.Generic;
+using HowLeaky.Tools.Helpers;
+using HowLeaky.ModelControllers.Veg;
 
 namespace HowLeaky.ModelControllers
 {
-    public enum CropStatus { csInFallow, csPlanting, csGrowing, csHarvesting };
+    public enum CropStatus { Fallow, Planting, Growing, Harvesting };
 
-    public class VegetationController : HLObject
+    public class VegetationController : HLObjectController
     {
-        //TODO: Refactor these variables
-        public int days_since_harvest { get; set; }             // Days since harvest
-        public int days_since_planting { get; set; }            // Days since planting
-        public int sum_crops_planted { get; set; }              // Total crops planted
-        public int sum_crops_harvested { get; set; }            //
-        public int sum_crops_killed { get; set; }               //
+        public int DaysSinceHarvest { get; set; }             // Days since harvest
+        public int DaysSincePlanting { get; set; }            // Days since planting
+        public int SumCropsPlanted { get; set; }              // Total crops planted
+        public int SumCropsHarvested { get; set; }            //
+        public int SumCropsKilled { get; set; }               //
 
-        //public struct total{
-
-        //}
-
-        //TODO: Refactor these variables
-
-        public double total_transpiration { get; set; }         //
-        public double total_evapotranspiration { get; set; }    //
-        public double total_cover { get; set; }                 //
-        public double total_cover_percent { get; set; }         //
-        public double total_crop_residue { get; set; }          //
-        public double total_residue_cover { get; set; }         //
-        public double total_residue_cover_percent { get; set; } //
+        public double TotalTranspiration { get; set; }
+        public double TotalEvapotranspiration { get; set; }
+        public double TotalCover { get; set; }
+        public double TotalCoverPercent { get; set; }
+        public double TotalCropResidue { get; set; }
+        public double TotalResidueCover { get; set; }
+        public double TotalResidueCoverPercent { get; set; }
 
         public VegObjectController CurrentCrop { get; set; } = null;
 
-        public List<VegObjectController> CropList { get; set; }
+        //public List<VegObjectController> ChildControllers { get; set; }
         public List<VegObjectController> SortedCropList { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public VegetationController() { }
+        public VegetationController(Simulation sim) : base(sim)
+        {
+             SortedCropList = new List<VegObjectController>();
+        }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sim"></param>
-        public VegetationController(Simulation sim) : base(sim)
+        /// <param name="inputModels"></param>
+        public VegetationController(Simulation sim, List<InputModel> inputModels) : this(sim)
         {
 
+            foreach (InputModel im in inputModels)
+            {
+                if (im.GetType() == typeof(LAIVegObjectDataModel))
+                {
+                    ChildControllers.Add(new LAIVegObjectController(sim, (LAIVegObjectDataModel)im));
+                }
+                else
+                {
+                    ChildControllers.Add(new CoverVegObjectController(sim, (CoverVegObjectDataModel)im));
+                }
+            }
         }
+        
         ////void RegisterInputs(TSimulationInputDefinitions* im)
         ////{
 
@@ -65,10 +75,11 @@ namespace HowLeaky.ModelControllers
             CurrentCrop = GetCrop(0);
             //for (int i = 0; i<_crop_count; ++i)
             //	GetCrop(i).Initialise();
-            //days_since_harvest=0;
-            //total_transpiration=0;
-            //total_evapotranspiration=0;
+            DaysSinceHarvest = 0;
+            TotalTranspiration = 0;
+            TotalEvapotranspiration = 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -81,15 +92,21 @@ namespace HowLeaky.ModelControllers
                     if (UseLAIModel())
                     {
                         if (CurrentCrop.GetInFallow())
+                        {
                             TryAndPlantNewCrop();
+                        }
                         else if (CurrentCrop.IsGrowing())
+                        {
                             CurrentCrop.Simulate();
+                        }
                     }
                     else
+                    {
                         CurrentCrop.Simulate();
-                    ++days_since_harvest;
-                    total_transpiration = CurrentCrop.total_transpiration;
-                    total_evapotranspiration = CurrentCrop.total_transpiration + sim.out_WatBal_SoilEvap_mm;
+                    }
+                    ++DaysSinceHarvest;
+                    TotalTranspiration = CurrentCrop.TotalTranspiration;
+                    TotalEvapotranspiration = CurrentCrop.TotalTranspiration + Sim.SoilController.WatBal.SoilEvap;
                     UpdateCropWaterBalanceParameters();
                 }
             }
@@ -98,29 +115,32 @@ namespace HowLeaky.ModelControllers
                 throw new Exception(e.Message);
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
-        public void SetStartOfDayParameters()
+        public override void SetStartOfDayParameters()
         {
             SortCurrentCropList();   //resort crop list to put the current crop first.
         }
+        
         /// <summary>
         /// 
         /// </summary>
         void SortCurrentCropList()
         {
-            int _crop_count = CropList.Count;
+            int cropCount = ChildControllers.Count;
             SortedCropList.Clear();
             int startindex = GetCropIndex(CurrentCrop);
-            for (int i = 0; i < _crop_count; ++i)
+            for (int i = 0; i < cropCount; ++i)
             {
                 int index = startindex + i;
-                index = (index < _crop_count ? index : index - _crop_count);
+                index = (index < cropCount ? index : index - cropCount);
                 VegObjectController crop = GetCrop(index);
                 SortedCropList.Add(crop);
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -128,7 +148,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public int GetCropIndex(VegObjectController veg)
         {
-            return CropList.IndexOf(veg);
+            return ChildControllers.IndexOf(veg);
         }
 
         /// <summary>
@@ -138,7 +158,6 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         VegObjectController GetSortedCrop(int index)
         {
-
             return SortedCropList[index];
         }
 
@@ -147,25 +166,26 @@ namespace HowLeaky.ModelControllers
         /// </summary>
         void UpdateCropWaterBalanceParameters()
         {
-            foreach (VegObjectController crop in CropList)
+            foreach (VegObjectController crop in ChildControllers)
             {
                 //TODO: Check these map to the correct variables
                 if (crop == CurrentCrop)
                 {
-                    crop.out_CropRunoff_mm = sim.out_WatBal_Runoff_mm;
-                    crop.out_CropDrainage_mm = sim.out_WatBal_DeepDrainage_mm; //As opposed to normal drainage
-                    crop.out_SoilEvaporation_mm = sim.out_WatBal_SoilEvap_mm;
-                    crop.total_evapotranspiration = total_evapotranspiration;
+                    crop.Output.CropRunoff = Sim.SoilController.WatBal.Runoff;
+                    crop.Output.CropDrainage = Sim.SoilController.WatBal.DeepDrainage; //As opposed to normal drainage
+                    crop.Output.SoilEvaporation = Sim.SoilController.WatBal.SoilEvap;
+                    crop.TotalEvapotranspiration = TotalEvapotranspiration;
                 }
                 else
                 {
-                    crop.out_CropRunoff_mm = 0;
-                    crop.out_CropDrainage_mm = 0;
-                    crop.out_SoilEvaporation_mm = 0;
-                    crop.total_evapotranspiration = 0;
+                    crop.Output.CropRunoff = 0;
+                    crop.Output.CropDrainage = 0;
+                    crop.Output.SoilEvaporation = 0;
+                    crop.TotalEvapotranspiration = 0;
                 }
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -176,7 +196,7 @@ namespace HowLeaky.ModelControllers
                 if (CanPlantCrop(crop))
                 {
                     crop.Plant();
-                    sim.IrrigationController.firstIrrigation = true;
+                    Sim.IrrigationController.FirstIrrigation = true;
                     return;
                 }
             }
@@ -209,18 +229,20 @@ namespace HowLeaky.ModelControllers
                 if (crop == CurrentCrop)
                     return crop.IsCropUnderMaxContinuousRotations();
                 else if (CurrentCrop.HasCropHadSufficientContinuousRotations())
-                    return crop.HasCropBeenAbsentForSufficientYears(sim.today);
+                    return crop.HasCropBeenAbsentForSufficientYears(Sim.Today);
             }
             return false;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public int GetCropCount()
         {
-            return CropList.Count;
+            return ChildControllers.Count;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -235,11 +257,11 @@ namespace HowLeaky.ModelControllers
                 {
                     RemoveSomeCropObjects(0);
                 }
-                if (newcount > CropList.Count)
+                if (newcount > ChildControllers.Count)
                 {
                     AddSomeCropObjects(newcount);
                 }
-                else if (newcount < CropList.Count)
+                else if (newcount < ChildControllers.Count)
                 {
                     RemoveSomeCropObjects(newcount);
                 }
@@ -262,27 +284,28 @@ namespace HowLeaky.ModelControllers
         {
             VegObjectController firstcrop = GetCrop(0);
 
-            for (int i = CropList.Count; i < newcount; ++i)
+            for (int i = ChildControllers.Count; i < newcount; ++i)
             {
                 if (UseLAIModel())
                 {
-                    CropList.Add(new LAIVegObjectController(sim));
+                    ChildControllers.Add(new LAIVegObjectController(Sim));
                 }
                 else
                 {
-                    CropList.Add(new CoverVegObjectController(sim));
+                    ChildControllers.Add(new CoverVegObjectController(Sim));
                 }
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="newcount"></param>
         public void RemoveSomeCropObjects(int newcount)
         {
-            for (int i = CropList.Count - 1; i >= newcount; --i)
+            for (int i = ChildControllers.Count - 1; i >= newcount; --i)
             {
-                CropList.RemoveAt(i);
+                ChildControllers.RemoveAt(i);
             }
         }
 
@@ -293,24 +316,26 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public VegObjectController GetCrop(int index)
         {
-            if (index >= 0 && index < CropList.Count)
+            if (index >= 0 && index < ChildControllers.Count)
             {
-                return CropList[index];
+                return (VegObjectController)ChildControllers[index];
             }
             return null;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="cresmultiplier"></param>
         public void AdjustCropResidue(double cresmultiplier)
         {
-            foreach (VegObjectController crop in CropList)
+            foreach (VegObjectController crop in ChildControllers)
             {
-                crop.crop_residue = crop.crop_residue * cresmultiplier;
+                crop.CropResidue = crop.CropResidue * cresmultiplier;
             }
             CalculateTotalResidue();
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -319,19 +344,20 @@ namespace HowLeaky.ModelControllers
         {
             int index = 0;
             int last = SortedCropList.Count - 1;
-            foreach (VegObjectController crop in CropList)
+            foreach (VegObjectController crop in ChildControllers)
             {
                 if (index == last)
                 {
-                    crop.crop_residue = value;
+                    crop.CropResidue = value;
                 }
                 else
                 {
-                    crop.crop_residue = 0;
+                    crop.CropResidue = 0;
                 }
                 ++index;
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -339,14 +365,18 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public double GetCropCoverIfLAIModel(double current)
         {
-            if (CurrentCrop.GetType() == typeof(LAIVegObjectController))
+            if (CurrentCrop != null)
             {
-                return CurrentCrop.crop_cover;
-                //LAI Model uses cover from the end of the previous day
-                //whereas Cover model predefines at the start of the day
+                if (CurrentCrop.GetType() == typeof(LAIVegObjectController))
+                {
+                    return CurrentCrop.CropCover;
+                    //LAI Model uses cover from the end of the previous day
+                    //whereas Cover model predefines at the start of the day
+                }
             }
             return current;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -368,7 +398,7 @@ namespace HowLeaky.ModelControllers
             {
                 if (CurrentCrop.GetType() == typeof(LAIVegObjectController))
                 {
-                    return Math.Min(1.0, CurrentCrop.crop_cover + sim.total_residue_cover * (1 - CurrentCrop.crop_cover));
+                    return Math.Min(1.0, CurrentCrop.CropCover + Sim.SoilController.TotalResidueCover * (1 - CurrentCrop.CropCover));
                 }
                 else
                 {
@@ -377,6 +407,7 @@ namespace HowLeaky.ModelControllers
             }
             return 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -384,9 +415,10 @@ namespace HowLeaky.ModelControllers
         public double GetCropCover()
         {
             if (CurrentCrop != null)
-                return CurrentCrop.crop_cover;
+                return CurrentCrop.CropCover;
             return 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -397,6 +429,7 @@ namespace HowLeaky.ModelControllers
                 return CurrentCrop.GetInFallow();
             return true;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -407,6 +440,7 @@ namespace HowLeaky.ModelControllers
                 return CurrentCrop.GetIsPlanting();
             return false;
         }
+       
         /// <summary>
         /// 
         /// </summary>
@@ -417,6 +451,7 @@ namespace HowLeaky.ModelControllers
                 return CurrentCrop.CalcFallowSoilWater();
             return 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -424,9 +459,10 @@ namespace HowLeaky.ModelControllers
         public double GetTotalTranspiration()
         {
             if (CurrentCrop != null)
-                return CurrentCrop.total_transpiration;
+                return CurrentCrop.TotalTranspiration;
             return 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -442,17 +478,19 @@ namespace HowLeaky.ModelControllers
                 throw new Exception(e.Message);
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
         public void CalculateResidue()
         {
-            foreach (VegObjectController crop in CropList)
+            foreach (VegObjectController crop in ChildControllers)
             {
                 crop.CalculateResidue();
             }
             CalculateTotalResidue();
         }
+       
         /// <summary>
         /// 
         /// </summary>
@@ -460,102 +498,111 @@ namespace HowLeaky.ModelControllers
         {
             if (CurrentCrop != null && UseLAIModel())
             {
-                total_crop_residue = 0;
-                total_residue_cover = 0;
+                TotalCropResidue = 0;
+                TotalResidueCover = 0;
                 LAIVegObjectController crop = (LAIVegObjectController)CurrentCrop;
-                total_residue_cover = crop.residue_cover;
-                int count = CropList.Count;
+                TotalResidueCover = crop.ResidueCover;
+                int count = ChildControllers.Count;
                 for (int i = 1; i < count; ++i)
                 {
                     int index = GetCropIndex(crop) + 1;
                     if (index == count)
                         index = 0;
-                    crop = (LAIVegObjectController)CropList[index];
-                    total_residue_cover = Math.Min(1.0, total_residue_cover + crop.residue_cover * (1 - total_residue_cover));
+                    crop = (LAIVegObjectController)ChildControllers[index];
+                    TotalResidueCover = Math.Min(1.0, TotalResidueCover + crop.ResidueCover * (1 - TotalResidueCover));
                 }
                 for (int i = 0; i < count; ++i)
                 {
-                    total_crop_residue += CropList[i].crop_residue;
+                    TotalCropResidue += ((VegObjectController)ChildControllers[i]).CropResidue;
                 }
 
             }
             else
             {
-                total_crop_residue = CropList[0].crop_residue;
-                total_residue_cover = CropList[0].residue_cover;
+                TotalCropResidue = ((VegObjectController)ChildControllers[0]).CropResidue;
+                TotalResidueCover = ((VegObjectController)ChildControllers[0]).ResidueCover;
             }
-            total_residue_cover_percent = total_residue_cover * 100.0;
+            TotalResidueCoverPercent = TotalResidueCover * 100.0;
 
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetTotalCropResidue()
         {
-            return total_crop_residue;
+            return TotalCropResidue;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetTotalResidueCover()
         {
-            return total_residue_cover;
+            return TotalResidueCover;
         }
+       
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetTotalResidueCoverPercent()
         {
-            return total_residue_cover_percent;
+            return TotalResidueCoverPercent;
         }
+       
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetTotalCropsPlanted()
         {
-            return sum_crops_planted;
+            return SumCropsPlanted;
         }
         public double GetTotalCropsHarvested()
         {
-            return sum_crops_harvested;
+            return SumCropsHarvested;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetTotalCropsKilled()
         {
-            return sum_crops_killed;
+            return SumCropsKilled;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetAvgYieldPerHarvest()
         {
-            return MathTools.Divide(CalculateTotalYield(), sum_crops_harvested);
+            return MathTools.Divide(CalculateTotalYield(), SumCropsHarvested);
         }
+       
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetAvgYieldPerPlanting()
         {
-            return MathTools.Divide(CalculateTotalYield(), sum_crops_planted);
+            return MathTools.Divide(CalculateTotalYield(), SumCropsPlanted);
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetAvgYieldPerYear()
         {
-            double simyears = sim.number_of_days_in_simulation / 365.0;
+            double simyears = Sim.NumberOfDaysInSimulation / 365.0;
             return MathTools.Divide(CalculateTotalYield(), simyears);
         }
+       
         /// <summary>
         /// 
         /// </summary>
@@ -563,21 +610,23 @@ namespace HowLeaky.ModelControllers
         public double CalculateTotalYield()
         {
             double total = 0;
-            foreach (VegObjectController crop in CropList)
+            foreach (VegObjectController crop in ChildControllers)
             {
-                total += crop.cumulative_yield;
+                total += crop.CumulativeYield;
             }
 
             return total;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public int GetDaysSinceHarvest()
         {
-            return days_since_harvest;
+            return DaysSinceHarvest;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -585,9 +634,10 @@ namespace HowLeaky.ModelControllers
         public int GetDaysSincePlanting()
         {
             if (CurrentCrop != null)
-                return CurrentCrop.days_since_planting;
+                return CurrentCrop.DaysSincePlanting;
             return 0;
         }
+        
         /// <summary>
         /// 
         /// </summary>

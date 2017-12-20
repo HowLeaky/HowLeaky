@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace HowLeakyWebsite.Tools.CSV
+namespace HowLeaky.Tools
 {
     //http://www.codeproject.com/Tips/741941/CSV-Parser-Csharp
     public class CsvParser

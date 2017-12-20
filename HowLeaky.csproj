@@ -46,56 +46,75 @@
     <Compile Include="CustomAttributes\Input.cs" />
     <Compile Include="CustomAttributes\Internal.cs" />
     <Compile Include="CustomAttributes\Output.cs" />
-    <Compile Include="DataModels\ClimateDataModel.cs" />
-    <Compile Include="DataModels\Cover\CoverVegModel.cs" />
-    <Compile Include="DataModels\Cover\LAIVegModel.cs" />
-    <Compile Include="DataModels\Cover\VegModel.cs" />
-    <Compile Include="DataModels\SolutesDataModel.cs" />
-    <Compile Include="DataModels\Tillage\TillageDataModel.cs" />
-    <Compile Include="DataModels\NitrateDataModel.cs" />
-    <Compile Include="DataModels\IrrigationDataModel.cs" />
-    <Compile Include="DataModels\Pesticide\PesticideDataModel.cs" />
-    <Compile Include="DataModels\PhosphorusDataModel.cs" />
-    <Compile Include="DataModels\SoilDataModel.cs" />
+    <Compile Include="Factories\SimInputModelFactory.cs" />
+    <Compile Include="Factories\RawInputModelFactory.cs" />
+    <Compile Include="Factories\SimulationFactory.cs" />
+    <Compile Include="InputModels\ClimateInputModel.cs" />
+    <Compile Include="InputModels\Cover\CoverVegInputModel.cs" />
+    <Compile Include="InputModels\Cover\LAIVegInputModel.cs" />
+    <Compile Include="InputModels\Cover\VegInputModel.cs" />
+    <Compile Include="InputModels\ModelOptionsInputModel.cs" />
+    <Compile Include="InputModels\SolutesInputModel.cs" />
+    <Compile Include="InputModels\Tillage\TillageInputModel.cs" />
+    <Compile Include="InputModels\NitrateInputModel.cs" />
+    <Compile Include="InputModels\IrrigationInputModel.cs" />
+    <Compile Include="InputModels\Pesticide\PesticideInputModel.cs" />
+    <Compile Include="InputModels\PhosphorusInputModel.cs" />
+    <Compile Include="InputModels\SoilInputModel.cs" />
     <Compile Include="Interfaces\IController.cs" />
     <Compile Include="Interfaces\IDataModel.cs" />
     <Compile Include="CustomAttributes\Unit.cs" />
-    <Compile Include="ModelControllers\BaseController.cs" />
+    <Compile Include="Interfaces\IDailyOutput.cs" />
+    <Compile Include="ModelControllers\Base\HLController.cs" />
+    <Compile Include="ModelControllers\Base\HLObjectController.cs" />
     <Compile Include="ModelControllers\ModelOptionsController.cs" />
+    <Compile Include="ModelControllers\Output\OutputModelController.cs" />
+    <Compile Include="ModelControllers\Pesticide\PesticideObjectController.cs" />
     <Compile Include="ModelControllers\SolutesController.cs" />
     <Compile Include="ModelControllers\TillageController.cs" />
     <Compile Include="ModelControllers\PesticideController.cs" />
     <Compile Include="ModelControllers\SoilController.cs" />
+    <Compile Include="ModelControllers\Tillage\TillageObjectController.cs" />
     <Compile Include="ModelControllers\VegetationController.cs" />
     <Compile Include="ModelControllers\NitrateController.cs" />
     <Compile Include="ModelControllers\PhosphorusController.cs" />
     <Compile Include="ModelControllers\IrrigationController.cs" />
     <Compile Include="ModelControllers\ClimateController.cs" />
+    <Compile Include="ModelControllers\Veg\CoverVegObjectController.cs" />
+    <Compile Include="ModelControllers\Veg\LAIVegObjectController.cs" />
+    <Compile Include="ModelControllers\Veg\VegObjectController.cs" />
+    <Compile Include="OutputModels\OutputDataModel.cs" />
     <Compile Include="ParameterModels\ParameterModelElement.cs" />
     <Compile Include="SyncModels\CustomSyncModel.cs" />
-    <Compile Include="DataModels\DataModel.cs" />
+    <Compile Include="InputModels\InputModel.cs" />
     <Compile Include="ErrorLogger\ErrorLogger.cs" />
     <Compile Include="ParameterModels\ParameterModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulation\Simulation.cs" />
+    <Compile Include="Tools\Cloner\Cloner.cs" />
     <Compile Include="Tools\DataObjects\DayMonthData.cs" />
     <Compile Include="Tools\DataObjects\OutputParameter.cs" />
     <Compile Include="Tools\DataObjects\ProfileData.cs" />
     <Compile Include="Tools\DataObjects\Sequence.cs" />
     <Compile Include="Tools\DataObjects\TimeSeriesData.cs" />
+    <Compile Include="Tools\ListExtensions.cs" />
     <Compile Include="Tools\Math\Math.cs" />
     <Compile Include="Tools\CSV\CsvParser.cs" />
     <Compile Include="Tools\Dates\DateUtilities.cs" />
     <Compile Include="Tools\Serialiser\Serialiser.cs" />
+    <Compile Include="Tools\XML\XMLUtilities.cs" />
     <Compile Include="XmlObjects\IndexData.cs" />
     <Compile Include="XmlObjects\StateData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ControllersClassDiagram.cd" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DataModels\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
