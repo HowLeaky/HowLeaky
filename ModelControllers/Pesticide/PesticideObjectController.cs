@@ -11,6 +11,40 @@ namespace HowLeaky.ModelControllers.Pesticide
 {
     public class PesticideOutputDataModel : OutputDataModel, IDailyOutput
     {
+       
+    }
+
+    public class PesticideObjectController : HLController
+    {
+        public PesticideObjectDataModel DataModel { get; set; }
+        public PesticideOutputDataModel Output { get; set; }
+
+        //Internals
+        [XmlIgnore]
+        public int DaysSinceApplication { get; set; }
+        [XmlIgnore]
+        public int PestApplicCount { get; set; }
+        [XmlIgnore]
+        public int ApplicationIndex { get; set; }
+        [XmlIgnore]
+        [Unit("L_per_ha")]
+        public double ProductRateApplied { get; set; }
+        [XmlIgnore]
+        [Unit("mg_per_kg")]
+        public double ConcSoilAfterLeach { get; set; }
+        [XmlIgnore]
+        [Unit("g_per_ha")]
+        public double LastPestInput { get; set; }
+        [XmlIgnore]
+        public int PesticideIndex
+        {
+            get
+            {
+                return Sim.PesticideController.GetPesticideIndex(this);
+            }
+        }
+
+        //Reportable Outputs
         [Output]
         [XmlIgnore]
         [Unit("g_per_ha")]
@@ -130,44 +164,6 @@ namespace HowLeaky.ModelControllers.Pesticide
         [XmlIgnore]
         [Unit("ug_per_L")]
         public double PestEMCL { get; set; }                       // Pesticide EMC (ug/L)
-    }
-
-    public class PesticideObjectController : HLController
-    {
-        public PesticideObjectDataModel DataModel { get; set; }
-        public PesticideOutputDataModel Output { get; set; }
-
-        //Internals
-        [Internal]
-        [XmlIgnore]
-        public int DaysSinceApplication { get; set; }
-        [Internal]
-        [XmlIgnore]
-        public int PestApplicCount { get; set; }
-        [Internal]
-        [XmlIgnore]
-        public int ApplicationIndex { get; set; }
-        [Internal]
-        [XmlIgnore]
-        [Unit("L_per_ha")]
-        public double ProductRateApplied { get; set; }
-        [Internal]
-        [XmlIgnore]
-        [Unit("mg_per_kg")]//We set up this temp variable as there are many types of inputs that can be assigned
-        public double ConcSoilAfterLeach { get; set; }
-        [Internal]
-        [XmlIgnore]
-        [Unit("g_per_ha")]
-        public double LastPestInput { get; set; }
-        [Internal]
-        [XmlIgnore]
-        public int PesticideIndex
-        {
-            get
-            {
-                return Sim.PesticideController.GetPesticideIndex(this);
-            }
-        }
 
         /// <summary>
         /// 
@@ -353,24 +349,24 @@ namespace HowLeaky.ModelControllers.Pesticide
 
             if (pos == EPestApplicationPosition.ApplyToVegetationLayer)
             {
-                Output.AppliedPestOnVeg = pest_application * Sim.SoilController.CropCover;
+                AppliedPestOnVeg = pest_application * Sim.SoilController.CropCover;
             }
             else
             {
-                Output.AppliedPestOnVeg = 0;
+                AppliedPestOnVeg = 0;
             }
             if (pos == EPestApplicationPosition.ApplyToVegetationLayer || pos == EPestApplicationPosition.ApplyToStubbleLayer)
             {
                 double stubble_cover = (1 - Sim.SoilController.CropCover) * Sim.SoilController.TotalResidueCover;
-                Output.AppliedPestOnStubble = pest_application * stubble_cover;
+                AppliedPestOnStubble = pest_application * stubble_cover;
             }
             else
             {
-                Output.AppliedPestOnStubble = 0;
+                AppliedPestOnStubble = 0;
             }
 
 
-            Output.AppliedPestOnSoil = pest_application - Output.AppliedPestOnVeg - Output.AppliedPestOnStubble;
+            AppliedPestOnSoil = pest_application - AppliedPestOnVeg - AppliedPestOnStubble;
             ++PestApplicCount;
         }
         
@@ -382,7 +378,7 @@ namespace HowLeaky.ModelControllers.Pesticide
             double halfLifeVegAdjusted = 0;
             double universalGasConstant = 8.314472;
             double refAirTempVegKelvin = DataModel.RefTempHalfLifeVeg + 273.15;
-            double airTempKelvin = ((Sim.ClimateController.MaxT + Sim.ClimateController.MinT) / 2.0) + 273.15;
+            double airTempKelvin = ((Sim.ClimateController.MaxTemp + Sim.ClimateController.MinTemp) / 2.0) + 273.15;
             if (!MathTools.DoublesAreEqual(airTempKelvin, 0) && !MathTools.DoublesAreEqual(refAirTempVegKelvin, 0))
                 halfLifeVegAdjusted = DataModel.HalfLifeVeg * Math.Exp((DataModel.DegradationActivationEnergy / universalGasConstant) * (1.0 / airTempKelvin - 1.0 / refAirTempVegKelvin));
             else
@@ -401,15 +397,15 @@ namespace HowLeaky.ModelControllers.Pesticide
             }
             if (Sim.ClimateController.YesterdaysRain < 5.0)
             {
-                Output.PestOnVeg = Output.PestOnVeg * vegdegrate + Output.AppliedPestOnVeg;
+                PestOnVeg = PestOnVeg * vegdegrate + AppliedPestOnVeg;
                 if (Sim.ClimateController.Rain >= 5) //rain over 5mm will wash part of pest of veg
                 {
-                    Output.PestOnVeg = Output.PestOnVeg * (1 - DataModel.CoverWashoffFraction);
+                    PestOnVeg = PestOnVeg * (1 - DataModel.CoverWashoffFraction);
                 }
             }
             else
             {
-                Output.PestOnVeg = 0;
+                PestOnVeg = 0;
             }
         }
         
@@ -421,7 +417,7 @@ namespace HowLeaky.ModelControllers.Pesticide
             double halfLifeStubbleAdjusted = 0;
             double universalGasConstant = 8.314472;
             double refAirTempStubbleKelvin = DataModel.RefTempHalfLifeStubble + 273.15;
-            double airTempKelvin = ((Sim.ClimateController.MaxT + Sim.ClimateController.MinT) / 2.0) + 273.15;
+            double airTempKelvin = ((Sim.ClimateController.MaxTemp + Sim.ClimateController.MinTemp) / 2.0) + 273.15;
             if (!MathTools.DoublesAreEqual(airTempKelvin, 0) && !MathTools.DoublesAreEqual(refAirTempStubbleKelvin, 0))
             {
                 halfLifeStubbleAdjusted = DataModel.HalfLifeStubble * Math.Exp((DataModel.DegradationActivationEnergy / universalGasConstant) * (1.0 / airTempKelvin - 1.0 / refAirTempStubbleKelvin));
@@ -443,15 +439,15 @@ namespace HowLeaky.ModelControllers.Pesticide
             }
             if (Sim.ClimateController.YesterdaysRain < 5.0)
             {
-                Output.PestOnStubble = Output.PestOnStubble * stubdegrate + Output.AppliedPestOnStubble;
+                PestOnStubble = PestOnStubble * stubdegrate + AppliedPestOnStubble;
                 if (Sim.ClimateController.Rain >= 5) //rain over 5mm will wash part of pest of stubble
                 {
-                    Output.PestOnStubble = Output.PestOnStubble * (1 - DataModel.CoverWashoffFraction);
+                    PestOnStubble = PestOnStubble * (1 - DataModel.CoverWashoffFraction);
                 }
             }
             else
             {
-                Output.PestOnStubble = 0;
+                PestOnStubble = 0;
             }
         }
        
@@ -463,7 +459,7 @@ namespace HowLeaky.ModelControllers.Pesticide
             double halflifesoil_adjusted = 0;
             double universalgasconstant = 8.314472;
             double ref_airtempsoil_kelvin = DataModel.RefTempHalfLifeSoil + 273.15;
-            double airtemp_kelvin = ((Sim.ClimateController.MaxT + Sim.ClimateController.MinT) / 2.0) + 273.15;
+            double airtemp_kelvin = ((Sim.ClimateController.MaxTemp + Sim.ClimateController.MinTemp) / 2.0) + 273.15;
             if (!MathTools.DoublesAreEqual(airtemp_kelvin, 0) && !MathTools.DoublesAreEqual(ref_airtempsoil_kelvin, 0))
             {
                 halflifesoil_adjusted = DataModel.HalfLife * Math.Exp((DataModel.DegradationActivationEnergy / universalgasconstant) * (1.0 / airtemp_kelvin - 1.0 / ref_airtempsoil_kelvin));
@@ -484,21 +480,21 @@ namespace HowLeaky.ModelControllers.Pesticide
                 MathTools.LogDivideByZeroError("CalculateDegradingPestInSoil", "HalfLifeSoil_adjusted", "soildegrate");
             }
 
-            Output.PestInSoil = Output.PestInSoil * soildegrate + Output.AppliedPestOnSoil - Output.PestLostInLeaching - Output.TotalPestLostInRunoff;
+            PestInSoil = PestInSoil * soildegrate + AppliedPestOnSoil - PestLostInLeaching - TotalPestLostInRunoff;
             if (Sim.ClimateController.Rain >= 5.0)
             {
-                Output.PestInSoil = Output.PestInSoil + (Output.PestOnStubble + Output.PestOnVeg) * DataModel.CoverWashoffFraction;
+                PestInSoil = PestInSoil + (PestOnStubble + PestOnVeg) * DataModel.CoverWashoffFraction;
             }
 
 
             denom = (Sim.SoilController.DataModel.BulkDensity.Values[0] * DataModel.MixLayerThickness * 10);
             if (!MathTools.DoublesAreEqual(denom, 0))
             {
-                Output.PestSoilConc = Output.PestInSoil / denom;
+                PestSoilConc = PestInSoil / denom;
             }
             else
             {
-                Output.PestSoilConc = 0;
+                PestSoilConc = 0;
                 MathTools.LogDivideByZeroError("CalculateDegradingPestInSoil", "sim.in_BulkDensity_g_per_cm3[0]*in_MixLayerThickness_mm*10", "out_PestSoilConc_mg_per_kg");
             }
 
@@ -520,12 +516,12 @@ namespace HowLeaky.ModelControllers.Pesticide
             }
             if (!MathTools.DoublesAreEqual(denom, 0))
             {
-                double infiltration = Sim.ClimateController.Rain - Sim.SoilController.WatBal.Runoff - availwaterstorageinmixing;
+                double infiltration = Sim.ClimateController.Rain - Sim.SoilController.Runoff - availwaterstorageinmixing;
                 if (infiltration < 0)
                 {
                     infiltration = 0;
                 }
-                ConcSoilAfterLeach = Output.PestSoilConc * Math.Exp(-infiltration / (denom));
+                ConcSoilAfterLeach = PestSoilConc * Math.Exp(-infiltration / (denom));
             }
             else
             {
@@ -543,11 +539,11 @@ namespace HowLeaky.ModelControllers.Pesticide
             double sorpBYext = DataModel.SorptionCoefficient * DataModel.ExtractCoefficient;
             double denom1 = (1 + sorpBYext);
 
-            if (Sim.SoilController.Runoff > 0 && Output.PestSoilConc > 0 && !MathTools.DoublesAreEqual(denom1, 0))
+            if (Sim.SoilController.Runoff > 0 && PestSoilConc > 0 && !MathTools.DoublesAreEqual(denom1, 0))
             {
-                Output.PestWaterPhaseConc = ConcSoilAfterLeach * DataModel.ExtractCoefficient / denom1 * 1000.0;
-                Output.PestSedPhaseConc = ConcSoilAfterLeach * sorpBYext / denom1;
-                Output.PestRunoffConc = Output.PestWaterPhaseConc + Output.PestSedPhaseConc * Sim.SoilController.SedimentConc;
+                PestWaterPhaseConc = ConcSoilAfterLeach * DataModel.ExtractCoefficient / denom1 * 1000.0;
+                PestSedPhaseConc = ConcSoilAfterLeach * sorpBYext / denom1;
+                PestRunoffConc = PestWaterPhaseConc + PestSedPhaseConc * Sim.SoilController.SedimentConc;
             }
             else
             {
@@ -555,9 +551,9 @@ namespace HowLeaky.ModelControllers.Pesticide
                 {
                     MathTools.LogDivideByZeroError("CalculatePesticideRunoffConcentrations", "1+sorpBYext", "3 x pest-concs");
                 }
-                Output.PestWaterPhaseConc = 0;
-                Output.PestSedPhaseConc = 0;
-                Output.PestRunoffConc = 0;
+                PestWaterPhaseConc = 0;
+                PestSedPhaseConc = 0;
+                PestRunoffConc = 0;
             }
         }
         
@@ -568,29 +564,29 @@ namespace HowLeaky.ModelControllers.Pesticide
         {
             if (Sim.SoilController.Runoff > 0)
             {
-                Output.PestLostInRunoffWater = Output.PestWaterPhaseConc * Sim.SoilController.Runoff * 0.01;
-                Output.PestLostInRunoffSediment = Output.PestSedPhaseConc * Sim.SoilController.ErosionTPerHa * Sim.SoilController.DataModel.SedDelivRatio;// spreadsheet uses runoff instead of erosion*SelDelivRatio
-                Output.TotalPestLostInRunoff = Output.PestLostInRunoffWater + Output.PestLostInRunoffSediment;
+                PestLostInRunoffWater = PestWaterPhaseConc * Sim.SoilController.Runoff * 0.01;
+                PestLostInRunoffSediment = PestSedPhaseConc * Sim.SoilController.ErosionTPerHa * Sim.SoilController.DataModel.SedDelivRatio;// spreadsheet uses runoff instead of erosion*SelDelivRatio
+                TotalPestLostInRunoff = PestLostInRunoffWater + PestLostInRunoffSediment;
 
             }
             else
             {
-                Output.PestLostInRunoffWater = 0;
-                Output.PestLostInRunoffSediment = 0;
-                Output.TotalPestLostInRunoff = 0;
+                PestLostInRunoffWater = 0;
+                PestLostInRunoffSediment = 0;
+                TotalPestLostInRunoff = 0;
             }
-            Output.PestLostInLeaching = (Output.PestSoilConc - ConcSoilAfterLeach) * Sim.SoilController.DataModel.BulkDensity.Values[0] * DataModel.MixLayerThickness / 10.0;
-            if (Output.PestLostInLeaching < 0)
+            PestLostInLeaching = (PestSoilConc - ConcSoilAfterLeach) * Sim.SoilController.DataModel.BulkDensity.Values[0] * DataModel.MixLayerThickness / 10.0;
+            if (PestLostInLeaching < 0)
             {
-                Output.PestLostInLeaching = 0;
+                PestLostInLeaching = 0;
             }
             if (!MathTools.DoublesAreEqual(LastPestInput, 0))
             {
-                Output.PestLossesPercentOfInput = (Output.TotalPestLostInRunoff + Output.PestLostInLeaching) / LastPestInput * 100.0;
+                PestLossesPercentOfInput = (TotalPestLostInRunoff + PestLostInLeaching) / LastPestInput * 100.0;
             }
             else
             {
-                Output.PestLossesPercentOfInput = 0;
+                PestLossesPercentOfInput = 0;
             }
         }
         
@@ -599,21 +595,21 @@ namespace HowLeaky.ModelControllers.Pesticide
         /// </summary>
         public void CalculatePesticideDaysAboveCritical()
         {
-            if (Output.PestRunoffConc > DataModel.CritPestConc * 1)
+            if (PestRunoffConc > DataModel.CritPestConc * 1)
             {
-                Output.DaysGreaterCrit1++;
+                DaysGreaterCrit1++;
             }
-            if (Output.PestRunoffConc > DataModel.CritPestConc * 0.5)
+            if (PestRunoffConc > DataModel.CritPestConc * 0.5)
             {
-                Output.DaysGreaterCrit2++;
+                DaysGreaterCrit2++;
             }
-            if (Output.PestRunoffConc > DataModel.CritPestConc * 2)
+            if (PestRunoffConc > DataModel.CritPestConc * 2)
             {
-                Output.DaysGreaterCrit3++;
+                DaysGreaterCrit3++;
             }
-            if (Output.PestRunoffConc > DataModel.CritPestConc * 10)
+            if (PestRunoffConc > DataModel.CritPestConc * 10)
             {
-                Output.DaysGreaterCrit4++;
+                DaysGreaterCrit4++;
             }
         }
 

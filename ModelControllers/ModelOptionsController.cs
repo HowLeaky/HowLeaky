@@ -29,7 +29,7 @@ namespace HowLeaky.ModelControllers
         /// </summary>
         public override void Initialise()
         {
-            throw new NotImplementedException();
+            //Do nothing
         }
         /// <summary>
         /// 
@@ -102,7 +102,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public bool UsePerfectUSLELSFn()
         {
-            return DataModel.UsePERFECT_USLE_LS_Fn;
+            return DataModel.UsePERFECTUSLELSFn;
         }
     }
 }

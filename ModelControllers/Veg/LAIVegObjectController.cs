@@ -7,80 +7,7 @@ using System.Xml.Serialization;
 
 namespace HowLeaky.ModelControllers.Veg
 {
-    [XmlRoot("VegetationType")]
-    public class LAIVegObjectDataModel : VegObjectInputDataModel
-    {
-        //Input Parameters
-        public double PotMaxLAI { get; set; }                   // The upper limit of the leaf area index (LAI) - development curve.
-        public double PropGrowSeaForMaxLai { get; set; }        // The development stage for potential maximum LAI.
-        public double BiomassAtFullCover { get; set; }          // The amount of dry plant residues (ie stubble, pasture litter etc) that results in complete coverage of the ground.  This parameter controls the relationship between the amount of crop residue and cover, which is used in calculating runoff and erosion.
-        [Unit("mm_per_day")]
-        public double DailyRootGrowth { get; set; }             // The daily increment in root depth.
-        public double PropGDDEnd { get; set; }                  // Set the proportion of the growth cycle for which irrigation is possible.
-        public double DaysOfStressToDeath { get; set; }         // The number of consecutive days that water supply is less than threshold before the crop is killed.
-        public double PercentOfMaxLai1 { get; set; }            // Percent of Maximum LAI for the 1st development stage.
-        public double PercentOfGrowSeason1 { get; set; }        // The development stage for the 1st LAI "point".
-        public double PercentOfMaxLai2 { get; set; }            // Percent of Maximum LAI for the 2nd development stage.
-        public double PercentOfGrowSeason2 { get; set; }        // The development stage for the 2nd LAI "point".
-        [Unit("days")]
-        public double DegreeDaysPlantToHarvest { get; set; }    // The sum of degree-days (temperature less the base temperature) between planting and harvest.  Controls the rate of crop development and the potential duration of the crop. Some plants develop to maturity and harvest more slowly than others - these accumulate more degree-days between plant and harvest.
-        public double SenesenceCoef { get; set; }               // Rate of LAI decline after max LAI.
-        public double RadUseEffic { get; set; }                 // Biomass production per unit of radiation.
-        public double HarvestIndex { get; set; }                // The grain biomass (kg/ha) divided by the above-ground biomass at flowering (kg/ha)
-        [Unit("oC")]
-        public double BaseTemp { get; set; }                    // The lower limit of plant development and growth, with respect to temperature (the average day temperature, degrees Celsius). The base temperature of vegetation is dependent on the type of environment in which the plant has evolved, and any breeding for hot or cold conditions.
-        [Unit("oC")]
-        public double OptTemp { get; set; }                     // The temperature for maximum biomass production.  Biomass production is a linear function of temperature between the Base temperature and the Optimum temperature.
-        [Unit("mm")]
-        public double MaxRootDepth { get; set; }                // located in CustomVegObject - >The maximum depth of the roots from the soil surface.  For the LAI model, the model calculates daily root growth from the root depth increase parameter
-        public double SWPropForNoStress { get; set; }           // Ratio of water supply to potential water supply that indicates a stress day
-        public double MaxResidueLoss { get; set; }              //Decomposition Rate
-
-        public DayMonthData PlantDate { get; set; }
-        public PlantingFormat PlantingFormat { get; set; }
-        public Waterlogging Waterlogging { get; set; }
-
-        //Getters
-        public int PlantingRulesOptions { get { return PlantingFormat.index; } }
-        public DayMonthData PlantingWindowStartDate { get { return PlantingFormat.StartPlantWindow; } }
-        public DayMonthData PlantingWindowEndDate { get { return PlantingFormat.EndPlantWindow; } }
-        public bool ForcePlantingAtEndOfWindow { get { return PlantingFormat.ForcePlanting.State; } }
-        public bool MultiPlantInWindow { get { return PlantingFormat.MultiPlantInWindow.State; } }
-        public int RotationFormat { get { return PlantingFormat.RotationOptions.index; } }
-        public int MinRotationCount { get { return PlantingFormat.RotationOptions.MinContinuousRotations; } }
-        public int MaxRotationCount { get { return PlantingFormat.RotationOptions.MaxContinuousRotations; } }
-        public int RestPeriodAfterChangingCrops { get { return PlantingFormat.RotationOptions.MinYearsBetweenSowing; } }
-        public bool FallowSwitch { get { return PlantingFormat.FallowSwitch.State; } }
-        [Unit("days")]
-        public int MinimumFallowPeriod { get { return PlantingFormat.FallowSwitch.MinFallowLength; } }
-        public bool PlantingRainSwitch { get { return PlantingFormat.RainfallSwitch.State; } }
-        [Unit("mm")]
-        public double RainfallPlantingThreshold { get { return PlantingFormat.RainfallSwitch.PlantingRain; } }
-        [Unit("days")]
-        public int RainfallSummationDays { get { return PlantingFormat.RainfallSwitch.DaysToTotalRain; } }
-        public bool SoilWaterSwitch { get { return PlantingFormat.SoilWaterSwitch.State; } }
-        [Unit("mm")]
-        public double MinSoilWaterTopLayer { get { return PlantingFormat.SoilWaterSwitch.MinSoilWaterRatio; } }
-        [Unit("mm")]
-        public double MaxSoilWaterTopLayer { get { return PlantingFormat.SoilWaterSwitch.MaxSoilWaterRatio; } }
-        public double SoilWaterReqToPlant { get { return PlantingFormat.SoilWaterSwitch.AvailSWAtPlanting; } }
-        [Unit("mm")]
-        public double DepthToSumPlantingWater { get { return PlantingFormat.SoilWaterSwitch.SoilDepthToSumPlantingSW; } set { } }
-        public int SowingDelay { get { return PlantingFormat.RainfallSwitch.SowingDelay; } }
-        public Sequence PlantingSequence { get { return PlantingFormat.PlantingDates; } }                           // The rate of removal of plant residues from the soil surface by decay. Fraction of current plant/crop residues that decay each day. Plant residues on the soil surface are used in calculation of soil evaporation, runoff and erosion.
-        public bool WaterLoggingSwitch { get { return Waterlogging.State; } }
-        public double WaterLoggingFactor1 { get { return Waterlogging.WaterLoggingFactor1; } }
-        public double WaterLoggingFactor2 { get { return Waterlogging.WaterLoggingFactor2; } }
-        public bool RatoonSwitch { get { return PlantingFormat.RatoonCrop.State; } }
-        public int NumberOfRatoons { get { return PlantingFormat.RatoonCrop.RatoonCount; } }
-        public double ScalingFactorForRatoons { get { return PlantingFormat.RatoonCrop.RatoonScaleFactor; } }
-
-        //TODO: unmatched
-        //MaxResidueLoss, WatStressForDeath
-        public double MaximumResidueCover { get; set; }
-
-        public LAIVegObjectDataModel() { }
-    }
+    
 
     public class LAIVegObjectController : VegObjectController
     {
@@ -103,7 +30,6 @@ namespace HowLeaky.ModelControllers.Veg
         public double LAICurveY1active { get; set; }
         public double LAICurveY2active { get; set; }
         public double MaxCalcLAI { get; set; }
-        public double LAI { get; set; }
 
         /// <summary>
         /// 
@@ -483,7 +409,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <summary>
         /// 
         /// </summary>
-        public new void Plant()
+        public override void Plant()
         {
             base.Plant();
             Sim.VegetationController.CurrentCrop.ResetCover();
@@ -512,7 +438,8 @@ namespace HowLeaky.ModelControllers.Veg
         public override double GetTotalCover()
         {
             TotalCover = Math.Min(1.0, CropCover + ResidueCover * (1 - CropCover));
-            Output.TotalCover = TotalCover * 100.0;
+            //REVIEW
+            //TotalCoverPc = TotalCover * 100.0;
             return TotalCover;
         }
         
@@ -526,7 +453,7 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 if (CropStage <= 2.0)
                 {
-                    if (Output.WaterStressIndex <= DataModel.SWPropForNoStress)
+                    if (WaterStressIndex <= DataModel.SWPropForNoStress)
                     {
                         ++KillDays;
                     }
@@ -568,29 +495,29 @@ namespace HowLeaky.ModelControllers.Veg
                 ratio = 1;
                 //dont log error for this one
             }
-            Output.TempStressIndex = Math.Sin(0.5 * Math.PI * ratio);
-            Output.TempStressIndex = Math.Max(Output.TempStressIndex, 0.0);
-            Output.TempStressIndex = Math.Min(Output.TempStressIndex, 1.0);
+            TempStressIndex = Math.Sin(0.5 * Math.PI * ratio);
+            TempStressIndex = Math.Max(TempStressIndex, 0.0);
+            TempStressIndex = Math.Min(TempStressIndex, 1.0);
 
             // ************************
             // *  Water stress index  *
             // ************************
 
-            Output.WaterStressIndex = 1.0;
-            if (Output.PotTranspiration > 0.0)
+            WaterStressIndex = 1.0;
+            if (PotTranspiration > 0.0)
             {
-                Output.WaterStressIndex = TotalTranspiration / Output.PotTranspiration;
+                WaterStressIndex = TotalTranspiration / PotTranspiration;
             }
-            Output.WaterStressIndex = Math.Max(Output.WaterStressIndex, 0.0);
-            Output.WaterStressIndex = Math.Min(Output.WaterStressIndex, 1.0);
+            WaterStressIndex = Math.Max(WaterStressIndex, 0.0);
+            WaterStressIndex = Math.Min(WaterStressIndex, 1.0);
 
             // *************************************
             // *  calculate minimum stress factor  *
             // *************************************
-            Output.GrowthRegulator = 1;
-            Output.GrowthRegulator = Math.Min(Output.GrowthRegulator, Output.TempStressIndex);
-            Output.GrowthRegulator = Math.Min(Output.GrowthRegulator, Output.WaterStressIndex);
-            Output.GrowthRegulator = MathTools.CheckConstraints(Output.GrowthRegulator, 1.0, 0);
+            GrowthRegulator = 1;
+            GrowthRegulator = Math.Min(GrowthRegulator, TempStressIndex);
+            GrowthRegulator = Math.Min(GrowthRegulator, WaterStressIndex);
+            GrowthRegulator = MathTools.CheckConstraints(GrowthRegulator, 1.0, 0);
         }
         
         /// <summary>
@@ -684,11 +611,11 @@ namespace HowLeaky.ModelControllers.Veg
 
                 if (Sim.ModelOptionsController.DataModel.UsePERFECTLeafAreaFn)
                 {
-                    dlai = dHUF * DataModel.PotMaxLAI * Math.Sqrt(Output.GrowthRegulator);
+                    dlai = dHUF * DataModel.PotMaxLAI * Math.Sqrt(GrowthRegulator);
                 }
                 else
                 {
-                    dlai = dHUF * DataModel.PotMaxLAI * Output.GrowthRegulator;
+                    dlai = dHUF * DataModel.PotMaxLAI * GrowthRegulator;
                 }
                 LAI = LAI + dlai;
 
@@ -733,7 +660,7 @@ namespace HowLeaky.ModelControllers.Veg
             // *********************************
             // Assumes PAR is 50% of solar radiation
             //         Extinction Coefficient = 0.65
-            rad = Sim.ClimateController.Radiation;
+            rad = Sim.ClimateController.SolarRadiation;
             par = 0.5 * rad * (1.0 - Math.Exp(-0.65 * LAI));
 
             // **********************
@@ -761,15 +688,15 @@ namespace HowLeaky.ModelControllers.Veg
             // [Equation 2.193] from EPIC
             if (Sim.ModelOptionsController.DataModel.UsePERFECTDryMatterFn)
             {
-                DryMatter += Output.GrowthRegulator * par * effectiverue * Math.Pow(1.0 + dhrlt, 3.0);
-                Output.DryMatter = DryMatter * 10.0;
+                DryMatter += GrowthRegulator * par * effectiverue * Math.Pow(1.0 + dhrlt, 3.0);
+                DryMatter = DryMatter * 10.0;
             }
 
             else
             {
                 par = 0.5 * rad;
-                DryMatter += effectiverue * par * Output.WaterStressIndex * Output.TempStressIndex * GreenCover;
-                Output.DryMatter = DryMatter * 10.0;
+                DryMatter += effectiverue * par * WaterStressIndex * TempStressIndex * GreenCover;
+                DryMatter = DryMatter * 10.0;
             }
         }
 
@@ -799,7 +726,9 @@ namespace HowLeaky.ModelControllers.Veg
             double rlat = alat * 0.0174533;
             double dnlat = 0;
             if (!MathTools.DoublesAreEqual(Math.Cos(rlat), 0) && !MathTools.DoublesAreEqual(Math.Cos(dcln), 0))
+            {
                 dnlat = -(Math.Sin(rlat) / Math.Cos(rlat)) * (Math.Sin(dcln) / Math.Cos(dcln));
+            }
             else
             {
                 MathTools.LogDivideByZeroError("GetDayLength", "Math.Cos(rlat) or Math.Cos(dcln)", "dnlat");
@@ -824,8 +753,8 @@ namespace HowLeaky.ModelControllers.Veg
         /// </summary>
         public void CalculateRootGrowth()
         {
-            Output.RootDepth = Output.RootDepth + DataModel.DailyRootGrowth;
-            Output.RootDepth = MathTools.CheckConstraints(Output.RootDepth, MaximumRootDepth, 0);
+            RootDepth = RootDepth + DataModel.DailyRootGrowth;
+            RootDepth = MathTools.CheckConstraints(RootDepth, MaximumRootDepth, 0);
         }
 
         /// <summary>
@@ -846,7 +775,6 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 TodayIsHarvestDay = false;
                 Yield = 0;
-                Output.Yield = 0;
             }
         }
         
@@ -866,9 +794,10 @@ namespace HowLeaky.ModelControllers.Veg
             // ++number_of_fallows;
             //	CropStatus=csInFallow;
             Yield = DataModel.HarvestIndex * DryMatter * 10.0;
-            Output.Yield = Yield / 1000.0;
-            Output.ResidueAmount = Output.ResidueAmount + (DryMatter - Yield / 10.0) * 0.95 * 10.0;
-
+            //REVIEW
+            //Output.Yield = Yield / 1000.0;
+            ResidueAmount = ResidueAmount + (DryMatter - Yield / 10.0) * 0.95 * 10.0;
+          
             GreenCover = 0;
 
             Sim.VegetationController.CalculateTotalResidue();
@@ -890,12 +819,11 @@ namespace HowLeaky.ModelControllers.Veg
             CalculateRootGrowth();
             // CalculateBioMass();//only needs to be here to replicate previous results
             // CalculateResidue();//only needs to be here to replicate previous results
-            Output.ResidueAmount = Output.ResidueAmount + (DryMatter - Yield) * 0.95 * 10.0;
+            ResidueAmount = ResidueAmount + (DryMatter - Yield) * 0.95 * 10.0;
             Sim.VegetationController.CalculateTotalResidue();
-            Output.WaterStressIndex = 1.0;
+            WaterStressIndex = 1.0;
             ++NumberOfCropsKilled;
             Yield = 0;
-            Output.Yield = 0;
             ResetParametersForEndOfCrop();
 
             //crop_stage=0;
@@ -923,7 +851,7 @@ namespace HowLeaky.ModelControllers.Veg
             DaysSincePlanting = 0;
             TotalTranspiration = 0;
             CropCover = 0;
-            CropCoverPercent = 0;
+            //CropCoverPercent = 0;
             CropStage = 0;
             LAI = 0;
             for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
@@ -931,12 +859,12 @@ namespace HowLeaky.ModelControllers.Veg
                 Sim.SoilController.LayerTranspiration[i] = 0;
             }
             HeatUnitIndex = 0;
-            Output.RootDepth = 0;
+            RootDepth = 0;
             GreenCover = 0;
-            Output.GrowthRegulator = 0;
+            GrowthRegulator = 0;
             DryMatter = 0;
-            Output.DryMatter = 0;
-            Output.PotTranspiration = 0;
+            DryMatter = 0;
+            PotTranspiration = 0;
 
         }
 
@@ -993,13 +921,14 @@ namespace HowLeaky.ModelControllers.Veg
 
             GreenCover = Math.Max(0.0, GreenCover);
             CropCover = Math.Max(CropCover, GreenCover);
-            double value = Math.Min(Sim.ClimateController.PanEvap * GreenCover, Sim.ClimateController.PanEvap - Sim.SoilController.WatBal.SoilEvap);
+            double value = Math.Min(Sim.ClimateController.PanEvap * GreenCover, Sim.ClimateController.PanEvap - Sim.SoilController.SoilEvap);
             if (value > Sim.ClimateController.PanEvap)
             {
                 value = Sim.ClimateController.PanEvap;
             }
-            Output.GreenCover = GreenCover * 100.0;
-            CropCoverPercent = CropCover * 100.0;
+            //REVIEW
+            //Output.GreenCover = GreenCover * 100.0;
+            //CropCoverPercent = CropCover * 100.0;
             if (DataModel.WaterLoggingSwitch && IsWaterLogged())
             {
                 value = value * DataModel.WaterLoggingFactor1;
@@ -1023,21 +952,21 @@ namespace HowLeaky.ModelControllers.Veg
         {
             if (Sim.ModelOptionsController.DataModel.UsePERFECTResidueFn)
             {
-                CalculateResidue_PERFECT();
+                CalculateResiduePERFECT();
             }
             else
             {
-                CalculateResidue_BR();
+                CalculateResidueBR();
             }
             TotalCover = GetTotalCover();
-            Output.TotalCover = TotalCover * 100.0;
+            TotalCover = TotalCover * 100.0;
             AccumulatedResidue += ResidueCover * 100.0;
         }
         
         /// <summary>
         /// 
         /// </summary>
-        public void CalculateResidue_BR()
+        public void CalculateResidueBR()
         {
             int seriesindex = Sim.Climateindex;
             double rain_yesterday = Sim.ClimateController.RainOnDay(Sim.Today - new TimeSpan(1, 0, 0, 0));
@@ -1053,23 +982,26 @@ namespace HowLeaky.ModelControllers.Veg
 
             // Will change this to a non-linear function in the near future. BR 14/09/2010
 
-            Output.ResidueAmount = Math.Max(0, Output.ResidueAmount - Output.ResidueAmount * DataModel.MaxResidueLoss / 100.0 * Decompdays);
+            ResidueAmount = Math.Max(0, ResidueAmount - ResidueAmount * DataModel.MaxResidueLoss / 100.0 * Decompdays);
             if (!MathTools.DoublesAreEqual(DataModel.BiomassAtFullCover, 0))
-                ResidueCover = Math.Min(1.0, Output.ResidueAmount / DataModel.BiomassAtFullCover);
+                ResidueCover = Math.Min(1.0, ResidueAmount / DataModel.BiomassAtFullCover);
             else
             {
                 ResidueCover = 0;
                 MathTools.LogDivideByZeroError("CalculateResidue_BR", "in_BiomassAtFullCover", "residue_cover");
             }
-            if (ResidueCover < 0) ResidueCover = 0;
-            Output.ResidueCover = ResidueCover * 100.0;
+            if (ResidueCover < 0)
+            {
+                ResidueCover = 0;
+            }
+            ResidueCover = ResidueCover * 100.0;
 
         }
        
         /// <summary>
         /// 
         /// </summary>
-        public void CalculateResidue_PERFECT()
+        public void CalculateResiduePERFECT()
         {
             // ************************************************************
             // *  Subroutine decays residue and calculates surface cover  *
@@ -1079,20 +1011,22 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 if (DaysSinceFallow < 60)
                 {
-                    Output.ResidueAmount = Math.Max(0, Output.ResidueAmount - 15);
+                    ResidueAmount = Math.Max(0, ResidueAmount - 15);
                 }
                 else if (DaysSinceFallow >= 60)
                 {
-                    Output.ResidueAmount = Math.Max(0, Output.ResidueAmount - 3);
+                    ResidueAmount = Math.Max(0, ResidueAmount - 3);
                 }
                 DaysSinceFallow += 1;
 
             }
             else
-                Output.ResidueAmount = Math.Max(0, Output.ResidueAmount - 15);
+            {
+                ResidueAmount = Math.Max(0, ResidueAmount - 15);
+            }
             //  Calculate proportion cover from residue weight
             //  using Sallaway type functions
-            ResidueCover = DataModel.MaximumResidueCover * (1.0 - Math.Exp(-1.0 * Output.ResidueAmount / 1000.0));
+            ResidueCover = DataModel.MaximumResidueCover * (1.0 - Math.Exp(-1.0 * ResidueAmount / 1000.0));
             if (ResidueCover < 0)
             {
                 ResidueCover = 0;
@@ -1101,7 +1035,8 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 ResidueCover = 1;
             }
-            Output.ResidueCover = ResidueCover * 100.0;
+            //REVIEW
+            //ResidueCoverPc = ResidueCover * 100.0;
         }
     }
 }

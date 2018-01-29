@@ -12,12 +12,15 @@ namespace HowLeaky.ModelControllers
     {
         [XmlIgnore]
         public Simulation Sim { get; set; }
+        [XmlIgnore]
+        public OutputDataModel Output { get; set; } 
 
         public HLController() { }
 
         public HLController(Simulation sim)
         {
             this.Sim = sim;
+            this.Output = new OutputDataModel(this);
         }
 
         public virtual void Initialise() { }
@@ -30,7 +33,7 @@ namespace HowLeaky.ModelControllers
         {
             List<OutputDataModel> outputModels = new List<OutputDataModel>();
 
-            List<PropertyInfo> outputModelProperties = new List<PropertyInfo>(this.GetType().GetProperties().Where(p => p.PropertyType.GetInterfaces().Contains(typeof(IDailyOutput))));
+            List<PropertyInfo> outputModelProperties = new List<PropertyInfo>(this.GetType().GetProperties().Where(p => p.Name == "Output"));
 
             foreach(PropertyInfo p in outputModelProperties)
             {

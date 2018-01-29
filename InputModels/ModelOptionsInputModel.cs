@@ -30,7 +30,7 @@ namespace HowLeaky.InputModels
         public bool UsePERFECTSoilEvapFn { get; set; }
         public bool UsePERFECTLeafAreaFn { get; set; }
         public bool UsePERFECTResidueFn { get; set; }
-        public bool UsePERFECT_USLE_LS_Fn { get; set; }
+        public bool UsePERFECTUSLELSFn { get; set; }
         public int UsePERFECTCurveNoFn { get; set; }
         public double InitialPAW { get; set; }
 

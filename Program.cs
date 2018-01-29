@@ -9,6 +9,8 @@ namespace HowLeaky
         {
             Project p = new Project(@"C:\projects\HLTest\Banana_reeftool.hlk");
 
+            p.RunSimulations();
+
             Console.ReadKey();
         }
     }

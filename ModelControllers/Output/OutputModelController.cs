@@ -12,8 +12,8 @@ namespace HowLeaky.ModelControllers
     {
         public List<OutputDataModel> dailyOutputs;
         StreamWriter dailySW;
-        StreamWriter monthlySW;
-        StreamWriter annualSW;
+        //StreamWriter monthlySW;
+        //StreamWriter annualSW;
 
         /// <summary>
         /// 

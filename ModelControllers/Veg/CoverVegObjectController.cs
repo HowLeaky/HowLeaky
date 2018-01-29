@@ -8,7 +8,7 @@ namespace HowLeaky.ModelControllers.Veg
     {
         public CoverVegObjectDataModel DataModel { get; set; }
 
-        public int Pandayindex { get; set; }
+        public int PanDayindex { get; set; }
         public int PanEvapFactor { get; set; }
 
         /// <summary>
@@ -28,6 +28,8 @@ namespace HowLeaky.ModelControllers.Veg
         public CoverVegObjectController(Simulation simulation, CoverVegObjectDataModel dataModel) : this(simulation)
         {
             this.DataModel = dataModel;
+
+            DataModel.InitialiseCoverProfile();
         }
 
         /// <summary>
@@ -44,18 +46,20 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public override bool DoesCropMeetSowingCriteria()
         {
-            return (Pandayindex == DataModel.PlantDay);
+            return (Sim.Today.DayOfYear == DataModel.PlantDay && CropStatus != CropStatus.Growing);
         }
         /// <summary>
         /// 
         /// </summary>
         public override void Simulate()
         {
-            InitialisedMeasuredInputs();
+            //InitialisedMeasuredInputs();
             if (DoesCropMeetSowingCriteria())
             {
                 Plant();
+                
             }
+            InitialisedMeasuredInputs();
             EtPanPhenology();
             //	CalculateRootGrowth();
             CalculateTranspiration();
@@ -69,7 +73,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <summary>
         /// 
         /// </summary>
-        public new void Plant()
+        public override void Plant()
         {
             base.Plant();
             Sim.FManagementEvent = ManagementEvent.Planting;
@@ -80,7 +84,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// 
         /// </summary>
         /// <returns></returns>
-        public new double GetTotalCover()
+        public override double GetTotalCover()
         {
             TotalCover = ResidueCover * (1 - GreenCover) + GreenCover;
             // was requested by VicDPI to account for animal trampling
@@ -94,7 +98,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// 
         /// </summary>
         /// <returns></returns>
-        public new double GetPotentialSoilEvaporation()
+        public override double GetPotentialSoilEvaporation()
         {
             return Sim.ClimateController.PanEvap * (1.0 - TotalCover * 0.87);
             // Dan Rattray: 0.87 comes from APSIM
@@ -103,14 +107,19 @@ namespace HowLeaky.ModelControllers.Veg
         /// 
         /// </summary>
         /// <returns></returns>
-        public new bool InitialisedMeasuredInputs()
+        public override bool InitialisedMeasuredInputs()
         {
             if (DataModel.CoverDataType == 0)
             {
                 //		UpdatePanDayIndex();
-                GreenCover = DataModel.CoverProfile.GetValueForDayIndex("Green Cover", Pandayindex, Sim.Today) / 100.0 * DataModel.GreenCoverMultiplier;
-                ResidueCover = DataModel.CoverProfile.GetValueForDayIndex("Residue Cover", Pandayindex, Sim.Today) / 100.0 * DataModel.ResidueCoverMultiplier;
-                Output.RootDepth = DataModel.CoverProfile.GetValueForDayIndex("Root Depth", Pandayindex, Sim.Today) * DataModel.RootDepthMultiplier;
+                //GreenCover = DataModel.CoverProfile.GetValueForDayIndex("Green Cover", PanDayindex, Sim.Today) / 100.0 * DataModel.GreenCoverMultiplier;
+                //ResidueCover = DataModel.CoverProfile.GetValueForDayIndex("Residue Cover", PanDayindex, Sim.Today) / 100.0 * DataModel.ResidueCoverMultiplier;
+                //Output.RootDepth = DataModel.CoverProfile.GetValueForDayIndex("Root Depth", PanDayindex, Sim.Today) * DataModel.RootDepthMultiplier;
+                DataModel.CoverProfile.UpdateDayIndex(Sim.Today);
+                GreenCover = DataModel.CoverProfile.GetValueForDayIndex("Green Cover", Sim.Today) / 100.0 * DataModel.GreenCoverMultiplier;
+                ResidueCover = DataModel.CoverProfile.GetValueForDayIndex("Residue Cover", Sim.Today) / 100.0 * DataModel.ResidueCoverMultiplier;
+                RootDepth = DataModel.CoverProfile.GetValueForDayIndex("Root Depth", Sim.Today) * DataModel.RootDepthMultiplier;
+
                 CropCover = GreenCover;
             }
             else
@@ -141,11 +150,11 @@ namespace HowLeaky.ModelControllers.Veg
                     }
                     if (!MathTools.DoublesAreEqual(rootbiomass, MathTools.MISSING_DATA_VALUE))
                     {
-                        Output.RootDepth = DataModel.MaxRootDepth * (1 - Math.Exp(-rootbiomass * DataModel.RootDepthMultiplier));
+                        RootDepth = DataModel.MaxRootDepth * (1 - Math.Exp(-rootbiomass * DataModel.RootDepthMultiplier));
                     }
                     else
                     {
-                        Output.RootDepth = 0;
+                        RootDepth = 0;
                     }
                 }
                 else
@@ -153,7 +162,7 @@ namespace HowLeaky.ModelControllers.Veg
                     GreenCover = 0;
                     CropCover = 0;
                     ResidueCover = 0;
-                    Output.RootDepth = 0;
+                    RootDepth = 0;
                 }
             }
             if (ResidueCover > 1)
@@ -186,12 +195,12 @@ namespace HowLeaky.ModelControllers.Veg
             Sim.SoilController.TotalResidueCoverPercent = ResidueCover * 100.0;
             TotalCover = GetTotalCover();
             Yield = 0;
-            Output.Yield = 0;
-
-            Output.GreenCover = GreenCover * 100.0;
-            CropCoverPercent = CropCover * 100.0;
-            Output.TotalCover = TotalCover * 100.0;
-            Output.ResidueCover = ResidueCover * 100.0;
+           
+            //REVIEW
+            //Output.GreenCover = GreenCover * 100.0;
+            //CropCoverPercent = CropCover * 100.0;
+            //Output.TotalCover = TotalCover * 100.0;
+            //Output.ResidueCover = ResidueCover * 100.0;
 
             return true;
         }
@@ -199,12 +208,12 @@ namespace HowLeaky.ModelControllers.Veg
         /// 
         /// </summary>
         /// <returns></returns>
-        public new double CalculatePotentialTranspiration()
+        public override double CalculatePotentialTranspiration()
         {
             double cf = 1;
-            if (Output.RootDepth > 0)
+            if (RootDepth > 0)
             {
-                return Math.Min(GreenCover * Sim.ClimateController.PanEvap * cf, Sim.ClimateController.PanEvap - Sim.SoilController.WatBal.SoilEvap);
+                return Math.Min(GreenCover * Sim.ClimateController.PanEvap * cf, Sim.ClimateController.PanEvap - Sim.SoilController.SoilEvap);
             }
             return 0;
         }
@@ -271,7 +280,7 @@ namespace HowLeaky.ModelControllers.Veg
         public void CalculateBiomass()
         {
             DryMatter += DataModel.TranspirationEfficiency * TotalTranspiration;
-            Output.DryMatter = DryMatter;   //this used to be multiplied by 10, removed 07/03/2013
+            //Output.DryMatter = DryMatter;   //this used to be multiplied by 10, removed 07/03/2013
         }
         /// <summary>
         /// 
@@ -279,7 +288,8 @@ namespace HowLeaky.ModelControllers.Veg
         public void CalculateYield()
         {
             Yield = DataModel.HarvestIndex * DryMatter; //this used to be multiplied by 10, removed
-            Output.Yield = Yield / 1000.0;
+            //REVIEW
+            //Output.Yield = Yield / 1000.0;
             CumulativeYield += Yield;
             ++NumberOfHarvests;
             CropStatus = ModelControllers.CropStatus.Fallow;

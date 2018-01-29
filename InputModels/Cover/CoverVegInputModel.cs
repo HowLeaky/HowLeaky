@@ -57,10 +57,28 @@ namespace HowLeaky.DataModels
         public double MaxAllowTotalCover { get; set; }          // Maximum allowable total cover
         [Unit("mm")]
         public double MaxRootDepth { get; set; }  // located in CustomVegObject - >The maximum depth of the roots from the soil surface.  For the LAI model, the model calculates daily root growth from the root depth increase parameter
+        public double SWPropForNoStress { get; set; }
 
-        public CoverVegObjectDataModel() { }
+        public CoverVegObjectDataModel()
+        {
+            //InitialiseCoverProfile();
+        }
+
+        public void InitialiseCoverProfile()
+        {
+            CoverProfile = new ProfileData();
+
+            foreach(Data d in CropFactorMatrix)
+            {
+                CoverProfile.AddDate((int)d.X);
+                CoverProfile.AddValue("Green Cover", d.Y);
+                CoverProfile.AddValue("Residue Cover", d.Z);
+                CoverProfile.AddValue("Root Depth", d.A);
+
+            }
+        }
     }
 
 
-   
+
 }

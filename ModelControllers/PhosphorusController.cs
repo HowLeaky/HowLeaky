@@ -8,33 +8,10 @@ using HowLeaky.Interfaces;
 
 namespace HowLeaky.ModelControllers
 {
-    public class PhosphorusOutputDataModel : OutputDataModel, IDailyOutput
-    {
-        [Unit("mg_per_l")]
-        public double ParticulateConc { get; set; }        // Particulate P Conc (mg/l)
-        [Unit("mg_per_l")]
-        public double DissolvedConc { get; set; }          // Dissolved P Conc (mg/l)
-        [Unit("mg_per_l")]
-        public double BioAvailParticPConc { get; set; }    // Bioavailable particulate P Conc(mg/l)
-        [Unit("mg_per_l")]
-        public double BioAvailPConc { get; set; }          // Bioavailable P Conc(mg/l)
-        [Unit("mg_per_l")]
-        public double TotalPConc { get; set; }             // Total P Conc (mg/l)
-        [Unit("kg_per_ha")]
-        public double ParticPExport { get; set; }         // Particulate P export(kg/ha)
-        [Unit("kg_per_ha")]
-        public double BioAvailParticPExport { get; set; } // Bioavailable particulate P export(kg/ha)
-        [Unit("kg_per_ha")]
-        public double TotalBioAvailExport { get; set; }   // Bioavailable P export(kg/ha)
-        [Unit("kg_per_ha")]
-        public double TotalP { get; set; }                // Total Phosphorus export(kg/ha)
-        [Unit("t_per_ha")]
-        public double CKQ { get; set; }
-        [Unit("kg_per_ha")]
-        public double PPHLC { get; set; }
-        [Unit("kg_per_ha")]
-        public double PhosExportDissolve { get; set; }
-    }
+    //public class PhosphorusOutputDataModel : OutputDataModel, IDailyOutput
+    //{
+        
+    //}
 
     public class PhosphorusController : HLController
     {
@@ -54,7 +31,45 @@ namespace HowLeaky.ModelControllers
         public double MaxPhosConcDissolvemgPerL { get; set; }
 
         public PhosphorusInputModel DataModel { get; set; }
-        public PhosphorusOutputDataModel Output { get; set; }
+        //public PhosphorusOutputDataModel Output { get; set; }
+
+        //Reportable Outputs
+        [Output]
+        [Unit("mg_per_l")]
+        public double ParticulateConc { get; set; }        // Particulate P Conc (mg/l)
+        [Output]
+        [Unit("mg_per_l")]
+        public double DissolvedConc { get; set; }          // Dissolved P Conc (mg/l)
+        [Output]
+        [Unit("mg_per_l")]
+        public double BioAvailParticPConc { get; set; }    // Bioavailable particulate P Conc(mg/l)
+        [Output]
+        [Unit("mg_per_l")]
+        public double BioAvailPConc { get; set; }          // Bioavailable P Conc(mg/l)
+        [Output]
+        [Unit("mg_per_l")]
+        public double TotalPConc { get; set; }             // Total P Conc (mg/l)
+        [Output]
+        [Unit("kg_per_ha")]
+        public double ParticPExport { get; set; }         // Particulate P export(kg/ha)
+        [Output]
+        [Unit("kg_per_ha")]
+        public double BioAvailParticPExport { get; set; } // Bioavailable particulate P export(kg/ha)
+        [Output]
+        [Unit("kg_per_ha")]
+        public double TotalBioAvailExport { get; set; }   // Bioavailable P export(kg/ha)
+        [Output]
+        [Unit("kg_per_ha")]
+        public double TotalP { get; set; }                // Total Phosphorus export(kg/ha)
+        [Output]
+        [Unit("t_per_ha")]
+        public double CKQ { get; set; }
+        [Output]
+        [Unit("kg_per_ha")]
+        public double PPHLC { get; set; }
+        [Output]
+        [Unit("kg_per_ha")]
+        public double PhosExportDissolve { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -65,7 +80,7 @@ namespace HowLeaky.ModelControllers
         /// <param name="sim"></param>
         public PhosphorusController(Simulation sim) : base(sim)
         {
-            Output = new PhosphorusOutputDataModel();
+            //Output = new PhosphorusOutputDataModel();
         }
         /// <summary>
         /// 
@@ -74,9 +89,13 @@ namespace HowLeaky.ModelControllers
         {
             DataModel = (PhosphorusInputModel)inputModels[0];
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public override void Initialise()
         {
-            throw new NotImplementedException();
+            //Do nothing
         }
 
         /// <summary>
@@ -103,7 +122,7 @@ namespace HowLeaky.ModelControllers
             {
                 if (CansimulatePhosphorus())
                 {
-                    if (Sim.SoilController.WatBal.Runoff > 0)
+                    if (Sim.SoilController.Runoff > 0)
                     {
                         CalculateDissolvedPhosphorus();
                         CalculateParticulatePhosphorus();
@@ -171,25 +190,25 @@ namespace HowLeaky.ModelControllers
                 //The following is the original fn published at MODSIM11:
                 if (phosSaturationIndex < 5)
                 {
-                    Output.DissolvedConc = (10.0 * phosSaturationIndex / 1000.0);
+                    DissolvedConc = (10.0 * phosSaturationIndex / 1000.0);
                 }
                 else
                 {
-                    Output.DissolvedConc = ((-100.0 + 30 * phosSaturationIndex) / 1000.0);
+                    DissolvedConc = ((-100.0 + 30 * phosSaturationIndex) / 1000.0);
                 }
             }
             else
             {
                 if (phosSaturationIndex < 10)
                 {
-                    Output.DissolvedConc = (7.5 * phosSaturationIndex / 1000.0);
+                    DissolvedConc = (7.5 * phosSaturationIndex / 1000.0);
                 }
                 else
                 {
-                    Output.DissolvedConc = ((-200.0 + 27.5 * phosSaturationIndex) / 1000.0);
+                    DissolvedConc = ((-200.0 + 27.5 * phosSaturationIndex) / 1000.0);
                 }
             }
-            Output.PhosExportDissolve = (Output.DissolvedConc / 1000000.0 * Sim.SoilController.WatBal.Runoff * 10000.0);//CHECK - this wasn't marked as an output parameter
+            PhosExportDissolve = (DissolvedConc / 1000000.0 * Sim.SoilController.Runoff * 10000.0);//CHECK - this wasn't marked as an output parameter
         }
         /// <summary>
         /// 
@@ -198,15 +217,15 @@ namespace HowLeaky.ModelControllers
         {
             double pEnrich = CalculatePhosphorusEnrichmentRatio();
             double pSedConcGPerL = 0;
-            if (!MathTools.DoublesAreEqual(Sim.SoilController.WatBal.Runoff, 0))//&&sim.in_SedDelivRatio!=0)
+            if (!MathTools.DoublesAreEqual(Sim.SoilController.Runoff, 0))//&&sim.in_SedDelivRatio!=0)
             {
                 // convert t/ha to g/ha and sim.out_WatBal_Runoff_mm(mm) to L/ha.  Then the division yields g/L of sediment.
-                pSedConcGPerL = Sim.SoilController.Soil.HillSlopeErosion * 1000000.0 / (Sim.SoilController.WatBal.Runoff * 10000.0) * Sim.SoilController.DataModel.SedDelivRatio;
+                pSedConcGPerL = Sim.SoilController.HillSlopeErosion * 1000000.0 / (Sim.SoilController.Runoff * 10000.0) * Sim.SoilController.DataModel.SedDelivRatio;
             }
             // convert sed conc from g/L to mg/L and totalPconc from mg/kg (I assume it is in mg/kg) to g/g
-            Output.ParticulateConc = (pSedConcGPerL * 1000.0 * DataModel.TotalPConc / 1000000.0 * pEnrich);
+            ParticulateConc = (pSedConcGPerL * 1000.0 * DataModel.TotalPConc / 1000000.0 * pEnrich);
 
-            Output.ParticPExport = (Output.ParticulateConc / 1000000.0 * Sim.SoilController.WatBal.Runoff * 10000.0);
+            ParticPExport = (ParticulateConc / 1000000.0 * Sim.SoilController.Runoff * 10000.0);
         }
         /// <summary>
         /// 
@@ -232,8 +251,8 @@ namespace HowLeaky.ModelControllers
         /// </summary>
         public void CalculateTotalPhosphorus()
         {
-            Output.TotalPConc = (Output.DissolvedConc + Output.ParticulateConc);
-            Output.TotalP = (Output.PhosExportDissolve + Output.ParticPExport); //CHECK Phos_Export_Dissolve wasn't marked as out;
+            TotalPConc = (DissolvedConc + ParticulateConc);
+            TotalP = (PhosExportDissolve + ParticPExport); //CHECK Phos_Export_Dissolve wasn't marked as out;
 
         }
         /// <summary>
@@ -251,38 +270,38 @@ namespace HowLeaky.ModelControllers
                 pA = 0;
                 //	LogDivideByZeroError("CalculateBioavailableParticulatePhosphorus","in_TotalPConc_mg_per_kg","pA");
             }
-            Output.BioAvailParticPConc = (Output.ParticulateConc * pA);
-            Output.BioAvailParticPExport = (Output.ParticPExport * pA);
+            BioAvailParticPConc = (ParticulateConc * pA);
+            BioAvailParticPExport = (ParticPExport * pA);
         }
         /// <summary>
         /// 
         /// </summary>
         public void CalculateBioavailablePhosphorus()
         {
-            Output.BioAvailPConc = (0.8 * Output.DissolvedConc + Output.BioAvailParticPConc);
-            Output.TotalBioAvailExport = (0.8 * Output.PhosExportDissolve + Output.BioAvailParticPExport);
+            BioAvailPConc = (0.8 * DissolvedConc + BioAvailParticPConc);
+            TotalBioAvailExport = (0.8 * PhosExportDissolve + BioAvailParticPExport);
         }
         /// <summary>
         /// 
         /// </summary>
         public void CalculateCATCHMODSOutputs()
         {
-            if (Sim.SoilController.WatBal.Runoff > 0 && Sim.SoilController.Soil.HillSlopeErosion > 0)
+            if (Sim.SoilController.Runoff > 0 && Sim.SoilController.HillSlopeErosion > 0)
             {
-                if (!MathTools.DoublesAreEqual(Sim.SoilController.DataModel.SedDelivRatio, 0) && !MathTools.DoublesAreEqual(Sim.SoilController.usleLsFactor, 0))
+                if (!MathTools.DoublesAreEqual(Sim.SoilController.DataModel.SedDelivRatio, 0) && !MathTools.DoublesAreEqual(Sim.SoilController.UsleLsFactor, 0))
                 {
-                    Output.PPHLC = (Output.ParticPExport / (Sim.SoilController.DataModel.SedDelivRatio * Sim.SoilController.usleLsFactor));
+                    PPHLC = (ParticPExport / (Sim.SoilController.DataModel.SedDelivRatio * Sim.SoilController.UsleLsFactor));
                 }
                 else
                 {
-                    Output.PPHLC = 0;
+                    PPHLC = 0;
                 }
             }
             else
             {
-                Output.PPHLC = 0;
+                PPHLC = 0;
             }
-            Output.CKQ = (Sim.SoilController.sedCatchmod);
+            CKQ = (Sim.SoilController.SedCatchmod);
         }
 
         /// <summary>
@@ -301,25 +320,25 @@ namespace HowLeaky.ModelControllers
         /// </summary>
         public void TestMaximumPhosphorusConcentrations()
         {
-            if (MaxPhosConcParticmgPerL < Output.ParticulateConc)
+            if (MaxPhosConcParticmgPerL < ParticulateConc)
             {
-                MaxPhosConcParticmgPerL = Output.ParticulateConc;
+                MaxPhosConcParticmgPerL = ParticulateConc;
             }
-            if (MaxPhosConcTotalmgPerL < Output.TotalPConc)
+            if (MaxPhosConcTotalmgPerL < TotalPConc)
             {
-                MaxPhosConcTotalmgPerL = Output.TotalPConc;
+                MaxPhosConcTotalmgPerL = TotalPConc;
             }
-            if (MaxPhosConcDissolvemgPerL < Output.DissolvedConc)
+            if (MaxPhosConcDissolvemgPerL < DissolvedConc)
             {
-                MaxPhosConcDissolvemgPerL = Output.DissolvedConc;
+                MaxPhosConcDissolvemgPerL = DissolvedConc;
             }
-            if (MaxPhosConcBioParticmgPerL < Output.BioAvailParticPConc)
+            if (MaxPhosConcBioParticmgPerL < BioAvailParticPConc)
             {
-                MaxPhosConcBioParticmgPerL = Output.BioAvailParticPConc;
+                MaxPhosConcBioParticmgPerL = BioAvailParticPConc;
             }
-            if (MaxPhosConcBiomgPerL < Output.TotalPConc)
+            if (MaxPhosConcBiomgPerL < TotalPConc)
             {
-                MaxPhosConcBiomgPerL = Output.BioAvailPConc;
+                MaxPhosConcBiomgPerL = BioAvailPConc;
             }
         }
     }

@@ -3,70 +3,13 @@ using HowLeaky.Interfaces;
 using HowLeaky.OutputModels;
 using HowLeaky.Tools.Helpers;
 using System;
+using System.Xml.Serialization;
 
 namespace HowLeaky.ModelControllers.Veg
 {
-    public class VegObjectOutputModel : OutputDataModel, IDailyOutput
-    {
-        [Unit("days")]
-        public double DaysSincePlant { get; set; }          // Days since planting (days)
-        public double LAI { get; set; }                     // Leaf area index (LAI) [LAI model only]
-        [Unit("pc")]
-        public double GreenCover { get; set; }              // Green cover (%) - living vegetation cover expressed as a percentage of total area
-        [Unit("pc")]
-        public double ResidueCover { get; set; }            // Reside cover (%) - dead vegetation cover expressed as a percentage of total area
-        [Unit("pc")]
-        public double TotalCover { get; set; }              // Total cover (%) - living and dead cover, calculated using Beer's Law, and expressed as a percentage of total area
-        [Unit("kg_per_ha")]
-        public double ResidueAmount { get; set; }           // Residue biomass amount (kg/ha)
-        [Unit("kg_per_ha")]
-        public double DryMatter { get; set; }               // Dry matter (kg/ha) - cumulative dry matter
-        [Unit("mm")]
-        public double RootDepth { get; set; }               // Root depth (mm)
-        [Unit("t_per_h")]
-        public double Yield { get; set; }                   // Yield (t/ha)
-        [Unit("mm")]
-        public double PotTranspiration { get; set; }        // Potential transpiration (mm)
-        public double GrowthRegulator { get; set; }         // Growth regulator [LAI model only]
-        public double WaterStressIndex { get; set; }        // Water stress index [LAI model only]
-        public double TempStressIndex { get; set; }         // Temperature stress index [LAI model only]
-        [Unit("mm")]
-        public double CropRainfall { get; set; }            // Crop Rainfall (mm)
-        [Unit("mm")]
-        public double CropIrrigation { get; set; }          // Crop Irrigation (mm)
-        [Unit("mm")]
-        public double CropRunoff { get; set; }              // Crop Runoff (mm)
-        [Unit("mm")]
-        public double SoilEvaporation { get; set; }         // Crop Soil Evaporation (mm)
-        [Unit("mm")]
-        public double Transpiration { get; set; }           // Crop Transpiration (mm)
-        [Unit("mm")]
-        public double CropEvapoTranspiration { get; set; }  // Crop Evapotranspiration (mm)
-        [Unit("mm")]
-        public double CropDrainage { get; set; }            // Crop Drainage (mm)
-        [Unit("mm")]
-        public double CropLateralFlow { get; set; }         // Crop Lateral Flow (mm)
-        [Unit("mm")]
-        public double CropOverflow { get; set; }            // Crop Overflow (mm)
-        [Unit("t_per_h")]
-        public double CropSoilErrosion { get; set; }        // Crop Soil Erosion (t/ha)
-        [Unit("t_per_h")]
-        public double CropSedimentDelivery { get; set; }    // Crop Off Site Sediment Delivery (t/ha)
-        public double PlantingCount { get; set; }           // Crops Planted
-        public double HarvestCount { get; set; }            // Crops Harvested
-        public double CropDeaths { get; set; }              // Crops Killed
-        [Unit("kg_per_ha_per_harvest")]
-        public double YieldPerHarvest { get; set; }         // Avg. Yield per Harvest (kg/ha/harvest)
-        [Unit("kg_per_ha_per_plant")]
-        public double YieldPerPlant { get; set; }           // Avg. Yield per Planting (kg/ha/plant)
-        [Unit("kg_per_ha_per_yr")]
-        public double YieldPerYear { get; set; }            // Avg. Yield per Year (kg/ha/yr)
-        [Unit("kg_per_ha_per_mm")]
-        public double YieldDivTranspir { get; set; }        // Yield/Transpiration (kg/ha/mm)
-        [Unit("pc_per_mm")]
-        public double ResidueCovDivTranspir { get; set; }   // Residue Cover/Transpiration (%/mm)
-        public double PotMaxLAI { get; set; }               // Potential Maximum LAI
-    }
+    //public class VegObjectOutputModel : OutputDataModel, IDailyOutput
+    //{
+    //}
 
     public class VegObjectSummaryOutputModel : OutputDataModel
     {
@@ -113,7 +56,6 @@ namespace HowLeaky.ModelControllers.Veg
         public bool TodayIsHarvestDay { get; set; }
         public bool PredefinedResidue { get; set; }
         public CropStatus CropStatus { get; set; }
-        public string Name { get; set; }
         public DateTime LastSowingDate { get; set; } = DateUtilities.NULLDATE;
         public DateTime LastHarvestDate { get; set; } = DateUtilities.NULLDATE;
         public DateTime FirstRotationDate { get; set; } = DateUtilities.NULLDATE;
@@ -126,20 +68,14 @@ namespace HowLeaky.ModelControllers.Veg
         public int NumberOfFallows { get; set; }
         public int KillDays { get; set; }
         public double MaximumRootDepth { get; set; }
-        public double DryMatter { get; set; }
         public double TotalTranspiration { get; set; }
         public double CropStage { get; set; }
-        public double GreenCover { get; set; }
         public double CropCover { get; set; }
-        public double TotalCover { get; set; }
         public double CropCoverPercent { get; set; }
         public double CropResidue { get; set; }
-        public double ResidueCover { get; set; }
         public double Runoff { get; set; }
         public double Drainage { get; set; }
-        public double SoilEvaporation { get; set; }
         public double TotalEvapotranspiration { get; set; }
-        public double Yield { get; set; }
         public double SoilWaterAtPlanting { get; set; }
         public double SoilWaterAtHarvest { get; set; }
         public double CumulativeYield { get; set; }
@@ -156,7 +92,75 @@ namespace HowLeaky.ModelControllers.Veg
         public double YieldDivTranspiration { get; set; }
         public double ResidueCoverDivTranspiration { get; set; }
 
-        public VegObjectOutputModel Output { get; set; } = new VegObjectOutputModel();
+        //Reportable Outputs
+        [Output(" Days since planting", "days")]
+        public double DaysSincePlant { get; set; }         
+        [Output("Leaf area index", "LAI")]
+        public double LAI { get; set; }                       
+        [Output("Living vegetation cover expressed as a percentage of total area","%", 100)]
+        public double GreenCover { get; set; }
+        [Output("Dead vegetation cover expressed as a percentage of total area", "%", 100)]
+        public double ResidueCover { get; set; } 
+        [Output("Living and dead cover, calculated using Beer's Law, and expressed as a percentage of total area", "%", 100)]
+        public double TotalCover { get; set; }             
+        [Output("Residue biomass amount", "kg/ha")]
+        public double ResidueAmount { get; set; }          
+        [Output("Cumulative dry matter", "kg/ha")]
+        public double DryMatter { get; set; }              
+        [Output("Root depth", "mm")]
+        public double RootDepth { get; set; }              
+        [Output("Yield","t/h" )]
+        public double Yield { get; set; }                  
+        [Output("Potential transpiration","mm")]
+        public double PotTranspiration { get; set; }       
+        [Output("Growth regulator")]
+        public double GrowthRegulator { get; set; }        
+        [Output("Water stress index")]
+        public double WaterStressIndex { get; set; }       
+        [Output("Temperature stress index")]
+        public double TempStressIndex { get; set; }        
+        [Output("Crop Rainfall","mm")]
+        public double CropRainfall { get; set; }           
+        [Output("Crop Irrigation", "mm")]
+        public double CropIrrigation { get; set; }         
+        [Output("Crop Runoff", "mm")]
+        public double CropRunoff { get; set; }             
+        [Output("Crop Soil Evaporation", "mm")]
+        public double SoilEvaporation { get; set; }        
+        [Output("Crop Transpiration", "mm")]
+        public double Transpiration { get; set; }          
+        [Output(" Crop Evapotranspiration", "mm")]
+        public double CropEvapoTranspiration { get; set; } //Not currently set
+        [Output("Crop Drainage", "mm")]
+        public double CropDrainage { get; set; }           
+        [Output("Crop Lateral Flow", "mm")]
+        public double CropLateralFlow { get; set; }        
+        [Output("Crop Overflow", "mm")]
+        public double CropOverflow { get; set; }           
+        [Output("Crop Soil Erosion", "t/h")]
+        public double CropSoilErrosion { get; set; }       
+        [Output("Crop Off Site Sediment Delivery", "t/h")]
+        public double CropSedimentDelivery { get; set; }   
+        [Output("Crops Planted")]
+        public double PlantingCount { get; set; }          
+        [Output("Crops Harvested")]
+        public double HarvestCount { get; set; }           
+        [Output("Crops Killed")]
+        public double CropDeaths { get; set; }             
+        [Output("Avg. Yield per Harvest", "kg/ha/harvest")]
+        public double YieldPerHarvest { get; set; }        
+        [Output("Avg. Yield per Planting", "kg/ha/plant")]
+        public double YieldPerPlant { get; set; }          
+        [Output("Avg. Yield per Year", "kg/ha/yr")]
+        public double YieldPerYear { get; set; }           
+        [Output("Yield/Transpiration", "kg/ha/mm")]
+        public double YieldDivTranspir { get; set; }       
+        [Output("Residue Cover/Transpiration", "%/mm")]
+        public double ResidueCovDivTranspir { get; set; }  
+        [Output("Potential Maximum LAI")]
+        public double PotMaxLAI { get; set; }                                              
+
+        //public VegObjectOutputModel Output { get; set; } = new VegObjectOutputModel();
         public VegObjectSummaryOutputModel SO;
         public VegObjectAggregateOutputModel Sum;
 
@@ -260,7 +264,7 @@ namespace HowLeaky.ModelControllers.Veg
         public bool GetIsPlanting()
         {
             //TOD:Check this ishould be double
-            return (MathTools.DoublesAreEqual(Output.DaysSincePlant, 0));
+            return (MathTools.DoublesAreEqual(DaysSincePlant, 0));
         }
         
         /// <summary>
@@ -272,9 +276,9 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 Sim.SoilController.LayerTranspiration[i] = 0;
             }
-            Output.PotTranspiration = CalculatePotentialTranspiration();
+            PotTranspiration = CalculatePotentialTranspiration();
 
-            if (Output.PotTranspiration > 0)
+            if (PotTranspiration > 0)
             {
                 double psup;
 
@@ -293,7 +297,7 @@ namespace HowLeaky.ModelControllers.Veg
                 for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
                 {
                     double denom = Sim.SoilController.DrainUpperLimitRelWP[i];
-                    if (MathTools.DoublesAreEqual(denom, 0))
+                    if (!MathTools.DoublesAreEqual(denom, 0))
                     {
                         Sim.SoilController.MCFC[i] = MathTools.CheckConstraints(Sim.SoilController.SoilWaterRelWP[i] / denom, 1.0, 0.0);
                     }
@@ -304,9 +308,13 @@ namespace HowLeaky.ModelControllers.Veg
                     }
 
                     if (Sim.SoilController.MCFC[i] >= 0.3)
+                    {
                         supply[i] = 1.0;
+                    }
                     else
+                    {
                         supply[i] = Sim.SoilController.MCFC[i] / 0.3;
+                    }
                 }
 
                 //  Calculate root penetration per layer (root_penetration)
@@ -318,7 +326,7 @@ namespace HowLeaky.ModelControllers.Veg
                 {
                     if (Sim.SoilController.Depth[i + 1] - Sim.SoilController.Depth[i] > 0)
                     {
-                        rootPenetration[i] = Math.Min(1.0, Math.Max(Output.RootDepth - Sim.SoilController.Depth[i], 0) / (Sim.SoilController.Depth[i + 1] - Sim.SoilController.Depth[i]));
+                        rootPenetration[i] = Math.Min(1.0, Math.Max(RootDepth - Sim.SoilController.Depth[i], 0) / (Sim.SoilController.Depth[i + 1] - Sim.SoilController.Depth[i]));
                         if (Sim.SoilController.Depth[i + 1] > 300)
                         {
                             if (MathTools.DoublesAreEqual(MaximumRootDepth, 300))
@@ -357,7 +365,7 @@ namespace HowLeaky.ModelControllers.Veg
                     }
                     else
                     {
-                        Sim.SoilController.LayerTranspiration[i] = density[i] * supply[i] * Output.PotTranspiration;
+                        Sim.SoilController.LayerTranspiration[i] = density[i] * supply[i] * PotTranspiration;
                     }
                     if (Sim.SoilController.LayerTranspiration[i] > Sim.SoilController.SoilWaterRelWP[i])
                     {
@@ -368,11 +376,11 @@ namespace HowLeaky.ModelControllers.Veg
                 }
 
                 // reduce transpiration if more than potential transpiration
-                if (!MathTools.DoublesAreEqual(psup, 0) && psup > Output.PotTranspiration)
+                if (!MathTools.DoublesAreEqual(psup, 0) && psup > PotTranspiration)
                 {
                     for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
                     {
-                        Sim.SoilController.LayerTranspiration[i] *= Output.PotTranspiration / psup;
+                        Sim.SoilController.LayerTranspiration[i] *= PotTranspiration / psup;
                     }
                 }
                 TotalTranspiration = 0;
@@ -390,6 +398,9 @@ namespace HowLeaky.ModelControllers.Veg
                 TotalTranspiration = 0;
             }
             AccumulatedTranspiration += TotalTranspiration;
+
+            Transpiration = TotalTranspiration;
+            CropEvapoTranspiration = Transpiration + Sim.SoilController.SoilEvap;
         }
         
         /// <summary>
@@ -408,7 +419,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <summary>
         /// 
         /// </summary>
-        public void Plant()
+        public virtual void Plant()
         {
             ++Sim.SoilController.TotalNumberPlantings;
             Sim.SoilController.AccumulateCovDayBeforePlanting += Sim.SoilController.TotalResidueCover;
@@ -421,12 +432,12 @@ namespace HowLeaky.ModelControllers.Veg
                 Sim.VegetationController.CurrentCrop.ResetRotationCount();
             }
 
-            Output.DaysSincePlant = 0;
+            DaysSincePlant = 0;
             ++NumberOfPlantings;
             DryMatter = 0;
-            Output.DryMatter = 0;
+            DryMatter = 0;
             CropStage = 0;
-            Output.RootDepth = 0;
+            RootDepth = 0;
             Yield = 0;
             SoilWaterAtPlanting = Sim.SoilController.TotalSoilWater;
             CropStatus = CropStatus.Growing;
@@ -442,7 +453,6 @@ namespace HowLeaky.ModelControllers.Veg
             CropCover = 0;
             CropCoverPercent = 0;
             TotalCover = 0;
-            Output.TotalCover = 0;
         }
         
         /// <summary>
@@ -532,15 +542,15 @@ namespace HowLeaky.ModelControllers.Veg
                 if (ExistsInTheGround)
                 {
                     Sum.CropRainfall += Sim.ClimateController.Rain;
-                    Sum.CropIrrigation += Sim.SoilController.WatBal.Irrigation;
-                    Sum.CropRunoff += Sim.SoilController.WatBal.Runoff;
-                    Sum.CropSoilEvaporation += Sim.SoilController.WatBal.SoilEvap;
+                    Sum.CropIrrigation += Sim.SoilController.Irrigation;
+                    Sum.CropRunoff += Sim.SoilController.Runoff;
+                    Sum.CropSoilEvaporation += Sim.SoilController.SoilEvap;
                     Sum.CropTranspiration += TotalTranspiration;
                     Sum.CropEvapotranspiration = Sum.CropSoilEvaporation + Sum.CropTranspiration;
-                    Sum.CropOverflow += Sim.SoilController.WatBal.Overflow;
-                    Sum.CropDrainage += Sim.SoilController.WatBal.DeepDrainage;
-                    Sum.CropLateralFlow += Sim.SoilController.WatBal.LateralFlow;
-                    Sum.CropSoilErosion += Sim.SoilController.Soil.HillSlopeErosion;
+                    Sum.CropOverflow += Sim.SoilController.Overflow;
+                    Sum.CropDrainage += Sim.SoilController.DeepDrainage;
+                    Sum.CropLateralFlow += Sim.SoilController.LateralFlow;
+                    Sum.CropSoilErosion += Sim.SoilController.HillSlopeErosion;
                 }
 
             }

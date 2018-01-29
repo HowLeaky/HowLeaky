@@ -45,8 +45,7 @@ namespace HowLeaky
             //Check that the data models are OK
 
             //Run the simulations
-            RunSimulations();
-
+            //RunSimulations();
         }
         /// <summary>
         /// 
@@ -174,9 +173,7 @@ namespace HowLeaky
             //Lazy load the sims as worker is available
 
             Simulation sim = SimulationFactory.GenerateSimulationXML(SimulationElements[0], InputDataModels);
-            sim.SoilController.InitialiseSoilParameters();
             sim.Run();
-
         }
     }
 }

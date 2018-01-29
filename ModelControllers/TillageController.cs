@@ -134,7 +134,7 @@ namespace HowLeaky.ModelControllers
             TillageResidueReduction = initialCropResidue - Sim.SoilController.TotalCropResidue;
             if (RoughnessRatio > 0.0)
             {
-                Sim.SoilController.rainSinceTillage = 0.0;
+                Sim.SoilController.RainSinceTillage = 0.0;
             }
         }
 

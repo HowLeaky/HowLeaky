@@ -1,4 +1,6 @@
-﻿using HowLeaky.SyncModels;
+﻿using HowLeaky.CustomAttributes;
+using HowLeaky.ModelControllers;
+using HowLeaky.SyncModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +12,22 @@ namespace HowLeaky.OutputModels
 {
     public class OutputDataModel
     {
-        public List<PropertyInfo> variables;
+        public HLController HLController;
+        public Dictionary<PropertyInfo, Output> variables;
 
         public OutputDataModel()
         {
-            variables = new List<PropertyInfo>(this.GetType().GetProperties());
+            variables = new Dictionary<PropertyInfo, Output>();
+        }
+
+        public OutputDataModel(HLController hLController) : this()
+        {
+            HLController = hLController;
+            List<PropertyInfo> properties = new List<PropertyInfo>(HLController.GetType().GetProperties().Where(p => Attribute.IsDefined(p, typeof(Output))));
+            foreach (PropertyInfo p in properties)
+            {
+                variables.Add(p, (Output)p.GetCustomAttribute(typeof(Output)));
+            }
         }
 
         /// <summary>
@@ -25,17 +38,17 @@ namespace HowLeaky.OutputModels
         {
             List<string> propertyNames = new List<string>();
 
-            foreach (PropertyInfo p in variables)
+            foreach (KeyValuePair<PropertyInfo, Output> v in variables)
             {
-                if (p.GetType().IsGenericType)
+                if (v.Key.GetType().IsGenericType)
                 {
                     List<string> arrayNames = new List<string>();
 
                     int layerCount = 1;
 
-                    foreach (double d in (IEnumerable<double>)p.GetValue(this))
+                    foreach (double d in (IEnumerable<double>)v.Key.GetValue(this))
                     {
-                        arrayNames.Add(p.Name + "Layer" + layerCount.ToString());
+                        arrayNames.Add(v.Key.Name + "Layer" + layerCount.ToString());
                         layerCount++;
                     }
 
@@ -43,7 +56,7 @@ namespace HowLeaky.OutputModels
                 }
                 else
                 {
-                    propertyNames.Add(p.Name);
+                    propertyNames.Add(v.Key.Name);
                 }
             }
 
@@ -58,14 +71,17 @@ namespace HowLeaky.OutputModels
         {
             List<string> propertyValues = new List<string>();
 
-            foreach (PropertyInfo p in variables)
+            foreach (KeyValuePair<PropertyInfo, Output> v in variables)
             {
-                if (p.GetType().IsGenericType)
+                if (v.Key.GetType().IsGenericType)
                 {
                     List<string> arrayValues = new List<string>();
 
-                    foreach(double d in (IEnumerable<double>)p.GetValue(this) )
+                    foreach (double d in (IEnumerable<double>)v.Key.GetValue(HLController))
                     {
+                        //All of these properties have an output attribute
+                        //Output attr = p.Attributes.Where(a => a.GetType() == typeof(Output));
+                        //double scale = p.Attributes.Where(a => a.);
                         arrayValues.Add(d.ToString());
                     }
 
@@ -73,7 +89,15 @@ namespace HowLeaky.OutputModels
                 }
                 else
                 {
-                    propertyValues.Add(p.GetValue(this).ToString());
+                    object value = v.Key.GetValue(HLController);
+                    if (v.Value.Scale != 1)
+                    {
+                        propertyValues.Add(((double)value * v.Value.Scale).ToString());
+                    }
+                    else
+                    {
+                        propertyValues.Add(value.ToString());
+                    }
                 }
             }
 

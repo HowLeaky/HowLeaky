@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomAttributes\Alias.cs" />
     <Compile Include="CustomAttributes\Input.cs" />
     <Compile Include="CustomAttributes\Internal.cs" />
     <Compile Include="CustomAttributes\Output.cs" />

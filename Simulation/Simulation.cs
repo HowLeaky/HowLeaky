@@ -18,22 +18,12 @@ namespace HowLeaky
 {
     public enum ManagementEvent { Planting, Harvest, Tillage, Pesticide, Irrigation, CropGrowing, InPlantingWindow, MeetsSoilWaterPlantCritera, MeetsDaysSinceHarvestPlantCritera, MeetsRainfallPlantCritera, None };
 
-    public class SimulationOutputModel : OutputDataModel, IDailyOutput
-    {
-        public SimulationOutputModel() : base() { }
+    //public class SimulationOutputModel : OutputDataModel, IDailyOutput
+    //{
+    //    public SimulationOutputModel() : base() { }
 
-        public DateTime Date { get; set; }
-        [Unit("mm")]
-        public double Rain { get; set; }            // Daily rainfall amount (mm) as read directly from the P51 file.
-        [Unit("oC")]
-        public double MaxTemp { get; set; }         // Daily max temperature (oC) as read directly from the P51 file.
-        [Unit("oC")]
-        public double MinTemp { get; set; }         // Daily min temperature (oC) as read directly from the P51 file.
-        [Unit("mm")]
-        public double PanEvap { get; set; }         // Daily pan evaporation (mm) as read directly from the P51 file.
-        [Unit("MJ_per_m2_per_day")]
-        public double SolarRad { get; set; }        // Daily solar radition (mMJ/m^2/day) as read directly from the P51 file.
-    }
+
+    //}
 
     public class Simulation : HLController
     {
@@ -63,10 +53,9 @@ namespace HowLeaky
 
         public List<HLController> ActiveControlllers { get; set; }
 
-        public SimulationOutputModel Out { get; set; } = new SimulationOutputModel();
+        //public SimulationOutputModel Out { get; set; } = new SimulationOutputModel();
 
         public int NumberOfDaysInSimulation { get; set; }
-        public DateTime Today { get; set; }
 
         public string ControlError { get; set; }
 
@@ -99,10 +88,15 @@ namespace HowLeaky
         public int Seriesindex { get; set; }
         public int Climateindex { get; set; }
 
+        //Reportable Outputs
+        [Output("Today's date")]
+        [Alias("Date")]
+        public DateTime Today { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
-        public Simulation()
+        public Simulation() : base(null)
         {
             // FProgramManager = manager;
 
@@ -207,19 +201,20 @@ namespace HowLeaky
         {
             ResetToDefault();
 
+            SoilController.InitialiseSoilParameters();
+
             DateTime start = DateTime.Now;
+
+            //Initialse the controllers
+            foreach (HLController controller in ActiveControlllers)
+            {
+                controller.Initialise();
+            }
+
 
             while (Today <= EndDate)
             {
                 this.SimulateDay();
-               
-                //TODO: Tidy this up - reporting
-                Out.Date = Today;
-                Out.Rain = ClimateController.Rain;
-                Out.MaxTemp = ClimateController.MaxT;
-                Out.MinTemp = ClimateController.MinT;
-                Out.PanEvap = ClimateController.PanEvap;
-                Out.SolarRad = ClimateController.Radiation;
 
                 //Write output and go to next day
                 OutputModelController.WriteData();
@@ -343,7 +338,7 @@ namespace HowLeaky
         /// <summary>
         /// /
         /// </summary>
-        public void SetStartOfDayParameters()
+        public override void SetStartOfDayParameters()
         {
             try
             {
@@ -387,7 +382,7 @@ namespace HowLeaky
             if (IrrigationController != null)
             {
                 IrrigationController.Simulate();
-                SoilController.WatBal.Irrigation = IrrigationController.Output.IrrigationApplied;
+                SoilController.Irrigation = IrrigationController.IrrigationApplied;
             }
         }
 
@@ -414,7 +409,7 @@ namespace HowLeaky
             ModelOptionsController.DataModel.IgnoreCropKill = false;
             ModelOptionsController.DataModel.UsePERFECTDryMatterFn = false;
             ModelOptionsController.DataModel.UsePERFECTLeafAreaFn = false;
-            ModelOptionsController.DataModel.UsePERFECT_USLE_LS_Fn = true;
+            ModelOptionsController.DataModel.UsePERFECTUSLELSFn = true;
             ModelOptionsController.DataModel.UsePERFECTResidueFn = false;
             ModelOptionsController.DataModel.UsePERFECTSoilEvapFn = false;
             ModelOptionsController.DataModel.UsePERFECTCurveNoFn = Simulation.DEFAULT_CN;
@@ -621,7 +616,7 @@ namespace HowLeaky
         /// 
         /// </summary>
         /// <returns></returns>
-        public bool Simulate()
+        public override void Simulate()
         {
             //	try
             //	{
@@ -666,7 +661,7 @@ namespace HowLeaky
             //		  return false;
             //	}
             //	Synchronize(UpdateFinishMessages);
-            return true;
+            //return true;
         }
 
         /// <summary>

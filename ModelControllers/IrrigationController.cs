@@ -15,54 +15,7 @@ namespace HowLeaky.ModelControllers
 
     public class IrrigationControllerOutput : OutputDataModel, IDailyOutput
     {
-        [Output]
-        [Unit("mm")]
-        public double IrrigationRunoff { get; set; }                         // Amount of runoff (mm) from irrigation
-        [Output]
-        [Unit("mm")]
-        public double IrrigationApplied { get; set; }                        // Amount of water (mm) applied during irrigation
-        [Output]
-        [Unit("mm")]
-        public double IrrigationInfiltration { get; set; }                   // Amount of water (mm) which infiltrates into soil during irrigation
-        [Output]
-        [Unit("ML")]
-        public double RingTankEvaporationLosses { get; set; }                // Ring-Tank Evaporation Losses (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankSeepageLosses { get; set; }                    // Ring-Tank Seepage Losses (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankOvertoppingLosses { get; set; }                // Ring-Tank Overtopping Losses (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankIrrigationLosses { get; set; }                 // Ring-Tank Irrigation Losses (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankTotalLosses { get; set; }                      // Ring-Tank Total Losses (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankRunoffCaptureInflow { get; set; }              // Ring-Tank Captured Runoff Inflow ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankRainfalInflow { get; set; }                    // Ring-Tank Rainfall Inflow (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankEffectiveAdditionalInflow { get; set; }        // Ring-Tank Effective Additional Inflow (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankTotalAdditionalInflow { get; set; }            // Ring-Tank Total Additional Inflow (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankTotalInflow { get; set; }                      // Ring-Tank Total Inflow (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankIneffectiveAdditionalInflow { get; set; }      // Ring-Tank Ineffective Additional Inflow (ML)
-        [Output]
-        [Unit("ML")]
-        public double RingTankStorageVolume { get; set; }                    // Ring-Tank Storage Volume (ML)
-        [Output]
-        [Unit("pc")]
-        public double RingTankStorageLevel { get; set; }                     // Ring-Tank storage Level (%)
+        
     }
 
     public class IrrigationControllerSummaryOutput : OutputDataModel
@@ -120,7 +73,7 @@ namespace HowLeaky.ModelControllers
         //--------------------------------------------------------------------------
         //Outputs
         //--------------------------------------------------------------------------
-        public IrrigationControllerOutput Output { get; set; } = new IrrigationControllerOutput();
+        //public IrrigationControllerOutput Output { get; set; } = new IrrigationControllerOutput();
         public IrrigationControllerSummaryOutput Sum { get; set; } = new IrrigationControllerSummaryOutput();
         public IrrigationControllerSO SO { get; set; } = new IrrigationControllerSO();
 
@@ -139,9 +92,6 @@ namespace HowLeaky.ModelControllers
         public double Overflow { get; set; }                                    // Amount of overflow (mm) from ringtank
         [Internal]
         [Unit("mm")]
-        public double IrrigationApplied { get; set; }                           // Actual amount of irrigation (mm) that is applied
-        [Internal]
-        [Unit("mm")]
         public double IrrigationAmount { get; set; }                            // Amount of water required for irrigation
         [Internal]
         public double IrrigationAmountFromRingtank { get; set; }
@@ -156,6 +106,56 @@ namespace HowLeaky.ModelControllers
         public int LastOvertoppingYear { get; set; }
 
         public IrrigationInputModel DataModel { get; set; }
+
+        //Reportbale Outputs
+        [Output]
+        [Unit("mm")]
+        public double IrrigationRunoff { get; set; }                         // Amount of runoff (mm) from irrigation
+        [Output]
+        [Unit("mm")]
+        public double IrrigationApplied { get; set; }                        // Amount of water (mm) applied during irrigation
+        [Output]
+        [Unit("mm")]
+        public double IrrigationInfiltration { get; set; }                   // Amount of water (mm) which infiltrates into soil during irrigation
+        [Output]
+        [Unit("ML")]
+        public double RingTankEvaporationLosses { get; set; }                // Ring-Tank Evaporation Losses (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankSeepageLosses { get; set; }                    // Ring-Tank Seepage Losses (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankOvertoppingLosses { get; set; }                // Ring-Tank Overtopping Losses (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankIrrigationLosses { get; set; }                 // Ring-Tank Irrigation Losses (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankTotalLosses { get; set; }                      // Ring-Tank Total Losses (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankRunoffCaptureInflow { get; set; }              // Ring-Tank Captured Runoff Inflow ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankRainfalInflow { get; set; }                    // Ring-Tank Rainfall Inflow (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankEffectiveAdditionalInflow { get; set; }        // Ring-Tank Effective Additional Inflow (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankTotalAdditionalInflow { get; set; }            // Ring-Tank Total Additional Inflow (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankTotalInflow { get; set; }                      // Ring-Tank Total Inflow (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankIneffectiveAdditionalInflow { get; set; }      // Ring-Tank Ineffective Additional Inflow (ML)
+        [Output]
+        [Unit("ML")]
+        public double RingTankStorageVolume { get; set; }                    // Ring-Tank Storage Volume (ML)
+        [Output]
+        [Unit("pc")]
+        public double RingTankStorageLevel { get; set; }                     // Ring-Tank storage Level (%)
 
         /// <summary>
         /// 
@@ -221,6 +221,7 @@ namespace HowLeaky.ModelControllers
             RecordIrrigationEvent();
             IrrigationApplied = available_amount;
             IrrigationAmount = RemoveRunoffLosses(available_amount);
+            Sim.SoilController.Irrigation = IrrigationAmount;
             if (IrrigationAmount > 0)
             {
                 DistributeWaterThroughSoilLayers(IrrigationAmount);
@@ -233,7 +234,7 @@ namespace HowLeaky.ModelControllers
         public override void SetStartOfDayParameters()
         {
             IrrigationAmount = 0;
-            Output.IrrigationApplied = 0;
+            IrrigationApplied = 0;
             IrrigationRunoffAmount = 0;
             if (DaysSinceIrrigation != -1)
             {
@@ -313,16 +314,16 @@ namespace HowLeaky.ModelControllers
             {
                 if (Sim.SoilController.EffectiveRain <= 0.1)
                 {
-                    if (DataModel.SWDToIrrigate > 0.0 && Sim.SoilController.swd > DataModel.SWDToIrrigate)
+                    if (DataModel.SWDToIrrigate > 0.0 && Sim.SoilController.Swd > DataModel.SWDToIrrigate)
                     {
                         switch (DataModel.TargetAmountOpt)
                         {
-                            case (int)TargetAmountOptions.FieldCapacity: return Sim.SoilController.swd;
-                            case (int)TargetAmountOptions.Saturation: return Sim.SoilController.satd;
+                            case (int)TargetAmountOptions.FieldCapacity: return Sim.SoilController.Swd;
+                            case (int)TargetAmountOptions.Saturation: return Sim.SoilController.Satd;
                             case (int)TargetAmountOptions.FixedAmount: return DataModel.FixedIrrigationAmount;
-                            case (int)TargetAmountOptions.DULplus25Percent: return Sim.SoilController.swd + (Sim.SoilController.satd - Sim.SoilController.swd) * 0.25;
-                            case (int)TargetAmountOptions.DULplus50Percent: return Sim.SoilController.swd + (Sim.SoilController.satd - Sim.SoilController.swd) * 0.50;
-                            case (int)TargetAmountOptions.DULplus75Percent: return Sim.SoilController.swd + (Sim.SoilController.satd - Sim.SoilController.swd) * 0.75;
+                            case (int)TargetAmountOptions.DULplus25Percent: return Sim.SoilController.Swd + (Sim.SoilController.Satd - Sim.SoilController.Swd) * 0.25;
+                            case (int)TargetAmountOptions.DULplus50Percent: return Sim.SoilController.Swd + (Sim.SoilController.Satd - Sim.SoilController.Swd) * 0.50;
+                            case (int)TargetAmountOptions.DULplus75Percent: return Sim.SoilController.Swd + (Sim.SoilController.Satd - Sim.SoilController.Swd) * 0.75;
                             default: return 0;
                         }
                     }
@@ -452,12 +453,12 @@ namespace HowLeaky.ModelControllers
                     i = layercount;
                 }
             }
-            Sim.SoilController.swd = 0;
+            Sim.SoilController.Swd = 0;
             for (int i = 0; i < layercount; ++i)
             {
-                Sim.SoilController.swd = Sim.SoilController.swd + (Sim.SoilController.DrainUpperLimitRelWP[i] - Sim.SoilController.SoilWaterRelWP[i]);
+                Sim.SoilController.Swd = Sim.SoilController.Swd + (Sim.SoilController.DrainUpperLimitRelWP[i] - Sim.SoilController.SoilWaterRelWP[i]);
             }
-            Sim.SoilController.sse1 = Math.Max(0, Sim.SoilController.sse1 - Sim.SoilController.swd);
+            Sim.SoilController.Sse1 = Math.Max(0, Sim.SoilController.Sse1 - Sim.SoilController.Swd);
             if (amount > 0)
             {
                 Sim.SoilController.EffectiveRain += amount;
@@ -509,26 +510,26 @@ namespace HowLeaky.ModelControllers
             double maxvolume = DataModel.RingTankDepth * DataModel.RingTankArea; //m^3
             double oldvolume = StorageVolume;
             StorageVolume = maxvolume * DataModel.CapactityAtReset / 100.0;
-            Output.RingTankIrrigationLosses = 0;
-            Output.RingTankEvaporationLosses = 0;
-            Output.RingTankSeepageLosses = 0;
-            Output.RingTankOvertoppingLosses = 0;
-            Output.RingTankTotalLosses = 0;
-            Output.RingTankRunoffCaptureInflow = 0;
-            Output.RingTankRainfalInflow = 0;
-            Output.RingTankEffectiveAdditionalInflow = 0;
-            Output.RingTankTotalAdditionalInflow = 0;
-            Output.RingTankTotalInflow = 0;
-            Output.RingTankIneffectiveAdditionalInflow = 0;
-            Output.RingTankStorageVolume = StorageVolume / 1000.0;
+            RingTankIrrigationLosses = 0;
+            RingTankEvaporationLosses = 0;
+            RingTankSeepageLosses = 0;
+            RingTankOvertoppingLosses = 0;
+            RingTankTotalLosses = 0;
+            RingTankRunoffCaptureInflow = 0;
+            RingTankRainfalInflow = 0;
+            RingTankEffectiveAdditionalInflow = 0;
+            RingTankTotalAdditionalInflow = 0;
+            RingTankTotalInflow = 0;
+            RingTankIneffectiveAdditionalInflow = 0;
+            RingTankStorageVolume = StorageVolume / 1000.0;
 
             if (!MathTools.DoublesAreEqual(DataModel.RingTankDepth * DataModel.RingTankArea, 0))
             {
-                Output.RingTankStorageLevel = StorageVolume / (DataModel.RingTankDepth * DataModel.RingTankArea) * 100.0;
+                RingTankStorageLevel = StorageVolume / (DataModel.RingTankDepth * DataModel.RingTankArea) * 100.0;
             }
             else
             {
-                Output.RingTankStorageLevel = 0;
+                RingTankStorageLevel = 0;
                 MathTools.LogDivideByZeroError("ModelRingTank", "in_RingTankDepth_m*in_RingTankArea_ha", "out_RingTankStorageLevel_pc");
             }
         }
@@ -574,19 +575,19 @@ namespace HowLeaky.ModelControllers
             StorageVolume = CalcActualStorageVolume(totalInflowM3, seepagePlusEvapLossesM3, potentialStorageVolumeM3);
 
             //output variables
-            Output.RingTankIrrigationLosses = (IrrigationApplied / 1000.0 * DataModel.IrrigatedArea * 10000.0) / 1000.0 / (DataModel.IrrigDeliveryEfficiency / 100.0);
-            Output.RingTankEvaporationLosses = evaporationLossesM3 / 1000.0;
-            Output.RingTankSeepageLosses = seepageLossesM3 / 1000.0;
-            Output.RingTankOvertoppingLosses = CalcOvertoppingAmount(potentialStorageVolumeM3, StorageVolume);
-            Output.RingTankTotalLosses = Output.RingTankIrrigationLosses + Output.RingTankEvaporationLosses + Output.RingTankSeepageLosses + Output.RingTankOvertoppingLosses;
-            Output.RingTankRunoffCaptureInflow = runoffCaptureInflowM3 / 1000.0;
-            Output.RingTankRainfalInflow = rainfallInflowM3 / 1000.0;
-            Output.RingTankTotalAdditionalInflow = additionalInflowM3 / 1000.0;
-            Output.RingTankEffectiveAdditionalInflow = CalcEffectiveAdditionalInflow(Output.RingTankOvertoppingLosses, additionalInflowM3);
-            Output.RingTankTotalInflow = Output.RingTankRainfalInflow + Output.RingTankRunoffCaptureInflow + additionalInflowM3 / 1000.0;
-            Output.RingTankIneffectiveAdditionalInflow = additionalInflowM3 / 1000.0 - Output.RingTankEffectiveAdditionalInflow;
-            Output.RingTankStorageVolume = StorageVolume / 1000.0;
-            Output.RingTankStorageLevel = CalcStorageLevel(StorageVolume);
+            RingTankIrrigationLosses = (IrrigationApplied / 1000.0 * DataModel.IrrigatedArea * 10000.0) / 1000.0 / (DataModel.IrrigDeliveryEfficiency / 100.0);
+            RingTankEvaporationLosses = evaporationLossesM3 / 1000.0;
+            RingTankSeepageLosses = seepageLossesM3 / 1000.0;
+            RingTankOvertoppingLosses = CalcOvertoppingAmount(potentialStorageVolumeM3, StorageVolume);
+            RingTankTotalLosses = RingTankIrrigationLosses + RingTankEvaporationLosses + RingTankSeepageLosses + RingTankOvertoppingLosses;
+            RingTankRunoffCaptureInflow = runoffCaptureInflowM3 / 1000.0;
+            RingTankRainfalInflow = rainfallInflowM3 / 1000.0;
+            RingTankTotalAdditionalInflow = additionalInflowM3 / 1000.0;
+            RingTankEffectiveAdditionalInflow = CalcEffectiveAdditionalInflow(RingTankOvertoppingLosses, additionalInflowM3);
+            RingTankTotalInflow = RingTankRainfalInflow + RingTankRunoffCaptureInflow + additionalInflowM3 / 1000.0;
+            RingTankIneffectiveAdditionalInflow = additionalInflowM3 / 1000.0 - RingTankEffectiveAdditionalInflow;
+            RingTankStorageVolume = StorageVolume / 1000.0;
+            RingTankStorageLevel = CalcStorageLevel(StorageVolume);
         }
         
         /// <summary>
@@ -676,7 +677,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public double CalcRunoffCaptureInflow()
         {
-            double runoffinflow = Sim.SoilController.WatBal.Runoff / 1000.0 * DataModel.CatchmentArea * 10000;  //m^3
+            double runoffinflow = Sim.SoilController.Runoff / 1000.0 * DataModel.CatchmentArea * 10000;  //m^3
             double runoffcapturerate_m3 = DataModel.RunoffCaptureRate * 1000.0;
             return (runoffinflow < runoffcapturerate_m3 ? runoffinflow : runoffcapturerate_m3);
         }
@@ -715,16 +716,16 @@ namespace HowLeaky.ModelControllers
             {
                 if (DataModel.UseRingTank)
                 {
-                    Sum.IrrigationLosses += Output.RingTankIrrigationLosses;
-                    Sum.EvaporationLosses += Output.RingTankEvaporationLosses;
-                    Sum.SeepageLosses += Output.RingTankSeepageLosses;
-                    Sum.OvertoppingLosses += Output.RingTankOvertoppingLosses;
-                    Sum.RunoffCaptureInflow += Output.RingTankRunoffCaptureInflow;
-                    Sum.RainfallInflow += Output.RingTankRainfalInflow;
-                    Sum.EffectiveAdditionalnflow += Output.RingTankEffectiveAdditionalInflow;
-                    Sum.TotalAdditionalInflow += Output.RingTankTotalAdditionalInflow;
-                    Sum.StorageLevel += Output.RingTankStorageLevel;
-                    if (Output.RingTankOvertoppingLosses > 0)
+                    Sum.IrrigationLosses += RingTankIrrigationLosses;
+                    Sum.EvaporationLosses += RingTankEvaporationLosses;
+                    Sum.SeepageLosses += RingTankSeepageLosses;
+                    Sum.OvertoppingLosses += RingTankOvertoppingLosses;
+                    Sum.RunoffCaptureInflow += RingTankRunoffCaptureInflow;
+                    Sum.RainfallInflow += RingTankRainfalInflow;
+                    Sum.EffectiveAdditionalnflow += RingTankEffectiveAdditionalInflow;
+                    Sum.TotalAdditionalInflow += RingTankTotalAdditionalInflow;
+                    Sum.StorageLevel += RingTankStorageLevel;
+                    if (RingTankOvertoppingLosses > 0)
                     {
                         ++NumDaysOverflow;
                         if (Sim.Year != LastOvertoppingYear)

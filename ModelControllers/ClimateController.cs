@@ -1,4 +1,5 @@
-﻿using HowLeaky.DataModels;
+﻿using HowLeaky.CustomAttributes;
+using HowLeaky.DataModels;
 using System;
 using System.Collections.Generic;
 
@@ -8,14 +9,22 @@ namespace HowLeaky.ModelControllers
     {
         public ClimateInputModel DataModel { get; set; }
 
+        [Output]
         public double Latitude { get { return DataModel.Latitude; } }
+        [Output]
         public double Longitude { get { return DataModel.Longitude; } }
+        [Output]
         public double Temperature { get; set; }
-        public double Rain { get; set; }
-        public double MaxT { get; set; }
-        public double MinT { get; set; }
+        [Output("Daily rainfall amount (mm) as read directly from the P51 file", "mm") ]
+        public double Rain { get; set; }  
+        [Output("Daily max temperature (oC) as read directly from the P51 file.", "oC")]
+        public double MaxTemp { get; set; } 
+        [Output("Daily min temperature (oC) as read directly from the P51 file.", "oC")]
+        public double MinTemp { get; set; }
+        [Output("Daily pan evaporation (mm) as read directly from the P51 file.", "mm")]
         public double PanEvap { get; set; }
-        public double Radiation { get; set; }
+        [Output(" Daily solar radition (mMJ/m^2/day) as read directly from the P51 file.", "MJ/m2/day")]
+        public double SolarRadiation { get; set; }
 
         public double YesterdaysRain { get; set; }
 
@@ -73,11 +82,11 @@ namespace HowLeaky.ModelControllers
                 {
                     YesterdaysRain = 0;
                 }
-                MaxT = DataModel.MaxT[todayIndex];
-                MinT = DataModel.MinT[todayIndex];
+                MaxTemp = DataModel.MaxT[todayIndex];
+                MinTemp = DataModel.MinT[todayIndex];
 
                 PanEvap = DataModel.PanEvap[todayIndex];
-                Radiation = DataModel.Radiation[todayIndex];
+                SolarRadiation = DataModel.Radiation[todayIndex];
             }
             catch (Exception e)
             {
