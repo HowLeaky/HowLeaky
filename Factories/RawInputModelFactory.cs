@@ -19,18 +19,18 @@ namespace HowLeaky.Factories
         /// </summary>
         static Dictionary<string, Type> inputModelMap = new Dictionary<string, Type>
         {
-            { "TillageType", typeof(TillageObjectDataModel) },
-            { "PesticideType", typeof(PesticideObjectDataModel)},
+            { "TillageType", typeof(TillageInputModel) },
+            { "PesticideType", typeof(PesticideInputModel)},
             { "IrrigationType", typeof(IrrigationInputModel)},
             { "PhosphorusType", typeof(PhosphorusInputModel) },
             { "SoilType", typeof(SoilInputModel)},
             { "SolutesType", typeof(SolutesInputModel)},
             { "DataFile", typeof(ClimateInputModel) },
-            { "NitratesType", typeof(NitrateInputDataModel) },
+            { "NitratesType", typeof(NitrateInputModel) },
             //Vegetation models
             { "VegetationType", null },
-            { "LAIVegDataTemplate", typeof(LAIVegObjectDataModel) },
-            { "CoverVegTemplate", typeof(CoverVegObjectDataModel) }
+            { "LAIVegDataTemplate", typeof(LAIVegInputModel) },
+            { "CoverVegTemplate", typeof(CoverVegInputModel) }
         };
         /// <summary>
         /// 

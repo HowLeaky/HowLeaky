@@ -23,7 +23,7 @@ namespace HowLeaky.ModelControllers
         {
             foreach (InputModel im in inputModels)
             {
-                ChildControllers.Add(new PesticideObjectController(sim, (PesticideObjectDataModel)im));
+                ChildControllers.Add(new PesticideObjectController(sim, (PesticideInputModel)im));
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using HowLeaky.SyncModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Xml.Serialization;
 
@@ -18,6 +19,30 @@ namespace HowLeaky.DataModels
         public string Description { get; set; }
         [XmlIgnore]
         public Dictionary<string, object> Overrides { get; set; }
+        
+        public override string Name
+        {
+            get
+            {
+                if (base.Name != null)
+                {
+                    return base.Name;
+                }
+                else
+                {
+                    string name = "";
+                    try
+                    {
+                        name = new FileInfo(FileName).Name.Split(new char[] { '.' })[0];
+                    }
+                    catch(Exception e)
+                    {
+                        name = "";
+                    }
+                    return (name);
+                }
+            }
+        }
         /// <summary>
         /// 
         /// </summary>

@@ -76,7 +76,7 @@ namespace HowLeaky.DataModels
     }
 
     [XmlRoot("VegetationType")]
-    public class LAIVegObjectDataModel : VegObjectInputDataModel
+    public class LAIVegInputModel : VegInputModel
     {
         //Input Parameters
         public double PotMaxLAI { get; set; }                   // The upper limit of the leaf area index (LAI) - development curve.
@@ -147,6 +147,6 @@ namespace HowLeaky.DataModels
         //MaxResidueLoss, WatStressForDeath
         public double MaximumResidueCover { get; set; }
 
-        public LAIVegObjectDataModel() { }
+        public LAIVegInputModel() { }
     }
 }

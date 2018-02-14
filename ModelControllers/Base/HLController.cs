@@ -1,4 +1,5 @@
-﻿using HowLeaky.Interfaces;
+﻿using HowLeaky.DataModels;
+using HowLeaky.Interfaces;
 using HowLeaky.OutputModels;
 using HowLeaky.SyncModels;
 using System.Collections.Generic;
@@ -13,13 +14,17 @@ namespace HowLeaky.ModelControllers
         [XmlIgnore]
         public Simulation Sim { get; set; }
         [XmlIgnore]
-        public OutputDataModel Output { get; set; } 
+        public OutputDataModel Output { get; set; }
 
         public HLController() { }
 
         public HLController(Simulation sim)
         {
             this.Sim = sim;
+        }
+
+        public void InitOutputModel()
+        {
             this.Output = new OutputDataModel(this);
         }
 
@@ -35,11 +40,16 @@ namespace HowLeaky.ModelControllers
 
             List<PropertyInfo> outputModelProperties = new List<PropertyInfo>(this.GetType().GetProperties().Where(p => p.Name == "Output"));
 
-            foreach(PropertyInfo p in outputModelProperties)
+            foreach (PropertyInfo p in outputModelProperties)
             {
                 outputModels.Add((OutputDataModel)p.GetValue(this));
             }
-                return outputModels;
+            return outputModels;
+        }
+
+        public virtual InputModel GetInputModel()
+        {
+            return null;
         }
     }
 }

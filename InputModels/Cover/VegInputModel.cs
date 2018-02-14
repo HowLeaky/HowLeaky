@@ -1,5 +1,5 @@
 ﻿
 namespace HowLeaky.DataModels
 {
-    public class VegObjectInputDataModel : InputModel { }
+    public class VegInputModel : InputModel { }
 }

@@ -37,7 +37,7 @@ namespace HowLeaky.ModelControllers
         {
             foreach (InputModel im in inputModels)
             {
-                ChildControllers.Add(new TillageObjectController(sim, (TillageObjectDataModel)im));
+                ChildControllers.Add(new TillageObjectController(sim, (TillageInputModel)im));
             }
         }
         

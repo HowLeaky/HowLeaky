@@ -48,7 +48,15 @@ namespace HowLeaky.DataModels
 
         public void WriteXml(XmlWriter writer)
         {
-            return;
+            //<InSituAirDryMoist Count="5" value1="4.8" value2="5.6" value3="5.6" value4="5.5" value5="4.8" Units="%Vol" LastModified="6/11/2012"/>
+            writer.WriteAttributeString("count" , Values.Count.ToString());
+
+            for (int i = 0; i < Values.Count; i++)
+            {
+                writer.WriteAttributeString("value" + (i+1).ToString(), Values[i].ToString());
+            }
+
+            writer.WriteAttributeString("Units", Units);
         }
     }
 

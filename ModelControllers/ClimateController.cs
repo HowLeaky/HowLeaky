@@ -7,23 +7,23 @@ namespace HowLeaky.ModelControllers
 {
     public class ClimateController : HLController
     {
-        public ClimateInputModel DataModel { get; set; }
+        public ClimateInputModel InputModel { get; set; }
 
         [Output]
-        public double Latitude { get { return DataModel.Latitude; } }
+        public double Latitude { get { return InputModel.Latitude; } }
         [Output]
-        public double Longitude { get { return DataModel.Longitude; } }
+        public double Longitude { get { return InputModel.Longitude; } }
         [Output]
         public double Temperature { get; set; }
-        [Output("Daily rainfall amount (mm) as read directly from the P51 file", "mm") ]
+        [Output("Daily rainfall amount as read directly from the P51 file", "mm") ]
         public double Rain { get; set; }  
-        [Output("Daily max temperature (oC) as read directly from the P51 file.", "oC")]
+        [Output("Daily max temperature as read directly from the P51 file.", "oC")]
         public double MaxTemp { get; set; } 
-        [Output("Daily min temperature (oC) as read directly from the P51 file.", "oC")]
+        [Output("Daily min temperature as read directly from the P51 file.", "oC")]
         public double MinTemp { get; set; }
-        [Output("Daily pan evaporation (mm) as read directly from the P51 file.", "mm")]
+        [Output("Daily pan evaporation as read directly from the P51 file.", "mm")]
         public double PanEvap { get; set; }
-        [Output(" Daily solar radition (mMJ/m^2/day) as read directly from the P51 file.", "MJ/m2/day")]
+        [Output(" Daily solar radition as read directly from the P51 file.", "MJ/m2/day")]
         public double SolarRadiation { get; set; }
 
         public double YesterdaysRain { get; set; }
@@ -37,7 +37,8 @@ namespace HowLeaky.ModelControllers
         /// <param name="inputModels"></param>
         public ClimateController(Simulation sim, List<InputModel> inputModels) : base(sim)
         {
-            DataModel = (ClimateInputModel)inputModels[0];
+            InputModel = (ClimateInputModel)inputModels[0];
+            InitOutputModel();
         }
         
         /// <summary>
@@ -47,11 +48,11 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public double RainOnDay(DateTime day)
         {
-            int index = (day - DataModel.StartDate.Value).Days;
+            int index = (day - InputModel.StartDate.Value).Days;
 
-            if (index > 0 && index <= DataModel.Rain.Count - 1)
+            if (index > 0 && index <= InputModel.Rain.Count - 1)
             {
-                return DataModel.Rain[index];
+                return InputModel.Rain[index];
             }
             return 0;
         }
@@ -70,23 +71,23 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                todayIndex = (Sim.Today - DataModel.StartDate.Value).Days;
-                Temperature = DataModel.MaxT[todayIndex] + DataModel.MinT[todayIndex] / 2.0;
+                todayIndex = (Sim.Today - InputModel.StartDate.Value).Days;
+                Temperature = InputModel.MaxT[todayIndex] + InputModel.MinT[todayIndex] / 2.0;
 
-                Rain = DataModel.Rain[todayIndex];
+                Rain = InputModel.Rain[todayIndex];
                 if (todayIndex > 0)
                 {
-                    YesterdaysRain = DataModel.Rain[todayIndex - 1];
+                    YesterdaysRain = InputModel.Rain[todayIndex - 1];
                 }
                 else
                 {
                     YesterdaysRain = 0;
                 }
-                MaxTemp = DataModel.MaxT[todayIndex];
-                MinTemp = DataModel.MinT[todayIndex];
+                MaxTemp = InputModel.MaxT[todayIndex];
+                MinTemp = InputModel.MinT[todayIndex];
 
-                PanEvap = DataModel.PanEvap[todayIndex];
-                SolarRadiation = DataModel.Radiation[todayIndex];
+                PanEvap = InputModel.PanEvap[todayIndex];
+                SolarRadiation = InputModel.Radiation[todayIndex];
             }
             catch (Exception e)
             {
@@ -94,7 +95,17 @@ namespace HowLeaky.ModelControllers
                 throw new Exception(e.Message);
             }
         }
-        
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override InputModel GetInputModel()
+        {
+            return InputModel;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -110,7 +121,7 @@ namespace HowLeaky.ModelControllers
                 index = todayIndex - i - delay;
                 if (index >= 0)
                 {
-                    sumrain += DataModel.Rain[index];
+                    sumrain += InputModel.Rain[index];
                 }
             }
             return sumrain;

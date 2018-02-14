@@ -40,25 +40,25 @@ namespace HowLeaky.Factories
                             if (childElement.Name == "OverrideParameter")
                             {
                                 //Add the override to the model
-                                model.Overrides.Add(childElement.Attribute("Keyword").Value, childElement.Element("Value").Value);
+                                model2.Overrides.Add(childElement.Attribute("Keyword").Value, childElement.Element("Value").Value);
                             }
                             else
                             {
                                 //Probably a climate file override
                                 if (element.Name == "ptrStation")
                                 {
-                                    if (childElement.HasAttributes)
+                                    if (childElement.Attribute("index") != null)
                                     {
-                                        model.Overrides.Add(childElement.Name.ToString(), childElement.Attribute("index").Value);
+                                        model2.Overrides.Add(childElement.Name.ToString(), childElement.Attribute("index").Value);
                                     }
                                     else
                                     {
-                                        model.Overrides.Add(childElement.Name.ToString(), childElement.Value);
+                                        model2.Overrides.Add(childElement.Name.ToString(), childElement.Value);
                                     }
                                 }
                             }
                         }
-                        simModels.Add(model);
+                        simModels.Add(model2);
                     }
                     catch (Exception e)
                     {

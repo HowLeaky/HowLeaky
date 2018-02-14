@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace HowLeaky.DataModels
 {
     [XmlRoot("NitratesType")]
-    public class NitrateInputDataModel : InputModel
+    public class NitrateInputModel : InputModel
     {
         [XmlElement("DissolvedNinRunoffOptions")]
         public DissolvedNinRunoffOptions DissolvedNinRunoff { get; set; }
@@ -46,7 +46,7 @@ namespace HowLeaky.DataModels
         public double NBeta { get; set; }                                           // A particulate N conversion factor to adjust units and that can be used as a calibration factor.
         public double SoilNLoadWeighting3 { get; set; }                             //
 
-        public NitrateInputDataModel() { }
+        public NitrateInputModel() { }
     }
     /// <summary>
     /// 

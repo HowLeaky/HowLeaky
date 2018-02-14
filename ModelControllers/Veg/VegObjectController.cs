@@ -7,10 +7,6 @@ using System.Xml.Serialization;
 
 namespace HowLeaky.ModelControllers.Veg
 {
-    //public class VegObjectOutputModel : OutputDataModel, IDailyOutput
-    //{
-    //}
-
     public class VegObjectSummaryOutputModel : OutputDataModel
     {
         [Unit("mm")]
@@ -51,7 +47,7 @@ namespace HowLeaky.ModelControllers.Veg
         public double CropSoilErosion { get; set; }
     }
 
-    public class VegObjectController : HLController
+    public class VegObjectController : HLController, IChildController
     {
         public bool TodayIsHarvestDay { get; set; }
         public bool PredefinedResidue { get; set; }
@@ -288,10 +284,11 @@ namespace HowLeaky.ModelControllers.Veg
 
 
                 // initialize transpiration array
-                for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
-                {
-                    Sim.SoilController.LayerTranspiration[i] = 0;
-                }
+                //Didn't we just do this !
+                //for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
+                //{
+                //    Sim.SoilController.LayerTranspiration[i] = 0;
+                //}
                 //  Calculate soil water supply index
 
                 for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
@@ -306,6 +303,8 @@ namespace HowLeaky.ModelControllers.Veg
                         Sim.SoilController.MCFC[i] = 0;
                         //LogDivideByZeroError("CalculateTranspiration","sim.DrainUpperLimit_rel_wp[i]","sim.mcfc[i]");
                     }
+
+                    //TODO: the 0.3 here is the SWPropForNoStress variable - need to implement
 
                     if (Sim.SoilController.MCFC[i] >= 0.3)
                     {
@@ -329,7 +328,7 @@ namespace HowLeaky.ModelControllers.Veg
                         rootPenetration[i] = Math.Min(1.0, Math.Max(RootDepth - Sim.SoilController.Depth[i], 0) / (Sim.SoilController.Depth[i + 1] - Sim.SoilController.Depth[i]));
                         if (Sim.SoilController.Depth[i + 1] > 300)
                         {
-                            if (MathTools.DoublesAreEqual(MaximumRootDepth, 300))
+                            if (!MathTools.DoublesAreEqual(MaximumRootDepth, 300))
                             {
                                 density[i] = Math.Max(0.0, (1.0 - 0.50 * Math.Min(1.0, (Sim.SoilController.Depth[i + 1] - 300.0) / (MaximumRootDepth - 300.0))));
                             }
@@ -584,7 +583,7 @@ namespace HowLeaky.ModelControllers.Veg
             SO.AvgCropDrainage = MathTools.Divide(Sum.CropDrainage, denom);
             SO.AvgCropLateralFlow = MathTools.Divide(Sum.CropLateralFlow, denom);
             SO.AvgCropSoilErrosion = MathTools.Divide(Sum.CropSoilErosion, denom);
-            SO.AnnualCropSedimentDelivery = MathTools.Divide(Sum.CropSoilErosion, denom) * Sim.SoilController.DataModel.SedDelivRatio;
+            SO.AnnualCropSedimentDelivery = MathTools.Divide(Sum.CropSoilErosion, denom) * Sim.SoilController.InputModel.SedDelivRatio;
         }
     }
 }

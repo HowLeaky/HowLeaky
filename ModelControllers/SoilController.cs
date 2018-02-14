@@ -17,95 +17,95 @@ namespace HowLeaky.ModelControllers
     //{
     //}
 
-    public class SoilSummaryOutputModel : OutputDataModel
-    {
-        public double YrlyAvgRainfall_mm_per_yr { get; set; }           //
-        public double YrlyAvgIrrigation_mm_per_yr { get; set; }         //
-        public double YrlyAvgRunoff_mm_per_yr { get; set; }             //
-        public double YrlyAvgSoilEvaporation_mm_per_yr { get; set; }    //
-        public double YrlyAvgTranspiration_mm_per_yr { get; set; }      //
-        public double YrlyAvgEvapotransp_mm_per_yr { get; set; }         //
-        public double YrlyAvgOverflow_mm_per_yr { get; set; }           //
-        public double YrlyAvgDrainage_mm_per_yr { get; set; }           //
-        public double YrlyAvgLateralFlow_mm_per_yr { get; set; }        //
-        public double YrlyAvgSoilErosion_T_per_ha_per_yr { get; set; }  //
-        public double YrlyAvgOffsiteSedDel_T_per_ha_per_yr { get; set; }//
-        public double TotalCropsPlanted { get; set; }                   //
-        public double TotalCropsHarvested { get; set; }                 //
-        public double TotalCropsKilled { get; set; }                    //
-        public double AvgYieldPerHrvst_t_per_ha_per_hrvst { get; set; } //
-        public double AvgYieldPerPlant_t_per_ha_per_plant { get; set; } //
-        public double AvgYieldPerYr_t_per_ha_per_yr { get; set; }       //
-        public double YrlyAvgCropRainfall_mm_per_yr { get; set; }       //
-        public double YrlyAvgCropIrrigation_mm_per_yr { get; set; }     //
-        public double YrlyAvgCropRunoff_mm_per_yr { get; set; }         //
-        public double YrlyAvgCropSoilEvap_mm_per_yr { get; set; }        //
-        public double YrlyAvgCropTransp_mm_per_yr { get; set; }          //
-        public double YrlyAvgCropEvapotransp_mm_per_yr { get; set; }     //
-        public double YrlyAvgCropOverflow_mm_per_yr { get; set; }       //
-        public double YrlyAvgCropDrainage_mm_per_yr { get; set; }       //
-        public double YrlyAvgCropLateralFlow_mm_per_yr { get; set; }    //
-        public double YrlyAvgCropSoilErosion_T_per_ha_per_yr { get; set; }//
-        public double YrlyAvgCropOffsiteSedDel_T_per_ha_per_yr { get; set; }//
-        public double YrlyAvgFallowRainfall_mm_per_yr { get; set; }     //
-        public double YrlyAvgFallowIrrigation_mm_per_yr { get; set; }   //
-        public double YrlyAvgFallowRunoff_mm_per_yr { get; set; }       //
-        public double YrlyAvgFallowSoilEvap_mm_per_yr { get; set; }      //
-        public double YrlyAvgFallowTransp_mm_per_yr { get; set; }        //
-        public double YrlyAvgFallowEvapotransp_mm_per_yr { get; set; }  //
-        public double YrlyAvgFallowOverflow_mm_per_yr { get; set; }     //
-        public double YrlyAvgFallowDrainage_mm_per_yr { get; set; }     //
-        public double YrlyAvgFallowLateralFlow_mm_per_yr { get; set; }  //
-        public double YrlyAvgFallowSoilErosion_T_per_ha_per_yr { get; set; }//
-        public double YrlyAvgFallowOffsiteSedDel_T_per_ha_per_yr { get; set; }//
-        public double YrlyAvgPotEvap_mm { get; set; }                   //
-        public double YrlyAvgRunoffAsPercentOfInflow_pc { get; set; }   //
-        public double YrlyAvgEvapAsPercentOfInflow_pc { get; set; }     //
-        public double YrlyAvgTranspAsPercentOfInflow_pc { get; set; }   //
-        public double YrlyAvgDrainageAsPercentOfInflow_pc { get; set; } //
-        public double YrlyAvgPotEvapAsPercentOfInflow_pc { get; set; }  //
-        public double YrlyAvgCropSedDel_t_per_ha_per_yr { get; set; }   //
-        public double YrlyAvgFallowSedDel_t_per_ha_per_yr { get; set; } //
-        public double RobinsonErrosionIndex { get; set; }                //
-        public double YrlyAvgCover_pc { get; set; }                     //
-        public double YrlyAvgFallowDaysWithMore50pcCov_days { get; set; }//
-        public double AvgCoverBeforePlanting_pc { get; set; }           //
-        public double SedimentEMCBeoreDR { get; set; }                  //
-        public double SedimentEMCAfterDR { get; set; }                  //
-        public double AvgSedConcInRunoff { get; set; }                   //
-    }
+    //public class SoilSummaryOutputModel : OutputDataModel
+    //{
+    //    public double YrlyAvgRainfall_mm_per_yr { get; set; }           //
+    //    public double YrlyAvgIrrigation_mm_per_yr { get; set; }         //
+    //    public double YrlyAvgRunoff_mm_per_yr { get; set; }             //
+    //    public double YrlyAvgSoilEvaporation_mm_per_yr { get; set; }    //
+    //    public double YrlyAvgTranspiration_mm_per_yr { get; set; }      //
+    //    public double YrlyAvgEvapotransp_mm_per_yr { get; set; }         //
+    //    public double YrlyAvgOverflow_mm_per_yr { get; set; }           //
+    //    public double YrlyAvgDrainage_mm_per_yr { get; set; }           //
+    //    public double YrlyAvgLateralFlow_mm_per_yr { get; set; }        //
+    //    public double YrlyAvgSoilErosion_T_per_ha_per_yr { get; set; }  //
+    //    public double YrlyAvgOffsiteSedDel_T_per_ha_per_yr { get; set; }//
+    //    public double TotalCropsPlanted { get; set; }                   //
+    //    public double TotalCropsHarvested { get; set; }                 //
+    //    public double TotalCropsKilled { get; set; }                    //
+    //    public double AvgYieldPerHrvst_t_per_ha_per_hrvst { get; set; } //
+    //    public double AvgYieldPerPlant_t_per_ha_per_plant { get; set; } //
+    //    public double AvgYieldPerYr_t_per_ha_per_yr { get; set; }       //
+    //    public double YrlyAvgCropRainfall_mm_per_yr { get; set; }       //
+    //    public double YrlyAvgCropIrrigation_mm_per_yr { get; set; }     //
+    //    public double YrlyAvgCropRunoff_mm_per_yr { get; set; }         //
+    //    public double YrlyAvgCropSoilEvap_mm_per_yr { get; set; }        //
+    //    public double YrlyAvgCropTransp_mm_per_yr { get; set; }          //
+    //    public double YrlyAvgCropEvapotransp_mm_per_yr { get; set; }     //
+    //    public double YrlyAvgCropOverflow_mm_per_yr { get; set; }       //
+    //    public double YrlyAvgCropDrainage_mm_per_yr { get; set; }       //
+    //    public double YrlyAvgCropLateralFlow_mm_per_yr { get; set; }    //
+    //    public double YrlyAvgCropSoilErosion_T_per_ha_per_yr { get; set; }//
+    //    public double YrlyAvgCropOffsiteSedDel_T_per_ha_per_yr { get; set; }//
+    //    public double YrlyAvgFallowRainfall_mm_per_yr { get; set; }     //
+    //    public double YrlyAvgFallowIrrigation_mm_per_yr { get; set; }   //
+    //    public double YrlyAvgFallowRunoff_mm_per_yr { get; set; }       //
+    //    public double YrlyAvgFallowSoilEvap_mm_per_yr { get; set; }      //
+    //    public double YrlyAvgFallowTransp_mm_per_yr { get; set; }        //
+    //    public double YrlyAvgFallowEvapotransp_mm_per_yr { get; set; }  //
+    //    public double YrlyAvgFallowOverflow_mm_per_yr { get; set; }     //
+    //    public double YrlyAvgFallowDrainage_mm_per_yr { get; set; }     //
+    //    public double YrlyAvgFallowLateralFlow_mm_per_yr { get; set; }  //
+    //    public double YrlyAvgFallowSoilErosion_T_per_ha_per_yr { get; set; }//
+    //    public double YrlyAvgFallowOffsiteSedDel_T_per_ha_per_yr { get; set; }//
+    //    public double YrlyAvgPotEvap_mm { get; set; }                   //
+    //    public double YrlyAvgRunoffAsPercentOfInflow_pc { get; set; }   //
+    //    public double YrlyAvgEvapAsPercentOfInflow_pc { get; set; }     //
+    //    public double YrlyAvgTranspAsPercentOfInflow_pc { get; set; }   //
+    //    public double YrlyAvgDrainageAsPercentOfInflow_pc { get; set; } //
+    //    public double YrlyAvgPotEvapAsPercentOfInflow_pc { get; set; }  //
+    //    public double YrlyAvgCropSedDel_t_per_ha_per_yr { get; set; }   //
+    //    public double YrlyAvgFallowSedDel_t_per_ha_per_yr { get; set; } //
+    //    public double RobinsonErrosionIndex { get; set; }                //
+    //    public double YrlyAvgCover_pc { get; set; }                     //
+    //    public double YrlyAvgFallowDaysWithMore50pcCov_days { get; set; }//
+    //    public double AvgCoverBeforePlanting_pc { get; set; }           //
+    //    public double SedimentEMCBeoreDR { get; set; }                  //
+    //    public double SedimentEMCAfterDR { get; set; }                  //
+    //    public double AvgSedConcInRunoff { get; set; }                   //
+    //}
 
-    public class SoilMonthlyOutputModel : OutputDataModel
-    {
-        [Unit("mm")]
-        public List<double> MthlyAvgRainfall { get; set; }                 //
-        [Unit("mm")]
-        public List<double> MthlyAvgEvaporation { get; set; }              //
-        [Unit("mm")]
-        public List<double> MthlyAvgTranspiration { get; set; }            //
-        [Unit("mm")]
-        public List<double> MthlyAvgRunoff { get; set; }                   //
-        [Unit("mm")]
-        public List<double> MthlyAvgDrainage { get; set; }                 //
+    //public class SoilMonthlyOutputModel : OutputDataModel
+    //{
+    //    [Unit("mm")]
+    //    public List<double> MthlyAvgRainfall { get; set; }                 //
+    //    [Unit("mm")]
+    //    public List<double> MthlyAvgEvaporation { get; set; }              //
+    //    [Unit("mm")]
+    //    public List<double> MthlyAvgTranspiration { get; set; }            //
+    //    [Unit("mm")]
+    //    public List<double> MthlyAvgRunoff { get; set; }                   //
+    //    [Unit("mm")]
+    //    public List<double> MthlyAvgDrainage { get; set; }                 //
 
-        public SoilMonthlyOutputModel()
-        {
-            MthlyAvgRainfall = new List<double>(12).Fill(0);
-            MthlyAvgEvaporation = new List<double>(12).Fill(0);
-            MthlyAvgTranspiration = new List<double>(12).Fill(0);
-            MthlyAvgRunoff = new List<double>(12).Fill(0);
-            MthlyAvgDrainage = new List<double>(12).Fill(0);
-        }
-    }
+    //    public SoilMonthlyOutputModel()
+    //    {
+    //        MthlyAvgRainfall = new List<double>(12).Fill(0);
+    //        MthlyAvgEvaporation = new List<double>(12).Fill(0);
+    //        MthlyAvgTranspiration = new List<double>(12).Fill(0);
+    //        MthlyAvgRunoff = new List<double>(12).Fill(0);
+    //        MthlyAvgDrainage = new List<double>(12).Fill(0);
+    //    }
+    //}
 
     public class SoilController : HLController
     {
-        public SoilInputModel DataModel { get; set; }
+        public SoilInputModel InputModel { get; set; }
 
         //public SoilWaterBalanceOutputModel WatBal { get; set; } = new SoilWaterBalanceOutputModel();
         //public SoilOutputModel Soil { get; set; } = new SoilOutputModel(0);
-        public SoilMonthlyOutputModel MO { get; set; } = new SoilMonthlyOutputModel();
-        public SoilSummaryOutputModel SO { get; set; } = new SoilSummaryOutputModel();
+        //public SoilMonthlyOutputModel MO { get; set; } = new SoilMonthlyOutputModel();
+        //public SoilSummaryOutputModel SO { get; set; } = new SoilSummaryOutputModel();
 
         //--------------------------------------------------------------------------
         // intermediate variables
@@ -199,7 +199,7 @@ namespace HowLeaky.ModelControllers
         public List<double> Seepage { get; set; }
         public List<double> MaxDrainage { get; set; }
 
-        public int LayerCount { get { return DataModel.HorizonCount; } }
+        public int LayerCount { get { return InputModel.HorizonCount; } }
 
         //Reportable Outputs
         //Water balance outputs
@@ -225,23 +225,23 @@ namespace HowLeaky.ModelControllers
         public double Overflow { get; set; }                  
         [Output("Lateral flow","mm")]
         public double LateralFlow { get; set; }               
-        [Output("Volume Balance Error")]
+        [Output("Volume Balance Error","")]
         public double VBE { get; set; }                       
         [Output("Runoff curve number","")]
          public double RunoffCurveNo { get; set; }            
-        [Output("Runoff retention number")]        
+        [Output("Runoff retention number","")]        
         public double RunoffRetentionNo { get; set; }         
         [Output("Hillslope errorsion","t/ha")]
         public double HillSlopeErosion { get; set; }          
-        [Output("Offsite sediment deliver", "t_per_ha")]
+        [Output("Offsite sediment deliver", "t/ha")]
         public double OffSiteSedDelivery { get; set; }        
         [Output("Sum of soil water in all layers", "mm")]
         public double TotalSoilWater { get; set; }            
         [Output("Soil water deficit", "mm")]
         public double SoilWaterDeficit { get; set; }          
-        [Output("Layer 1 saturation index")]
+        [Output("Layer 1 saturation index","")]
         public double Layer1SatIndex { get; set; }                                                    
-        [Output("Total crop residue  - sum of all crops present", "kg_per_ha")]
+        [Output("Total crop residue  - sum of all crops present", "kg/ha")]
         public double TotalCropResidue { get; set; }            
         [Output("Total residue cover - based on all crops present", "%")]
         public double TotalResidueCover { get; set; }          
@@ -260,8 +260,8 @@ namespace HowLeaky.ModelControllers
         {
             //WatBal = new SoilWaterBalanceOutputModel();
             //Soil = new SoilOutputModel(0);
-            MO = new SoilMonthlyOutputModel();
-            SO = new SoilSummaryOutputModel();
+            //MO = new SoilMonthlyOutputModel();
+            //SO = new SoilSummaryOutputModel();
         }
 
         /// <summary>
@@ -271,7 +271,9 @@ namespace HowLeaky.ModelControllers
         /// <param name="inputModels"></param>
         public SoilController(Simulation sim, List<InputModel> inputModels) : this(sim)
         {
-            DataModel = (SoilInputModel)inputModels[0];
+            InputModel = (SoilInputModel)inputModels[0];
+
+            InitOutputModel();
 
             SoilWater = new List<double>(LayerCount).Fill(0);
             Drainage = new List<double>(LayerCount).Fill(0);
@@ -283,6 +285,15 @@ namespace HowLeaky.ModelControllers
         public override void Initialise()
         {
             //Do nothing
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override InputModel GetInputModel()
+        {
+            return InputModel;
         }
 
         /// <summary>
@@ -335,7 +346,9 @@ namespace HowLeaky.ModelControllers
                     }
                 }
                 else if (Sim.VegetationController.IsPlanting())
+                {
                     SumFallowSoilwater += Sim.VegetationController.CalcFallowSoilWater();
+                }
             }
             catch (Exception e)
             {
@@ -371,101 +384,101 @@ namespace HowLeaky.ModelControllers
         /// <summary>
         /// 
         /// </summary>
-        public void CalculateMonthlyOutputs()
-        {
-            double simyears = Sim.NumberOfDaysInSimulation / 365.0;
-            for (int i = 0; i < 12; ++i)
-            {
-                MO.MthlyAvgRainfall[i] = MathTools.Divide(MO.MthlyAvgRainfall[i], simyears);
-                MO.MthlyAvgEvaporation[i] = MathTools.Divide(MO.MthlyAvgEvaporation[i], simyears);
-                MO.MthlyAvgTranspiration[i] = MathTools.Divide(MO.MthlyAvgTranspiration[i], simyears);
-                MO.MthlyAvgRunoff[i] = MathTools.Divide(MO.MthlyAvgRunoff[i], simyears);
-                MO.MthlyAvgDrainage[i] = MathTools.Divide(MO.MthlyAvgDrainage[i], simyears);
-            }
-        }
+        //public void CalculateMonthlyOutputs()
+        //{
+        //    double simyears = Sim.NumberOfDaysInSimulation / 365.0;
+        //    for (int i = 0; i < 12; ++i)
+        //    {
+        //        MO.MthlyAvgRainfall[i] = MathTools.Divide(MO.MthlyAvgRainfall[i], simyears);
+        //        MO.MthlyAvgEvaporation[i] = MathTools.Divide(MO.MthlyAvgEvaporation[i], simyears);
+        //        MO.MthlyAvgTranspiration[i] = MathTools.Divide(MO.MthlyAvgTranspiration[i], simyears);
+        //        MO.MthlyAvgRunoff[i] = MathTools.Divide(MO.MthlyAvgRunoff[i], simyears);
+        //        MO.MthlyAvgDrainage[i] = MathTools.Divide(MO.MthlyAvgDrainage[i], simyears);
+        //    }
+        //}
 
         /// <summary>
         /// 
         /// </summary>
-        public void UpdateMonthlyStatistics()
-        {
-            try
-            {
-                int monthindex = Sim.Month - 1;
-                MO.MthlyAvgRainfall[monthindex] += Sim.ClimateController.Rain;
-                MO.MthlyAvgEvaporation[monthindex] += SoilEvap;
-                MO.MthlyAvgTranspiration[monthindex] += Sim.VegetationController.GetTotalTranspiration();
-                MO.MthlyAvgRunoff[monthindex] += Runoff;
-                MO.MthlyAvgDrainage[monthindex] += DeepDrainage;
-            }
-            catch (Exception e)
-            {
-                Sim.ControlError = "UpdateMonthlyStatistics";
-                throw new Exception(e.Message);
-            }
-        }
+        //public void UpdateMonthlyStatistics()
+        //{
+        //    try
+        //    {
+        //        int monthindex = Sim.Month - 1;
+        //        MO.MthlyAvgRainfall[monthindex] += Sim.ClimateController.Rain;
+        //        MO.MthlyAvgEvaporation[monthindex] += SoilEvap;
+        //        MO.MthlyAvgTranspiration[monthindex] += Sim.VegetationController.GetTotalTranspiration();
+        //        MO.MthlyAvgRunoff[monthindex] += Runoff;
+        //        MO.MthlyAvgDrainage[monthindex] += DeepDrainage;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Sim.ControlError = "UpdateMonthlyStatistics";
+        //        throw new Exception(e.Message);
+        //    }
+        //}
 
         /// <summary>
         /// 
         /// </summary>
-        public void CalculateSummaryOutputs()
-        {
-            double simyears = Sim.NumberOfDaysInSimulation / 365.0;
+        //public void CalculateSummaryOutputs()
+        //{
+        //    double simyears = Sim.NumberOfDaysInSimulation / 365.0;
 
-            SO.YrlyAvgRainfall_mm_per_yr = MathTools.Divide(SumRainfall, simyears);
-            SO.YrlyAvgIrrigation_mm_per_yr = MathTools.Divide(SumIrrigation, simyears);
-            SO.YrlyAvgRunoff_mm_per_yr = MathTools.Divide(SumRunoff, simyears);
-            SO.YrlyAvgSoilEvaporation_mm_per_yr = MathTools.Divide(SumSoilEvaporation, simyears);
-            SO.YrlyAvgTranspiration_mm_per_yr = MathTools.Divide(SumTranspiration, simyears);
-            SO.YrlyAvgEvapotransp_mm_per_yr = MathTools.Divide(SumEvapotranspiration, simyears);
-            SO.YrlyAvgOverflow_mm_per_yr = MathTools.Divide(SumOverflow, simyears);
-            SO.YrlyAvgDrainage_mm_per_yr = MathTools.Divide(SumDrainage, simyears);
-            SO.YrlyAvgLateralFlow_mm_per_yr = MathTools.Divide(SumLateralFlow, simyears);
-            SO.YrlyAvgSoilErosion_T_per_ha_per_yr = MathTools.Divide(SumSoilErosion, simyears);
-            SO.YrlyAvgOffsiteSedDel_T_per_ha_per_yr = MathTools.Divide(SumSoilErosion * DataModel.SedDelivRatio, simyears);
-            SO.TotalCropsPlanted = Sim.VegetationController.GetTotalCropsPlanted();
-            SO.TotalCropsHarvested = Sim.VegetationController.GetTotalCropsHarvested();
-            SO.TotalCropsKilled = Sim.VegetationController.GetTotalCropsKilled();
-            SO.AvgYieldPerHrvst_t_per_ha_per_hrvst = Sim.VegetationController.GetAvgYieldPerHarvest();
-            SO.AvgYieldPerPlant_t_per_ha_per_plant = Sim.VegetationController.GetAvgYieldPerPlanting();
-            SO.AvgYieldPerYr_t_per_ha_per_yr = Sim.VegetationController.GetAvgYieldPerYear();
-            SO.YrlyAvgCropRainfall_mm_per_yr = MathTools.Divide(SumCropRainfall, simyears);
-            SO.YrlyAvgCropIrrigation_mm_per_yr = MathTools.Divide(SumCropIrrigation, simyears);
-            SO.YrlyAvgCropRunoff_mm_per_yr = MathTools.Divide(SumCropRunoff, simyears);
-            SO.YrlyAvgCropSoilEvap_mm_per_yr = MathTools.Divide(SumCropSoilevaporation, simyears);
-            SO.YrlyAvgCropTransp_mm_per_yr = MathTools.Divide(SumCropTranspiration, simyears);
-            SO.YrlyAvgCropEvapotransp_mm_per_yr = MathTools.Divide(SumCropEvapotranspiration, simyears);
-            SO.YrlyAvgCropOverflow_mm_per_yr = MathTools.Divide(SumCropOverflow, simyears);
-            SO.YrlyAvgCropDrainage_mm_per_yr = MathTools.Divide(SumCropDrainage, simyears);
-            SO.YrlyAvgCropLateralFlow_mm_per_yr = MathTools.Divide(SumCropLateralFlow, simyears);
-            SO.YrlyAvgCropSoilErosion_T_per_ha_per_yr = MathTools.Divide(SumCropSoilerosion, simyears);
-            SO.YrlyAvgCropOffsiteSedDel_T_per_ha_per_yr = MathTools.Divide(SumCropSoilerosion * DataModel.SedDelivRatio, simyears);
-            SO.YrlyAvgFallowRainfall_mm_per_yr = MathTools.Divide(SumFallowRainfall, simyears);
-            SO.YrlyAvgFallowIrrigation_mm_per_yr = MathTools.Divide(SumFallowIrrigation, simyears);
-            SO.YrlyAvgFallowRunoff_mm_per_yr = MathTools.Divide(SumFallowRunoff, simyears);
-            SO.YrlyAvgFallowSoilEvap_mm_per_yr = MathTools.Divide(SumFallowSoilevaporation, simyears);
-            SO.YrlyAvgFallowOverflow_mm_per_yr = MathTools.Divide(SumFallowOverflow, simyears);
-            SO.YrlyAvgFallowDrainage_mm_per_yr = MathTools.Divide(SumFallowDrainage, simyears);
-            SO.YrlyAvgFallowLateralFlow_mm_per_yr = MathTools.Divide(SumFallowLateralFlow, simyears);
-            SO.YrlyAvgFallowSoilErosion_T_per_ha_per_yr = MathTools.Divide(SumFallowSoilerosion, simyears);
-            SO.YrlyAvgFallowOffsiteSedDel_T_per_ha_per_yr = MathTools.Divide(SumFallowSoilerosion * DataModel.SedDelivRatio, simyears);
-            FallowEfficiency = MathTools.Divide(SumFallowSoilwater * 100.0, SumFallowRainfall);
-            SO.YrlyAvgPotEvap_mm = MathTools.Divide(SumPotevap, simyears);
-            SO.YrlyAvgRunoffAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgRunoff_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
-            SO.YrlyAvgEvapAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgSoilEvaporation_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
-            SO.YrlyAvgTranspAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgTranspiration_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
-            SO.YrlyAvgDrainageAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgDrainage_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
-            SO.YrlyAvgPotEvapAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgPotEvap_mm * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
-            SO.YrlyAvgCropSedDel_t_per_ha_per_yr = MathTools.Divide(AccumulatedCropSedDeliv, simyears);
-            SO.YrlyAvgFallowSedDel_t_per_ha_per_yr = MathTools.Divide(AccumulatedFallowSedDeliv, simyears);
-            SO.RobinsonErrosionIndex = MathTools.Divide(SO.YrlyAvgSoilErosion_T_per_ha_per_yr * SO.YrlyAvgCover_pc, DataModel.FieldSlope);
-            SO.YrlyAvgCover_pc = MathTools.Divide(AccumulatedCover, Sim.NumberOfDaysInSimulation);
-            SO.YrlyAvgFallowDaysWithMore50pcCov_days = MathTools.Divide(FallowDaysWithMore50pcCov * 100.0, Sim.NumberOfDaysInSimulation);
-            SO.AvgCoverBeforePlanting_pc = MathTools.Divide(AccumulateCovDayBeforePlanting * 100.0, TotalNumberPlantings);
-            SO.SedimentEMCBeoreDR = MathTools.MISSING_DATA_VALUE;
-            SO.SedimentEMCAfterDR = MathTools.MISSING_DATA_VALUE;
-            SO.AvgSedConcInRunoff = MathTools.Divide(SumSoilErosion * DataModel.SedDelivRatio * 100.0, SumRunoff);//for g/L
-        }
+        //    SO.YrlyAvgRainfall_mm_per_yr = MathTools.Divide(SumRainfall, simyears);
+        //    SO.YrlyAvgIrrigation_mm_per_yr = MathTools.Divide(SumIrrigation, simyears);
+        //    SO.YrlyAvgRunoff_mm_per_yr = MathTools.Divide(SumRunoff, simyears);
+        //    SO.YrlyAvgSoilEvaporation_mm_per_yr = MathTools.Divide(SumSoilEvaporation, simyears);
+        //    SO.YrlyAvgTranspiration_mm_per_yr = MathTools.Divide(SumTranspiration, simyears);
+        //    SO.YrlyAvgEvapotransp_mm_per_yr = MathTools.Divide(SumEvapotranspiration, simyears);
+        //    SO.YrlyAvgOverflow_mm_per_yr = MathTools.Divide(SumOverflow, simyears);
+        //    SO.YrlyAvgDrainage_mm_per_yr = MathTools.Divide(SumDrainage, simyears);
+        //    SO.YrlyAvgLateralFlow_mm_per_yr = MathTools.Divide(SumLateralFlow, simyears);
+        //    SO.YrlyAvgSoilErosion_T_per_ha_per_yr = MathTools.Divide(SumSoilErosion, simyears);
+        //    SO.YrlyAvgOffsiteSedDel_T_per_ha_per_yr = MathTools.Divide(SumSoilErosion * InputModel.SedDelivRatio, simyears);
+        //    SO.TotalCropsPlanted = Sim.VegetationController.GetTotalCropsPlanted();
+        //    SO.TotalCropsHarvested = Sim.VegetationController.GetTotalCropsHarvested();
+        //    SO.TotalCropsKilled = Sim.VegetationController.GetTotalCropsKilled();
+        //    SO.AvgYieldPerHrvst_t_per_ha_per_hrvst = Sim.VegetationController.GetAvgYieldPerHarvest();
+        //    SO.AvgYieldPerPlant_t_per_ha_per_plant = Sim.VegetationController.GetAvgYieldPerPlanting();
+        //    SO.AvgYieldPerYr_t_per_ha_per_yr = Sim.VegetationController.GetAvgYieldPerYear();
+        //    SO.YrlyAvgCropRainfall_mm_per_yr = MathTools.Divide(SumCropRainfall, simyears);
+        //    SO.YrlyAvgCropIrrigation_mm_per_yr = MathTools.Divide(SumCropIrrigation, simyears);
+        //    SO.YrlyAvgCropRunoff_mm_per_yr = MathTools.Divide(SumCropRunoff, simyears);
+        //    SO.YrlyAvgCropSoilEvap_mm_per_yr = MathTools.Divide(SumCropSoilevaporation, simyears);
+        //    SO.YrlyAvgCropTransp_mm_per_yr = MathTools.Divide(SumCropTranspiration, simyears);
+        //    SO.YrlyAvgCropEvapotransp_mm_per_yr = MathTools.Divide(SumCropEvapotranspiration, simyears);
+        //    SO.YrlyAvgCropOverflow_mm_per_yr = MathTools.Divide(SumCropOverflow, simyears);
+        //    SO.YrlyAvgCropDrainage_mm_per_yr = MathTools.Divide(SumCropDrainage, simyears);
+        //    SO.YrlyAvgCropLateralFlow_mm_per_yr = MathTools.Divide(SumCropLateralFlow, simyears);
+        //    SO.YrlyAvgCropSoilErosion_T_per_ha_per_yr = MathTools.Divide(SumCropSoilerosion, simyears);
+        //    SO.YrlyAvgCropOffsiteSedDel_T_per_ha_per_yr = MathTools.Divide(SumCropSoilerosion * InputModel.SedDelivRatio, simyears);
+        //    SO.YrlyAvgFallowRainfall_mm_per_yr = MathTools.Divide(SumFallowRainfall, simyears);
+        //    SO.YrlyAvgFallowIrrigation_mm_per_yr = MathTools.Divide(SumFallowIrrigation, simyears);
+        //    SO.YrlyAvgFallowRunoff_mm_per_yr = MathTools.Divide(SumFallowRunoff, simyears);
+        //    SO.YrlyAvgFallowSoilEvap_mm_per_yr = MathTools.Divide(SumFallowSoilevaporation, simyears);
+        //    SO.YrlyAvgFallowOverflow_mm_per_yr = MathTools.Divide(SumFallowOverflow, simyears);
+        //    SO.YrlyAvgFallowDrainage_mm_per_yr = MathTools.Divide(SumFallowDrainage, simyears);
+        //    SO.YrlyAvgFallowLateralFlow_mm_per_yr = MathTools.Divide(SumFallowLateralFlow, simyears);
+        //    SO.YrlyAvgFallowSoilErosion_T_per_ha_per_yr = MathTools.Divide(SumFallowSoilerosion, simyears);
+        //    SO.YrlyAvgFallowOffsiteSedDel_T_per_ha_per_yr = MathTools.Divide(SumFallowSoilerosion * InputModel.SedDelivRatio, simyears);
+        //    FallowEfficiency = MathTools.Divide(SumFallowSoilwater * 100.0, SumFallowRainfall);
+        //    SO.YrlyAvgPotEvap_mm = MathTools.Divide(SumPotevap, simyears);
+        //    SO.YrlyAvgRunoffAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgRunoff_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
+        //    SO.YrlyAvgEvapAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgSoilEvaporation_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
+        //    SO.YrlyAvgTranspAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgTranspiration_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
+        //    SO.YrlyAvgDrainageAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgDrainage_mm_per_yr * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
+        //    SO.YrlyAvgPotEvapAsPercentOfInflow_pc = MathTools.Divide(SO.YrlyAvgPotEvap_mm * 100.0, SO.YrlyAvgRainfall_mm_per_yr + SO.YrlyAvgIrrigation_mm_per_yr);
+        //    SO.YrlyAvgCropSedDel_t_per_ha_per_yr = MathTools.Divide(AccumulatedCropSedDeliv, simyears);
+        //    SO.YrlyAvgFallowSedDel_t_per_ha_per_yr = MathTools.Divide(AccumulatedFallowSedDeliv, simyears);
+        //    SO.RobinsonErrosionIndex = MathTools.Divide(SO.YrlyAvgSoilErosion_T_per_ha_per_yr * SO.YrlyAvgCover_pc, InputModel.FieldSlope);
+        //    SO.YrlyAvgCover_pc = MathTools.Divide(AccumulatedCover, Sim.NumberOfDaysInSimulation);
+        //    SO.YrlyAvgFallowDaysWithMore50pcCov_days = MathTools.Divide(FallowDaysWithMore50pcCov * 100.0, Sim.NumberOfDaysInSimulation);
+        //    SO.AvgCoverBeforePlanting_pc = MathTools.Divide(AccumulateCovDayBeforePlanting * 100.0, TotalNumberPlantings);
+        //    SO.SedimentEMCBeoreDR = MathTools.MISSING_DATA_VALUE;
+        //    SO.SedimentEMCAfterDR = MathTools.MISSING_DATA_VALUE;
+        //    SO.AvgSedConcInRunoff = MathTools.Divide(SumSoilErosion * InputModel.SedDelivRatio * 100.0, SumRunoff);//for g/L
+        //}
 
         /// <summary>
         /// 
@@ -474,7 +487,7 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                if (DataModel.SoilCrack.State)
+                if (InputModel.SoilCrack.State)
                 {
                     //************************************************************************
                     //*                                                                      *
@@ -538,7 +551,7 @@ namespace HowLeaky.ModelControllers
                     }
                     //  Fill cracks from lowest cracked layer first to a maximum of 50% of
                     //  field capacity.
-                    tred = Math.Min(DataModel.MaxInfiltIntoCracks, EffectiveRain);
+                    tred = Math.Min(InputModel.MaxInfiltIntoCracks, EffectiveRain);
                     for (int i = nod - 1; i >= 0; --i)
                     {
                         Red[i] = Math.Min(tred, DrainUpperLimitRelWP[i] / 2.0 - SoilWaterRelWP[i]);
@@ -551,7 +564,7 @@ namespace HowLeaky.ModelControllers
 
                     //  calculate effective rainfall after infiltration into cracks.
                     //  Note that redistribution of water into layer 1 is ignored.
-                    EffectiveRain = EffectiveRain + Red[0] - Math.Min(DataModel.MaxInfiltIntoCracks, EffectiveRain);
+                    EffectiveRain = EffectiveRain + Red[0] - Math.Min(InputModel.MaxInfiltIntoCracks, EffectiveRain);
                     Red[0] = 0.0;
 
                     //  calculate total amount of water in cracks
@@ -598,7 +611,7 @@ namespace HowLeaky.ModelControllers
                 //  *  Calculate cover effect on curve number (cn2).  *
                 //  ***************************************************}
                 CropCover = Sim.VegetationController.GetCropCoverIfLAIModel(CropCover);  //LAI Model uses cover from the end of the previous day whereas Cover model predefines at the start of the day
-                RunoffCurveNo = DataModel.RunoffCurveNumber - DataModel.RedInCNAtFullCover /* Check this -- in_CurveNumberReduction*/ * Math.Min(1.0, CropCover + TotalResidueCover * (1 - CropCover));
+                RunoffCurveNo = InputModel.RunoffCurveNumber - InputModel.RedInCNAtFullCover /* Check this -- in_CurveNumberReduction*/ * Math.Min(1.0, CropCover + TotalResidueCover * (1 - CropCover));
                 progress = 1;
 
                 //this could need attention!!!! Danny Rattray
@@ -607,11 +620,11 @@ namespace HowLeaky.ModelControllers
                 //  *******************************************************
 
                 RainSinceTillage += EffectiveRain;
-                if (!MathTools.DoublesAreEqual(DataModel.RainToRemoveRough, 0))
+                if (!MathTools.DoublesAreEqual(InputModel.RainToRemoveRough, 0))
                 {
-                    if (RainSinceTillage < DataModel.RainToRemoveRough && Sim.TillageController != null)
+                    if (RainSinceTillage < InputModel.RainToRemoveRough && Sim.TillageController != null)
                     {
-                        RunoffCurveNo += Sim.TillageController.RoughnessRatio * DataModel.MaxRedInCNDueToTill * (RainSinceTillage / DataModel.RainToRemoveRough - 1);
+                        RunoffCurveNo += Sim.TillageController.RoughnessRatio * InputModel.MaxRedInCNDueToTill * (RainSinceTillage / InputModel.RainToRemoveRough - 1);
                     }
                 }
 
@@ -732,8 +745,10 @@ namespace HowLeaky.ModelControllers
                 }
 
                 //add any runoff from irrigation.
-                Runoff += Sim.IrrigationController.IrrigationRunoff;
-
+                if (Sim.IrrigationController != null)
+                {
+                    Runoff += Sim.IrrigationController.IrrigationRunoff;
+                }
             }
             catch (Exception e)
             {
@@ -837,8 +852,8 @@ namespace HowLeaky.ModelControllers
                     {
                         Sse2 = Math.Max(0, Sse2 - Math.Max(0, Infiltration - Sse1));
                         Sse1 = Math.Max(0, Sse1 - Infiltration);
-                        if (!MathTools.DoublesAreEqual(DataModel.Stage2SoilEvapCona, 0))
-                            Dsr = Math.Pow(Sse2 / DataModel.Stage2SoilEvapCona, 2);
+                        if (!MathTools.DoublesAreEqual(InputModel.Stage2SoilEvapCona, 0))
+                            Dsr = Math.Pow(Sse2 / InputModel.Stage2SoilEvapCona, 2);
                         else
                         {
                             Dsr = 0;
@@ -849,13 +864,13 @@ namespace HowLeaky.ModelControllers
                     //  ********************************
                     //  *  Test for 1st stage drying.  *
                     //  ********************************
-                    if (Sse1 < DataModel.Stage1SoilEvapU)
+                    if (Sse1 < InputModel.Stage1SoilEvapU)
                     {
                         //  *****************************************************************
                         //  *  1st stage evaporation for today. Set se1 equal to potential  *
                         //  *  soil evaporation but limited by U.                           *
                         //  *****************************************************************
-                        Se1 = Math.Min(PotSoilEvap, DataModel.Stage1SoilEvapU - Sse1);
+                        Se1 = Math.Min(PotSoilEvap, InputModel.Stage1SoilEvapU - Sse1);
                         Se1 = Math.Max(0.0, Math.Min(Se1, SoilWaterRelWP[0] + AirDryLimitRelWP[0]));
 
                         //  *******************************
@@ -875,7 +890,7 @@ namespace HowLeaky.ModelControllers
                             //  * If sse2 is zero, then use Ritchie's empirical transition constant (0.6).  *
                             //  *****************************************************************************
                             if (Sse2 > 0.0)
-                                Se2 = Math.Min(PotSoilEvap - Se1, DataModel.Stage2SoilEvapCona * Math.Pow(Dsr, 0.5) - Sse2);
+                                Se2 = Math.Min(PotSoilEvap - Se1, InputModel.Stage2SoilEvapCona * Math.Pow(Dsr, 0.5) - Sse2);
                             else
                                 Se2 = 0.6 * (PotSoilEvap - Se1);
 
@@ -894,10 +909,10 @@ namespace HowLeaky.ModelControllers
                             //  ************************************************
                             //  *  Update 1st and 2nd stage soil evaporation.  *
                             //  ************************************************
-                            Sse1 = DataModel.Stage1SoilEvapU;
+                            Sse1 = InputModel.Stage1SoilEvapU;
                             Sse2 += Se2;
-                            if (!MathTools.DoublesAreEqual(DataModel.Stage2SoilEvapCona, 0))
-                                Dsr = Math.Pow(Sse2 / DataModel.Stage2SoilEvapCona, 2);
+                            if (!MathTools.DoublesAreEqual(InputModel.Stage2SoilEvapCona, 0))
+                                Dsr = Math.Pow(Sse2 / InputModel.Stage2SoilEvapCona, 2);
                             else
                             {
                                 Dsr = 0;
@@ -911,12 +926,12 @@ namespace HowLeaky.ModelControllers
                     }
                     else
                     {
-                        Sse1 = DataModel.Stage1SoilEvapU;
+                        Sse1 = InputModel.Stage1SoilEvapU;
                         //  ************************************************************************
                         //  *  No 1st stage drying. Calc. 2nd stage and remove from layers 1 & 2.  *
                         //  ************************************************************************
                         Dsr = Dsr + 1.0;
-                        Se2 = Math.Min(PotSoilEvap, DataModel.Stage2SoilEvapCona * Math.Pow(Dsr, 0.5) - Sse2);
+                        Se2 = Math.Min(PotSoilEvap, InputModel.Stage2SoilEvapCona * Math.Pow(Dsr, 0.5) - Sse2);
                         Se21 = Math.Max(0.0, Math.Min(Se2, SoilWaterRelWP[0] + AirDryLimitRelWP[0]));
                         Se22 = Math.Max(0.0, Math.Min(Se2 - Se21, SoilWaterRelWP[1] + AirDryLimitRelWP[1]));
                         //  ********************************************************
@@ -1052,6 +1067,11 @@ namespace HowLeaky.ModelControllers
             {
                 TotalSoilWater += SoilWaterRelWP[i];
             }
+
+            for(int i = 0; i < LayerCount; i++)
+            {
+                SoilWater[i] = SoilWaterRelWP[i];
+            }
         }
 
         /// <summary>
@@ -1086,8 +1106,8 @@ namespace HowLeaky.ModelControllers
                     else if (cover >= 50.0)
                         conc = -0.0254 * cover + 2.54;
                     conc = Math.Max(0.0, conc);
-                    ErosionTPerHa = conc * UsleLsFactor * DataModel.USLEK * DataModel.USLEP * Runoff / 10.0;
-                    SedCatchmod = conc * DataModel.USLEK * DataModel.USLEP * Runoff / 10.0;
+                    ErosionTPerHa = conc * UsleLsFactor * InputModel.USLEK * InputModel.USLEP * Runoff / 10.0;
+                    SedCatchmod = conc * InputModel.USLEK * InputModel.USLEP * Runoff / 10.0;
                 }
                 if (!MathTools.DoublesAreEqual(Runoff, 0))
                 {
@@ -1095,7 +1115,7 @@ namespace HowLeaky.ModelControllers
                         ++RunoffEventCount2;
                     InRunoff2 = true;
 
-                    SedimentConc = ErosionTPerHa * 100.0 / Runoff * DataModel.SedDelivRatio;    //sediment concentration in g/l
+                    SedimentConc = ErosionTPerHa * 100.0 / Runoff * InputModel.SedDelivRatio;    //sediment concentration in g/l
                     if (SedimentConc > PeakSedConc)
                         PeakSedConc = SedimentConc;
                 }
@@ -1108,7 +1128,7 @@ namespace HowLeaky.ModelControllers
                     InRunoff2 = false;
                     SedimentConc = 0;
                 }
-                OffsiteSedDelivery = ErosionTPerHa * DataModel.SedDelivRatio;
+                OffsiteSedDelivery = ErosionTPerHa * InputModel.SedDelivRatio;
             }
             catch (Exception e)
             {
@@ -1142,7 +1162,7 @@ namespace HowLeaky.ModelControllers
 
                     //  Convert in_FieldSlope_pc from percent to degrees
 
-                    double slopedeg = Math.Atan(DataModel.FieldSlope / 100.0) * 180.0 / 3.14159;
+                    double slopedeg = Math.Atan(InputModel.FieldSlope / 100.0) * 180.0 / 3.14159;
 
                     // Calculate PredRH - lateral flow partitioning
 
@@ -1223,10 +1243,10 @@ namespace HowLeaky.ModelControllers
             Depth[0] = 0;
             for (int i = 0; i < LayerCount; ++i)
             {
-                Depth[i + 1] = (int)(DataModel.Depths.Values[i] + 0.5);
+                Depth[i + 1] = (int)(InputModel.Depths.Values[i] + 0.5);
                 Red[i] = 0;
                 //TODO: Use MaxDailyDrainRate instead of ksat - ksat is misleading
-                KSat[i] = DataModel.MaxDailyDrainRate.Values[i];
+                KSat[i] = InputModel.MaxDailyDrainRate.Values[i];
             }
 
             TotalSoilWater = 0.0;
@@ -1237,22 +1257,22 @@ namespace HowLeaky.ModelControllers
                 {
                     //PERFECT soil water alorithms relate all values to wilting point.
                     double deltadepth = (Depth[i + 1] - Depth[i]) * 0.01;
-                    WiltingPointRelOD[i] = DataModel.WiltingPoint.Values[i] * deltadepth;
-                    DULRelOD[i] = DataModel.FieldCapacity.Values[i] * deltadepth;
+                    WiltingPointRelOD[i] = InputModel.WiltingPoint.Values[i] * deltadepth;
+                    DULRelOD[i] = InputModel.FieldCapacity.Values[i] * deltadepth;
                     if (i == 0)
                     {
-                        AirDryLimitRelWP[0] = WiltingPointRelOD[i] - DataModel.AirDry.Values[i] * deltadepth;
+                        AirDryLimitRelWP[0] = WiltingPointRelOD[i] - InputModel.AirDry.Values[i] * deltadepth;
                     }
                     else if (i == 1)
                     {
-                        AirDryLimitRelWP[1] = 0.5 * (WiltingPointRelOD[i] - DataModel.AirDry.Values[i] * deltadepth);
+                        AirDryLimitRelWP[1] = 0.5 * (WiltingPointRelOD[i] - InputModel.AirDry.Values[i] * deltadepth);
                     }
                     else
                     {
                         AirDryLimitRelWP[i] = 0;
                     }
-                    DrainUpperLimitRelWP[i] = (DataModel.FieldCapacity.Values[i] * deltadepth) - WiltingPointRelOD[i];
-                    SaturationLimitRelWP[i] = (DataModel.Saturation.Values[i] * deltadepth) - WiltingPointRelOD[i];
+                    DrainUpperLimitRelWP[i] = (InputModel.FieldCapacity.Values[i] * deltadepth) - WiltingPointRelOD[i];
+                    SaturationLimitRelWP[i] = (InputModel.Saturation.Values[i] * deltadepth) - WiltingPointRelOD[i];
                 }
                 else
                 {
@@ -1276,8 +1296,6 @@ namespace HowLeaky.ModelControllers
                     SoilWaterRelWP[i] = 0;
                 }
                 TotalSoilWater += SoilWaterRelWP[i];
-
-
             }
 
             TotalCropResidue = 0;
@@ -1302,18 +1320,18 @@ namespace HowLeaky.ModelControllers
         public void CalculateInitialValuesOfCumulativeSoilEvaporation()
         {
             //  Calculate initial values of cumulative soil evaporation
-            if (DrainUpperLimitRelWP[0] - SoilWaterRelWP[0] > DataModel.Stage1SoilEvapU)
+            if (DrainUpperLimitRelWP[0] - SoilWaterRelWP[0] > InputModel.Stage1SoilEvapU)
             {
-                Sse1 = DataModel.Stage1SoilEvapU;
-                Sse2 = Math.Max(0.0, DrainUpperLimitRelWP[0] - SoilWaterRelWP[0]) - DataModel.Stage1SoilEvapU;
+                Sse1 = InputModel.Stage1SoilEvapU;
+                Sse2 = Math.Max(0.0, DrainUpperLimitRelWP[0] - SoilWaterRelWP[0]) - InputModel.Stage1SoilEvapU;
             }
             else
             {
                 Sse1 = Math.Max(0.0, DrainUpperLimitRelWP[0] - SoilWaterRelWP[0]);
                 Sse2 = 0.0;
             }
-            if (!MathTools.DoublesAreEqual(DataModel.Stage2SoilEvapCona, 0))
-                Dsr = Math.Pow(Sse2 / DataModel.Stage2SoilEvapCona, 2.0);
+            if (!MathTools.DoublesAreEqual(InputModel.Stage2SoilEvapCona, 0))
+                Dsr = Math.Pow(Sse2 / InputModel.Stage2SoilEvapCona, 2.0);
             else
             {
                 Dsr = 0;
@@ -1362,24 +1380,24 @@ namespace HowLeaky.ModelControllers
         {
             if (Sim.ModelOptionsController.UsePerfectUSLELSFn())
             {
-                double aht = DataModel.FieldSlope * DataModel.SlopeLength / 100.0;
-                double lambda = 3.281 * (Math.Sqrt(DataModel.SlopeLength * DataModel.SlopeLength + aht * aht));
+                double aht = InputModel.FieldSlope * InputModel.SlopeLength / 100.0;
+                double lambda = 3.281 * (Math.Sqrt(InputModel.SlopeLength * InputModel.SlopeLength + aht * aht));
                 double theta;
-                if (!MathTools.DoublesAreEqual(DataModel.SlopeLength, 0))
-                    theta = Math.Asin(aht / DataModel.SlopeLength);
+                if (!MathTools.DoublesAreEqual(InputModel.SlopeLength, 0))
+                    theta = Math.Asin(aht / InputModel.SlopeLength);
                 else
                 {
                     theta = 0;
 
                     LogDivideByZeroError("CalculateUSLE_LSFactor", "in_SlopeLength_m", "theta");
                 }
-                if (!MathTools.DoublesAreEqual(1.0 + DataModel.RillRatio, 0))
+                if (!MathTools.DoublesAreEqual(1.0 + InputModel.RillRatio, 0))
                 {
-                    if (DataModel.FieldSlope < 9.0)
+                    if (InputModel.FieldSlope < 9.0)
 
-                        UsleLsFactor = Math.Pow(lambda / 72.6, DataModel.RillRatio / (1.0 + DataModel.RillRatio)) * (10.8 * Math.Sin(theta) + 0.03);
+                        UsleLsFactor = Math.Pow(lambda / 72.6, InputModel.RillRatio / (1.0 + InputModel.RillRatio)) * (10.8 * Math.Sin(theta) + 0.03);
                     else
-                        UsleLsFactor = Math.Pow(lambda / 72.6, DataModel.RillRatio / (1.0 + DataModel.RillRatio)) * (16.8 * Math.Sin(theta) - 0.5);
+                        UsleLsFactor = Math.Pow(lambda / 72.6, InputModel.RillRatio / (1.0 + InputModel.RillRatio)) * (16.8 * Math.Sin(theta) - 0.5);
                 }
                 else
                 {
@@ -1390,9 +1408,9 @@ namespace HowLeaky.ModelControllers
             }
             else
             {
-                if (!MathTools.DoublesAreEqual(1.0 + DataModel.RillRatio, 0))
+                if (!MathTools.DoublesAreEqual(1.0 + InputModel.RillRatio, 0))
                 {
-                    UsleLsFactor = Math.Pow(DataModel.SlopeLength / 22.1, DataModel.RillRatio / (1.0 + DataModel.RillRatio)) * (0.065 + 0.0456 * DataModel.FieldSlope + 0.006541 * Math.Pow(DataModel.FieldSlope, 2));
+                    UsleLsFactor = Math.Pow(InputModel.SlopeLength / 22.1, InputModel.RillRatio / (1.0 + InputModel.RillRatio)) * (0.065 + 0.0456 * InputModel.FieldSlope + 0.006541 * Math.Pow(InputModel.FieldSlope, 2));
                 }
                 else
                 {

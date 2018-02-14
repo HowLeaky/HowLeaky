@@ -21,7 +21,7 @@ namespace HowLeaky.DataModels
     }
 
     [XmlRoot("VegetationType")]
-    public class CoverVegObjectDataModel : VegObjectInputDataModel
+    public class CoverVegInputModel : VegInputModel
     {
         //Input Parameters
         public IndexData CoverInputOptions { get; set; }
@@ -59,11 +59,16 @@ namespace HowLeaky.DataModels
         public double MaxRootDepth { get; set; }  // located in CustomVegObject - >The maximum depth of the roots from the soil surface.  For the LAI model, the model calculates daily root growth from the root depth increase parameter
         public double SWPropForNoStress { get; set; }
 
-        public CoverVegObjectDataModel()
+        /// <summary>
+        /// 
+        /// </summary>
+        public CoverVegInputModel()
         {
-            //InitialiseCoverProfile();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void InitialiseCoverProfile()
         {
             CoverProfile = new ProfileData();

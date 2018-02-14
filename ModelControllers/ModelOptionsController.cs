@@ -7,23 +7,27 @@ namespace HowLeaky.ModelControllers
 {
     public class ModelOptionsController : HLController
     {
-        public ModelOptionsInputModel DataModel { get; set; }
+        public ModelOptionsInputModel InputModel { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         public ModelOptionsController(Simulation sim) : base(sim)
         {
-            DataModel = new ModelOptionsInputModel();
+            InputModel = new ModelOptionsInputModel();
+
+            InitOutputModel();
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sim"></param>
         public ModelOptionsController(Simulation sim, List<InputModel> inputModels) : this(sim)
         {
-            DataModel = (ModelOptionsInputModel)inputModels[0];
+            InputModel = (ModelOptionsInputModel)inputModels[0];
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -31,6 +35,7 @@ namespace HowLeaky.ModelControllers
         {
             //Do nothing
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -38,6 +43,7 @@ namespace HowLeaky.ModelControllers
         {
             throw new NotImplementedException();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -46,23 +52,23 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                if (DataModel.ResetSoilWaterAtDate)
+                if (InputModel.ResetSoilWaterAtDate)
                 {
-                    if (DataModel.ResetDateForSoilWater.MatchesDate(today))
+                    if (InputModel.ResetDateForSoilWater.MatchesDate(today))
                     {
                         for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
                         {
-                            Sim.SoilController.SoilWaterRelWP[i] = (DataModel.ResetValueForSWAtDate / 100.0) * Sim.SoilController.DrainUpperLimitRelWP[i];
+                            Sim.SoilController.SoilWaterRelWP[i] = (InputModel.ResetValueForSWAtDate / 100.0) * Sim.SoilController.DrainUpperLimitRelWP[i];
                         }
                         Sim.SoilController.CalculateInitialValuesOfCumulativeSoilEvaporation();
                     }
                 }
-                if (DataModel.ResetResidueAtDate)
+                if (InputModel.ResetResidueAtDate)
                 {
-                    if (DataModel.ResetDateForResidue.MatchesDate(today))
+                    if (InputModel.ResetDateForResidue.MatchesDate(today))
                     {
-                        Sim.SoilController.TotalCropResidue = DataModel.ResetValueForResidue;
-                        Sim.VegetationController.ResetCropResidue(DataModel.ResetValueForResidue);
+                        Sim.SoilController.TotalCropResidue = InputModel.ResetValueForResidue;
+                        Sim.VegetationController.ResetCropResidue(InputModel.ResetValueForResidue);
                     }
                 }
             }
@@ -72,37 +78,50 @@ namespace HowLeaky.ModelControllers
                 throw;
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public bool UsePerfectCurveNoFn()
         {
-            return ((DataModel.UsePERFECTCurveNoFn == Simulation.PERFECT_CN || DataModel.UsePERFECTCurveNoFn == Simulation.DEFAULT_CN) && !Sim.Force2011CurveNoFn);
+            return ((InputModel.UsePERFECTCurveNoFn == Simulation.PERFECT_CN || InputModel.UsePERFECTCurveNoFn == Simulation.DEFAULT_CN) && !Sim.Force2011CurveNoFn);
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public bool CanCalculateLateralFlow()
         {
-            return DataModel.CanCalculateLateralFlow;
+            return InputModel.CanCalculateLateralFlow;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public double GetInitialPAW()
         {
-            return DataModel.InitialPAW;
+            return InputModel.InitialPAW;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public bool UsePerfectUSLELSFn()
         {
-            return DataModel.UsePERFECTUSLELSFn;
+            return InputModel.UsePERFECTUSLELSFn;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override InputModel GetInputModel()
+        {
+            return InputModel;
         }
     }
 }

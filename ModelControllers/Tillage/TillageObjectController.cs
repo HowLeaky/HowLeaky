@@ -1,4 +1,5 @@
 ﻿using HowLeaky.DataModels;
+using HowLeaky.Interfaces;
 using HowLeaky.ModelControllers.Veg;
 using HowLeaky.Tools.Helpers;
 using System;
@@ -9,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace HowLeaky.ModelControllers.Tillage
 {
-    public class TillageObjectController : HLController
+    public class TillageObjectController : HLController, IChildController
     {
-        public TillageObjectDataModel DataModel { get; set; }
+        public TillageInputModel InputModel { get; set; }
         public TillageController TillageController { get; set; }
 
         /// <summary>
@@ -22,10 +23,12 @@ namespace HowLeaky.ModelControllers.Tillage
         /// 
         /// </summary>
         /// <param name="sim"></param>
-        public TillageObjectController(Simulation sim, TillageObjectDataModel dataModel) : base(sim)
+        public TillageObjectController(Simulation sim, TillageInputModel dataModel) : base(sim)
         {
             TillageController = sim.TillageController;
-            this.DataModel = dataModel;
+            this.InputModel = dataModel;
+
+            InitOutputModel();
         }
 
         /// <summary>
@@ -35,16 +38,26 @@ namespace HowLeaky.ModelControllers.Tillage
         {
             if (CanTillToday())
             {
-                TillageController.UpdateTillageParameters((ETillageType)DataModel.Type, DataModel.CropResidueMultiplier, DataModel.RoughnessRatio);
+                TillageController.UpdateTillageParameters((ETillageType)InputModel.Type, InputModel.CropResidueMultiplier, InputModel.RoughnessRatio);
             }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override InputModel GetInputModel()
+        {
+            return InputModel;
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public bool CanTillToday()
         {
-            switch (DataModel.Format)
+            switch (InputModel.Format)
             {
                 case (int)DataModels.ETillageFormat.TillInWindow: return IsFallowAndInWindow();
                 case (int)DataModels.ETillageFormat.FixedDate: return IsFallowAndDate();
@@ -67,9 +80,9 @@ namespace HowLeaky.ModelControllers.Tillage
         public bool IsFallowAndInWindow()
         {
             bool check1 = Sim.VegetationController.InFallow();
-            bool check2 = DateUtilities.isDateInWindow(Sim.Today, DataModel.StartTillWindow, DataModel.EndTillWindow);
-            bool check3 = (TillageController.DaysSinceTillage >= DataModel.MinDaysBetweenTills || TillageController.DaysSinceTillage == -1);
-            bool check4 = (Sim.ClimateController.SumRain(DataModel.NoDaysToTotalRain, 0) >= DataModel.RainForPrimaryTill);
+            bool check2 = DateUtilities.isDateInWindow(Sim.Today, InputModel.StartTillWindow, InputModel.EndTillWindow);
+            bool check3 = (TillageController.DaysSinceTillage >= InputModel.MinDaysBetweenTills || TillageController.DaysSinceTillage == -1);
+            bool check4 = (Sim.ClimateController.SumRain(InputModel.NoDaysToTotalRain, 0) >= InputModel.RainForPrimaryTill);
             return check1 && check2 && check3 && check4;
         }
         /// <summary>
@@ -87,7 +100,7 @@ namespace HowLeaky.ModelControllers.Tillage
         public bool IsFallowAndDate()
         {
             bool check1 = Sim.VegetationController.InFallow();
-            bool check2 = (DataModel.PrimaryTillDate.MatchesDate(Sim.Today) || DataModel.SecondaryTillDate1.MatchesDate(Sim.Today) || DataModel.SecondaryTillDate2.MatchesDate(Sim.Today) || DataModel.SecondaryTillDate3.MatchesDate(Sim.Today));
+            bool check2 = (InputModel.PrimaryTillDate.MatchesDate(Sim.Today) || InputModel.SecondaryTillDate1.MatchesDate(Sim.Today) || InputModel.SecondaryTillDate2.MatchesDate(Sim.Today) || InputModel.SecondaryTillDate3.MatchesDate(Sim.Today));
             return check1 && check2;
         }
         /// <summary>
@@ -151,7 +164,7 @@ namespace HowLeaky.ModelControllers.Tillage
         /// <returns></returns>
         public bool IsFallowAndInSequence()
         {
-            return Sim.VegetationController.InFallow() && DataModel.PrimaryTillageDates.ContainsDate(Sim.Today);
+            return Sim.VegetationController.InFallow() && InputModel.PrimaryTillageDates.ContainsDate(Sim.Today);
         }
     }
 }

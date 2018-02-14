@@ -13,7 +13,7 @@ namespace HowLeaky.SyncModels
         public DateTime ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }      //Going to use strings here - as User Account could be deleted, and we would like to preserve who did this.
 
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         public string Summary { get; set; }
         public string Comments { get; set; }
         public bool Published { get; set; }

@@ -11,7 +11,7 @@ namespace HowLeaky.ModelControllers.Veg
 
     public class LAIVegObjectController : VegObjectController
     {
-        public LAIVegObjectDataModel DataModel { get; set; }
+        public LAIVegInputModel InputModel { get; set; }
 
         public static int UNCONTROLLED = 0;
         public static int OPPORTUNITY = 1;
@@ -46,9 +46,10 @@ namespace HowLeaky.ModelControllers.Veg
             //TodayIsPlantDay = false;
         }
 
-        public LAIVegObjectController(Simulation sim, LAIVegObjectDataModel dataModel) : this(sim)
+        public LAIVegObjectController(Simulation sim, LAIVegInputModel dataModel) : this(sim)
         {
-            this.DataModel = dataModel;
+            this.InputModel = dataModel;
+            InitOutputModel();
         }
         
         /// <summary>
@@ -109,9 +110,18 @@ namespace HowLeaky.ModelControllers.Veg
         /// 
         /// </summary>
         /// <returns></returns>
+        public override InputModel GetInputModel()
+        {
+            return InputModel;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override double GetPotentialSoilEvaporation()
         {
-            if (Sim.ModelOptionsController.DataModel.UsePERFECTSoilEvapFn)
+            if (Sim.ModelOptionsController.InputModel.UsePERFECTSoilEvapFn)
             {
                 if (LAI < 0.3)
                 {
@@ -142,7 +152,7 @@ namespace HowLeaky.ModelControllers.Veg
 
             if (index == 2)
             {
-                return (DataModel.RotationFormat != INCROPORDER);
+                return (InputModel.RotationFormat != INCROPORDER);
             }
             return true;
         }
@@ -153,14 +163,14 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public override bool DoesCropMeetSowingCriteria()
         {
-            if (DataModel.PlantingRulesOptions == (int)EPlantingRules.FixedAnualPlaning)
+            if (InputModel.PlantingRulesOptions == (int)EPlantingRules.FixedAnualPlaning)
             {
-                if (DataModel.PlantDate.MatchesDate(Sim.Today))
+                if (InputModel.PlantDate.MatchesDate(Sim.Today))
                 {
                     return true;
                 }
             }
-            else if (DataModel.PlantingRulesOptions == (int)EPlantingRules.PlantInWindow)
+            else if (InputModel.PlantingRulesOptions == (int)EPlantingRules.PlantInWindow)
             {
                 // run ALL planting tests up front before testing results so that results
                 // can be added to the annotations on the time-series charts.
@@ -178,11 +188,11 @@ namespace HowLeaky.ModelControllers.Veg
                             return true;
                         }
                     }
-                    else if (DataModel.ForcePlantingAtEndOfWindow)
+                    else if (InputModel.ForcePlantingAtEndOfWindow)
                     {
                         if (!HasAlreadyPlantedInThisWindow())
                         {
-                            DateTime endplantingdate = new DateTime(Sim.Today.Year, DataModel.PlantingWindowEndDate.Month, DataModel.PlantingWindowEndDate.Day);
+                            DateTime endplantingdate = new DateTime(Sim.Today.Year, InputModel.PlantingWindowEndDate.Month, InputModel.PlantingWindowEndDate.Day);
                             return (Sim.Today == endplantingdate);
                         }
                         return false;
@@ -193,9 +203,9 @@ namespace HowLeaky.ModelControllers.Veg
                     }
                 }
             }
-            else if (DataModel.PlantingRulesOptions == (int)EPlantingRules.PlantFromSequenceFile)
+            else if (InputModel.PlantingRulesOptions == (int)EPlantingRules.PlantFromSequenceFile)
             {
-                return DataModel.PlantingSequence.ContainsDate(Sim.Today);
+                return InputModel.PlantingSequence.ContainsDate(Sim.Today);
             }
             return false;
         }
@@ -206,7 +216,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public override bool SatisifiesMultiPlantInWindow()
         {
-            if (!DataModel.MultiPlantInWindow && LastSowingDate != DateUtilities.NULLDATE)
+            if (!InputModel.MultiPlantInWindow && LastSowingDate != DateUtilities.NULLDATE)
             {
                 return !HasAlreadyPlantedInThisWindow();
             }
@@ -220,7 +230,7 @@ namespace HowLeaky.ModelControllers.Veg
         public bool HasAlreadyPlantedInThisWindow()
         {
             //Note there was a possible error here in previous version where the wrong year could have been used.
-            return DateUtilities.isDateInWindow(LastSowingDate, DataModel.PlantingWindowStartDate, DataModel.PlantingWindowEndDate);
+            return DateUtilities.isDateInWindow(LastSowingDate, InputModel.PlantingWindowStartDate, InputModel.PlantingWindowEndDate);
         }
         
         /// <summary>
@@ -229,7 +239,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         bool SatisifiesWindowConditions()
         {
-            bool result = DateUtilities.isDateInWindow(Sim.Today, DataModel.PlantingWindowStartDate, DataModel.PlantingWindowEndDate);
+            bool result = DateUtilities.isDateInWindow(Sim.Today, InputModel.PlantingWindowStartDate, InputModel.PlantingWindowEndDate);
             if (result)
             {
                 Sim.UpdateManagementEventHistory(ManagementEvent.InPlantingWindow, Sim.VegetationController.GetCropIndex(this));
@@ -244,13 +254,13 @@ namespace HowLeaky.ModelControllers.Veg
         bool SatisifiesPlantingRainConditions()
         {
             bool result = true;
-            if (DataModel.PlantingRainSwitch)
+            if (InputModel.PlantingRainSwitch)
             {
-                int actualSowingDelay = DataModel.SowingDelay;
+                int actualSowingDelay = InputModel.SowingDelay;
                 double sumrain = 0;
                 int index;
                 int count_rainfreedays = 0;
-                int max = 3 * DataModel.SowingDelay;
+                int max = 3 * InputModel.SowingDelay;
                 for (int i = 0; i < max; ++i)
                 {
                     index = Sim.Climateindex - i;
@@ -261,16 +271,16 @@ namespace HowLeaky.ModelControllers.Veg
                             ++count_rainfreedays;
                         }
                     }
-                    if (count_rainfreedays == DataModel.SowingDelay)
+                    if (count_rainfreedays == InputModel.SowingDelay)
                     {
                         actualSowingDelay = i;
                         i = max;
                     }
                 }
-                if (count_rainfreedays == DataModel.SowingDelay)
+                if (count_rainfreedays == InputModel.SowingDelay)
                 {
-                    int fallow_planting_rain = (int)Sim.ClimateController.SumRain(DataModel.RainfallSummationDays, actualSowingDelay);
-                    result = (fallow_planting_rain > DataModel.RainfallPlantingThreshold);
+                    int fallow_planting_rain = (int)Sim.ClimateController.SumRain(InputModel.RainfallSummationDays, actualSowingDelay);
+                    result = (fallow_planting_rain > InputModel.RainfallPlantingThreshold);
                 }
                 else
                 {
@@ -291,9 +301,9 @@ namespace HowLeaky.ModelControllers.Veg
         bool SatisifiesFallowConditions()
         {
             bool result = true;
-            if (DataModel.FallowSwitch)
+            if (InputModel.FallowSwitch)
             {
-                result = (Sim.VegetationController.DaysSinceHarvest >= DataModel.MinimumFallowPeriod);
+                result = (Sim.VegetationController.DaysSinceHarvest >= InputModel.MinimumFallowPeriod);
                 if (result)
                 {
                     Sim.UpdateManagementEventHistory(ManagementEvent.MeetsDaysSinceHarvestPlantCritera, Sim.VegetationController.GetCropIndex(this));
@@ -309,24 +319,24 @@ namespace HowLeaky.ModelControllers.Veg
         bool SatisifiesSoilWaterConditions()
         {
             bool result = true;
-            if (DataModel.SoilWaterSwitch)
+            if (InputModel.SoilWaterSwitch)
             {
                 double SumSW = 0.0;
                 for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
                 {
                     if (Sim.SoilController.Depth[i + 1] - Sim.SoilController.Depth[i] > 0)
                     {
-                        if (DataModel.DepthToSumPlantingWater > Sim.SoilController.Depth[Sim.SoilController.LayerCount])
+                        if (InputModel.DepthToSumPlantingWater > Sim.SoilController.Depth[Sim.SoilController.LayerCount])
                         {
-                            DataModel.DepthToSumPlantingWater = Sim.SoilController.Depth[Sim.SoilController.LayerCount];
+                            InputModel.DepthToSumPlantingWater = Sim.SoilController.Depth[Sim.SoilController.LayerCount];
                         }
-                        if (Sim.SoilController.Depth[i + 1] < DataModel.DepthToSumPlantingWater)
+                        if (Sim.SoilController.Depth[i + 1] < InputModel.DepthToSumPlantingWater)
                         {
                             SumSW += Sim.SoilController.SoilWaterRelWP[i];
                         }
-                        if (Sim.SoilController.Depth[i] < DataModel.DepthToSumPlantingWater && Sim.SoilController.Depth[i + 1] > DataModel.DepthToSumPlantingWater)
+                        if (Sim.SoilController.Depth[i] < InputModel.DepthToSumPlantingWater && Sim.SoilController.Depth[i + 1] > InputModel.DepthToSumPlantingWater)
                         {
-                            SumSW += Sim.SoilController.SoilWaterRelWP[i] * (DataModel.DepthToSumPlantingWater - Sim.SoilController.Depth[i]) / (Sim.SoilController.Depth[i + 1] - Sim.SoilController.Depth[i]);
+                            SumSW += Sim.SoilController.SoilWaterRelWP[i] * (InputModel.DepthToSumPlantingWater - Sim.SoilController.Depth[i]) / (Sim.SoilController.Depth[i + 1] - Sim.SoilController.Depth[i]);
                         }
                         if (!MathTools.DoublesAreEqual(Sim.SoilController.DrainUpperLimitRelWP[i], 0))
                         {
@@ -344,7 +354,7 @@ namespace HowLeaky.ModelControllers.Veg
                         MathTools.LogDivideByZeroError("SatisifiesSoilWaterConditions", "sim.depth[i+1]-sim.depth[i]", "SumSW");
                     }
                 }
-                result = (SumSW > DataModel.SoilWaterReqToPlant && Sim.SoilController.MCFC[0] >= DataModel.MinSoilWaterTopLayer && Sim.SoilController.MCFC[0] <= DataModel.MaxSoilWaterTopLayer);
+                result = (SumSW > InputModel.SoilWaterReqToPlant && Sim.SoilController.MCFC[0] >= InputModel.MinSoilWaterTopLayer && Sim.SoilController.MCFC[0] <= InputModel.MaxSoilWaterTopLayer);
 
                 if (result)
                 {
@@ -360,11 +370,11 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public override bool IsCropUnderMaxContinuousRotations()
         {
-            if (DataModel.PlantingRulesOptions != (int)EPlantingRules.PlantFromSequenceFile && DataModel.RotationFormat != UNCONTROLLED)
+            if (InputModel.PlantingRulesOptions != (int)EPlantingRules.PlantFromSequenceFile && InputModel.RotationFormat != UNCONTROLLED)
             {
                 if (FirstRotationDate != DateUtilities.NULLDATE)
                 {
-                    return (RotationCount + MissedRotationCount < DataModel.MaxRotationCount);
+                    return (RotationCount + MissedRotationCount < InputModel.MaxRotationCount);
                 }
 
             }
@@ -378,11 +388,11 @@ namespace HowLeaky.ModelControllers.Veg
         public override bool HasCropHadSufficientContinuousRotations()
         {
 
-            if (DataModel.PlantingRulesOptions != (int)EPlantingRules.PlantFromSequenceFile && DataModel.RotationFormat != UNCONTROLLED)
+            if (InputModel.PlantingRulesOptions != (int)EPlantingRules.PlantFromSequenceFile && InputModel.RotationFormat != UNCONTROLLED)
             {
                 if (FirstRotationDate != DateUtilities.NULLDATE)
                 {
-                    return (RotationCount + MissedRotationCount >= DataModel.MinRotationCount);
+                    return (RotationCount + MissedRotationCount >= InputModel.MinRotationCount);
                 }
             }
             return true;
@@ -395,12 +405,12 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public override bool HasCropBeenAbsentForSufficientYears(DateTime today)
         {
-            if (DataModel.PlantingRulesOptions != (int)EPlantingRules.PlantFromSequenceFile && DataModel.RotationFormat != UNCONTROLLED)
+            if (InputModel.PlantingRulesOptions != (int)EPlantingRules.PlantFromSequenceFile && InputModel.RotationFormat != UNCONTROLLED)
             {
                 if (LastHarvestDate != DateUtilities.NULLDATE)
                 {
                     int months_since_last_sow = DateUtilities.MonthsBetween(today, LastHarvestDate);
-                    return (months_since_last_sow >= DataModel.RestPeriodAfterChangingCrops);
+                    return (months_since_last_sow >= InputModel.RestPeriodAfterChangingCrops);
                 }
             }
             return true;
@@ -420,11 +430,11 @@ namespace HowLeaky.ModelControllers.Veg
             KillDays = 0;
             ++RotationCount;
             //TodayIsPlantDay = true;
-            if (Sim.ModelOptionsController.DataModel.ResetSoilWaterAtPlanting)
+            if (Sim.ModelOptionsController.InputModel.ResetSoilWaterAtPlanting)
             {
                 for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
                 {
-                    Sim.SoilController.SoilWaterRelWP[i] = (Sim.ModelOptionsController.DataModel.ResetValueForSWAtPlanting / 100.0) * Sim.SoilController.DrainUpperLimitRelWP[i];
+                    Sim.SoilController.SoilWaterRelWP[i] = (Sim.ModelOptionsController.InputModel.ResetValueForSWAtPlanting / 100.0) * Sim.SoilController.DrainUpperLimitRelWP[i];
                 }
             }
             Sim.FManagementEvent = ManagementEvent.Planting;
@@ -449,11 +459,11 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public bool CheckCropSurvives()
         {
-            if (Sim.ModelOptionsController.DataModel.IgnoreCropKill == false)
+            if (Sim.ModelOptionsController.InputModel.IgnoreCropKill == false)
             {
                 if (CropStage <= 2.0)
                 {
-                    if (WaterStressIndex <= DataModel.SWPropForNoStress)
+                    if (WaterStressIndex <= InputModel.SWPropForNoStress)
                     {
                         ++KillDays;
                     }
@@ -461,7 +471,7 @@ namespace HowLeaky.ModelControllers.Veg
                     {
                         KillDays = 0;
                     }
-                    if (KillDays >= DataModel.DaysOfStressToDeath)
+                    if (KillDays >= InputModel.DaysOfStressToDeath)
                     {
                         return false;
                     }
@@ -486,9 +496,9 @@ namespace HowLeaky.ModelControllers.Veg
             // [Equation 2.235] from EPIC
 
             double ratio;
-            if (!MathTools.DoublesAreEqual(DataModel.OptTemp, DataModel.BaseTemp))
+            if (!MathTools.DoublesAreEqual(InputModel.OptTemp, InputModel.BaseTemp))
             {
-                ratio = (Sim.ClimateController.Temperature - DataModel.BaseTemp) / (DataModel.OptTemp - DataModel.BaseTemp);
+                ratio = (Sim.ClimateController.Temperature - InputModel.BaseTemp) / (InputModel.OptTemp - InputModel.BaseTemp);
             }
             else
             {
@@ -526,17 +536,17 @@ namespace HowLeaky.ModelControllers.Veg
         /// </summary>
         public void Scurve()
         {
-            if (MathTools.DoublesAreEqual(DataModel.PercentOfMaxLai1, 1)) DataModel.PercentOfMaxLai1 = 0.99999;
-            if (MathTools.DoublesAreEqual(DataModel.PercentOfMaxLai2, 1)) DataModel.PercentOfMaxLai2 = 0.99999;
-            if (DataModel.PercentOfMaxLai1 > 0 && DataModel.PercentOfMaxLai2 > 0)
+            if (MathTools.DoublesAreEqual(InputModel.PercentOfMaxLai1, 1)) InputModel.PercentOfMaxLai1 = 0.99999;
+            if (MathTools.DoublesAreEqual(InputModel.PercentOfMaxLai2, 1)) InputModel.PercentOfMaxLai2 = 0.99999;
+            if (InputModel.PercentOfMaxLai1 > 0 && InputModel.PercentOfMaxLai2 > 0)
             {
-                double value1 = DataModel.PercentOfGrowSeason1 / DataModel.PercentOfMaxLai1 - DataModel.PercentOfGrowSeason1;
-                double value2 = DataModel.PercentOfGrowSeason2 / DataModel.PercentOfMaxLai2 - DataModel.PercentOfGrowSeason2;
+                double value1 = InputModel.PercentOfGrowSeason1 / InputModel.PercentOfMaxLai1 - InputModel.PercentOfGrowSeason1;
+                double value2 = InputModel.PercentOfGrowSeason2 / InputModel.PercentOfMaxLai2 - InputModel.PercentOfGrowSeason2;
                 if (!MathTools.DoublesAreEqual(value1, 0) && !MathTools.DoublesAreEqual(value2, 0))
                 {
                     double x = Math.Log(value1);
-                    LAICurveY2active = (x - Math.Log(value2)) / (DataModel.PercentOfGrowSeason2 - DataModel.PercentOfGrowSeason1);
-                    LAICurveY1active = x + DataModel.PercentOfGrowSeason1 * LAICurveY2active;
+                    LAICurveY2active = (x - Math.Log(value2)) / (InputModel.PercentOfGrowSeason2 - InputModel.PercentOfGrowSeason1);
+                    LAICurveY1active = x + InputModel.PercentOfGrowSeason1 * LAICurveY2active;
                 }
                 else
                 {
@@ -564,12 +574,12 @@ namespace HowLeaky.ModelControllers.Veg
             // ***************************
 
             // accumulate heat units
-            HeatUnits = HeatUnits + Math.Max(Sim.ClimateController.Temperature - DataModel.BaseTemp, 0.0);
+            HeatUnits = HeatUnits + Math.Max(Sim.ClimateController.Temperature - InputModel.BaseTemp, 0.0);
 
             // caluclate heat unit index [Equation 2.191] from EPIC
-            if (!MathTools.DoublesAreEqual(DataModel.DegreeDaysPlantToHarvest, 0))
+            if (!MathTools.DoublesAreEqual(InputModel.DegreeDaysPlantToHarvest, 0))
             {
-                HeatUnitIndex = HeatUnits / DataModel.DegreeDaysPlantToHarvest;
+                HeatUnitIndex = HeatUnits / InputModel.DegreeDaysPlantToHarvest;
             }
             else
             {
@@ -582,7 +592,7 @@ namespace HowLeaky.ModelControllers.Veg
             // *  calculate leaf growth  *
             // ***************************
 
-            if (HeatUnitIndex < DataModel.PropGrowSeaForMaxLai)
+            if (HeatUnitIndex < InputModel.PropGrowSeaForMaxLai)
             {
                 // heat unit factor, [Equation 2.198] from EPIC
                 double denom = (HeatUnitIndex + Math.Exp(LAICurveY1active - LAICurveY2active * HeatUnitIndex));
@@ -609,13 +619,13 @@ namespace HowLeaky.ModelControllers.Veg
                 // only.
 
 
-                if (Sim.ModelOptionsController.DataModel.UsePERFECTLeafAreaFn)
+                if (Sim.ModelOptionsController.InputModel.UsePERFECTLeafAreaFn)
                 {
-                    dlai = dHUF * DataModel.PotMaxLAI * Math.Sqrt(GrowthRegulator);
+                    dlai = dHUF * InputModel.PotMaxLAI * Math.Sqrt(GrowthRegulator);
                 }
                 else
                 {
-                    dlai = dHUF * DataModel.PotMaxLAI * GrowthRegulator;
+                    dlai = dHUF * InputModel.PotMaxLAI * GrowthRegulator;
                 }
                 LAI = LAI + dlai;
 
@@ -630,14 +640,14 @@ namespace HowLeaky.ModelControllers.Veg
             // *  calculate leaf senesence  *
             // ******************************
 
-            if (HeatUnitIndex >= DataModel.PropGrowSeaForMaxLai && HeatUnitIndex <= 1)
+            if (HeatUnitIndex >= InputModel.PropGrowSeaForMaxLai && HeatUnitIndex <= 1)
             {
-                if (DataModel.SenesenceCoef > 0)
+                if (InputModel.SenesenceCoef > 0)
                 {
                     // leaf senesence [Equation 2.199] from EPIC
-                    if (!MathTools.DoublesAreEqual(1.0 - DataModel.PropGrowSeaForMaxLai, 0))
+                    if (!MathTools.DoublesAreEqual(1.0 - InputModel.PropGrowSeaForMaxLai, 0))
                     {
-                        LAI = MaxCalcLAI * Math.Pow((1.0 - HeatUnitIndex) / (1.0 - DataModel.PropGrowSeaForMaxLai), DataModel.SenesenceCoef);
+                        LAI = MaxCalcLAI * Math.Pow((1.0 - HeatUnitIndex) / (1.0 - InputModel.PropGrowSeaForMaxLai), InputModel.SenesenceCoef);
                     }
                     else
                     {
@@ -675,18 +685,18 @@ namespace HowLeaky.ModelControllers.Veg
             }
             Hrltp = hrlt;
      
-            double rue = DataModel.RadUseEffic;
+            double rue = InputModel.RadUseEffic;
             double effectiverue = rue;
 
-            if (DataModel.WaterLoggingSwitch && IsWaterLogged())
+            if (InputModel.WaterLoggingSwitch && IsWaterLogged())
             {
-                effectiverue = rue * DataModel.WaterLoggingFactor2;
+                effectiverue = rue * InputModel.WaterLoggingFactor2;
             }
             // **************************
             // *  biomass accumulation  *
             // **************************
             // [Equation 2.193] from EPIC
-            if (Sim.ModelOptionsController.DataModel.UsePERFECTDryMatterFn)
+            if (Sim.ModelOptionsController.InputModel.UsePERFECTDryMatterFn)
             {
                 DryMatter += GrowthRegulator * par * effectiverue * Math.Pow(1.0 + dhrlt, 3.0);
                 DryMatter = DryMatter * 10.0;
@@ -753,7 +763,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// </summary>
         public void CalculateRootGrowth()
         {
-            RootDepth = RootDepth + DataModel.DailyRootGrowth;
+            RootDepth = RootDepth + InputModel.DailyRootGrowth;
             RootDepth = MathTools.CheckConstraints(RootDepth, MaximumRootDepth, 0);
         }
 
@@ -793,7 +803,7 @@ namespace HowLeaky.ModelControllers.Veg
             //    soil_water_at_harvest=sim.total_soil_water;
             // ++number_of_fallows;
             //	CropStatus=csInFallow;
-            Yield = DataModel.HarvestIndex * DryMatter * 10.0;
+            Yield = InputModel.HarvestIndex * DryMatter * 10.0;
             //REVIEW
             //Output.Yield = Yield / 1000.0;
             ResidueAmount = ResidueAmount + (DryMatter - Yield / 10.0) * 0.95 * 10.0;
@@ -874,14 +884,14 @@ namespace HowLeaky.ModelControllers.Veg
         public void RecordCropStage()
         {
             //   CropAnthesis=false;
-            if (HeatUnitIndex <= DataModel.PropGrowSeaForMaxLai && !MathTools.DoublesAreEqual(DataModel.PropGrowSeaForMaxLai, 0))
+            if (HeatUnitIndex <= InputModel.PropGrowSeaForMaxLai && !MathTools.DoublesAreEqual(InputModel.PropGrowSeaForMaxLai, 0))
             {
-                CropStage = HeatUnitIndex * 2.0 / DataModel.PropGrowSeaForMaxLai;
+                CropStage = HeatUnitIndex * 2.0 / InputModel.PropGrowSeaForMaxLai;
                 //anth=0;
             }
             else
             {
-                if (MathTools.DoublesAreEqual(DataModel.PropGrowSeaForMaxLai, 0))
+                if (MathTools.DoublesAreEqual(InputModel.PropGrowSeaForMaxLai, 0))
                 {
                     MathTools.LogDivideByZeroError("RecordCropStage", "in_PropSeasonForMaxLAI", "crop_stage");
                 }
@@ -890,9 +900,9 @@ namespace HowLeaky.ModelControllers.Veg
                 //			CropAnthesis=true;
                 //			anth=1;
                 //		}
-                if (!MathTools.DoublesAreEqual(DataModel.PropGrowSeaForMaxLai, 1))
+                if (!MathTools.DoublesAreEqual(InputModel.PropGrowSeaForMaxLai, 1))
                 {
-                    CropStage = 2 + (HeatUnitIndex - DataModel.PropGrowSeaForMaxLai) / (1.0 - DataModel.PropGrowSeaForMaxLai);
+                    CropStage = 2 + (HeatUnitIndex - InputModel.PropGrowSeaForMaxLai) / (1.0 - InputModel.PropGrowSeaForMaxLai);
                 }
             }
         }
@@ -905,7 +915,7 @@ namespace HowLeaky.ModelControllers.Veg
         {
 
             // Calculate potential transpiration
-            if (Sim.ModelOptionsController.DataModel.UsePERFECTGroundCovFn)
+            if (Sim.ModelOptionsController.InputModel.UsePERFECTGroundCovFn)
                 GreenCover = Math.Min(LAI / 3.0, 1.0);
             else
             {
@@ -929,9 +939,9 @@ namespace HowLeaky.ModelControllers.Veg
             //REVIEW
             //Output.GreenCover = GreenCover * 100.0;
             //CropCoverPercent = CropCover * 100.0;
-            if (DataModel.WaterLoggingSwitch && IsWaterLogged())
+            if (InputModel.WaterLoggingSwitch && IsWaterLogged())
             {
-                value = value * DataModel.WaterLoggingFactor1;
+                value = value * InputModel.WaterLoggingFactor1;
             }
             return value;
         }
@@ -942,7 +952,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public override bool StillRequiresIrrigating()
         {
-            return (HeatUnits < DataModel.PropGDDEnd / 100.0 * (double)(DataModel.DegreeDaysPlantToHarvest));
+            return (HeatUnits < InputModel.PropGDDEnd / 100.0 * (double)(InputModel.DegreeDaysPlantToHarvest));
         }
 
         /// <summary>
@@ -950,7 +960,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// </summary>
         public new void CalculateResidue()
         {
-            if (Sim.ModelOptionsController.DataModel.UsePERFECTResidueFn)
+            if (Sim.ModelOptionsController.InputModel.UsePERFECTResidueFn)
             {
                 CalculateResiduePERFECT();
             }
@@ -982,9 +992,9 @@ namespace HowLeaky.ModelControllers.Veg
 
             // Will change this to a non-linear function in the near future. BR 14/09/2010
 
-            ResidueAmount = Math.Max(0, ResidueAmount - ResidueAmount * DataModel.MaxResidueLoss / 100.0 * Decompdays);
-            if (!MathTools.DoublesAreEqual(DataModel.BiomassAtFullCover, 0))
-                ResidueCover = Math.Min(1.0, ResidueAmount / DataModel.BiomassAtFullCover);
+            ResidueAmount = Math.Max(0, ResidueAmount - ResidueAmount * InputModel.MaxResidueLoss / 100.0 * Decompdays);
+            if (!MathTools.DoublesAreEqual(InputModel.BiomassAtFullCover, 0))
+                ResidueCover = Math.Min(1.0, ResidueAmount / InputModel.BiomassAtFullCover);
             else
             {
                 ResidueCover = 0;
@@ -1026,7 +1036,7 @@ namespace HowLeaky.ModelControllers.Veg
             }
             //  Calculate proportion cover from residue weight
             //  using Sallaway type functions
-            ResidueCover = DataModel.MaximumResidueCover * (1.0 - Math.Exp(-1.0 * ResidueAmount / 1000.0));
+            ResidueCover = InputModel.MaximumResidueCover * (1.0 - Math.Exp(-1.0 * ResidueAmount / 1000.0));
             if (ResidueCover < 0)
             {
                 ResidueCover = 0;

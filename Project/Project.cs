@@ -10,7 +10,7 @@ using System.Linq;
 using HowLeaky.Tools.Helpers;
 using HowLeaky.Factories;
 using HowLeaky.Tools.XML;
-
+using System.ComponentModel;
 
 namespace HowLeaky
 {
@@ -22,7 +22,12 @@ namespace HowLeaky
         //Base input data models from the parameter files
         public List<InputModel> InputDataModels { get; set; }
 
+        public List<BackgroundWorker> BackgroundWorkers;
+
         public string ContactDetails { get; set; }
+
+        public int CurrentSimIndex = 0;
+        public int NoSimsComplete = 0;
 
         /// <summary>
         /// Need default constructor for populating via Entity Framework 
@@ -47,6 +52,7 @@ namespace HowLeaky
             //Run the simulations
             //RunSimulations();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -76,6 +82,7 @@ namespace HowLeaky
             }
 
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -84,6 +91,7 @@ namespace HowLeaky
         {
             throw new NotImplementedException();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -162,18 +170,110 @@ namespace HowLeaky
             int noCoresToUse = numberOfThreads;
             int noCores = Environment.ProcessorCount;
 
-            if(numberOfThreads <= 0 )
+            if (numberOfThreads <= 0)
             {
                 noCoresToUse = noCores + numberOfThreads;
             }
             //Create database for outputs
             //SQLite
 
-            //Create simulations on main thread
-            //Lazy load the sims as worker is available
+            //Reset the counters
+            CurrentSimIndex = 0;
+            NoSimsComplete = 0;
 
-            Simulation sim = SimulationFactory.GenerateSimulationXML(SimulationElements[0], InputDataModels);
+            //Create a list of background workers
+            BackgroundWorkers = new List<BackgroundWorker>(noCoresToUse);
+
+            //Populate the Background workers and run
+            for (int i = 0; i < noCoresToUse; i++)
+            {
+                BackgroundWorkers.Add(new BackgroundWorker());
+                BackgroundWorkers[i].DoWork += HLBackgroundWorker_DoWork;
+                BackgroundWorkers[i].RunWorkerCompleted += HLBackgroundWorker_RunWorkerCompleted;
+
+                XElement xe = GetSimulationElement();
+
+                if(xe != null)
+                {
+                    BackgroundWorkers[i].RunWorkerAsync(xe);
+                }
+            }
+        }
+
+        public XElement GetSimulationElement()
+        {
+            XElement result = null;
+
+            if (SimulationElements.Count > CurrentSimIndex)
+            {
+                result = SimulationElements[CurrentSimIndex];
+                CurrentSimIndex++;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void CancelBackGroundWorkers()
+        {
+            foreach (BackgroundWorker bw in BackgroundWorkers)
+                if (bw.IsBusy)
+                {
+                    bw.CancelAsync();
+                }
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HLBackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            XElement simElement = (XElement)e.Argument;
+
+            Simulation sim = SimulationFactory.GenerateSimulationXML(simElement, InputDataModels);
             sim.Run();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HLBackgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+
+            }
+            else if (e.Error != null)
+            {
+
+            }
+            else
+            {
+
+            }
+
+            NoSimsComplete++;
+
+            //Update Progress
+            Console.WriteLine("{0} % Done.", ((double)NoSimsComplete / SimulationElements.Count * 100).ToString("0.00"));
+
+            BackgroundWorker bw = (BackgroundWorker)sender;
+
+            XElement nextSim = GetSimulationElement();
+
+            if(nextSim == null)
+            {
+                return;
+            }
+            else
+            {
+                bw.RunWorkerAsync(nextSim);
+            }
         }
     }
 }

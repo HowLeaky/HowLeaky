@@ -12,8 +12,6 @@ namespace HowLeaky.ModelControllers
     {
         public List<OutputDataModel> dailyOutputs;
         StreamWriter dailySW;
-        //StreamWriter monthlySW;
-        //StreamWriter annualSW;
 
         /// <summary>
         /// 
@@ -26,8 +24,6 @@ namespace HowLeaky.ModelControllers
             //Create some stream writers from the simuation name
             dailyOutputs = new List<OutputDataModel>();
             dailySW = new StreamWriter(sim.Name + "_daily.csv", false);
-            //monthlySW = new StreamWriter(sim.Name + "_monthly.csv", false);
-            //annualSW = new StreamWriter(sim.Name + "_annual.csv", false);
 
             //Create a list of output models
             foreach (HLController hlc in Sim.ActiveControlllers)
@@ -35,11 +31,20 @@ namespace HowLeaky.ModelControllers
                 //Get the daily Ouputs and add to the list
                 if (hlc.GetType().BaseType == typeof(HLObjectController))
                 {
-                    dailyOutputs.AddRange(((HLObjectController)hlc).GetOutputModels());
+                    List<OutputDataModel> odms = ((HLObjectController)hlc).GetOutputModels();
+
+                    if (odms != null)
+                    {
+                        dailyOutputs.AddRange(odms);
+                    }
                 }
                 else
                 {
-                    dailyOutputs.AddRange(hlc.GetOutputModels());
+                    List<OutputDataModel> odms = hlc.GetOutputModels();
+                    if (odms != null)
+                    {
+                        dailyOutputs.AddRange(odms);
+                    }
                 }
             }
 
@@ -71,6 +76,9 @@ namespace HowLeaky.ModelControllers
             dailySW.WriteLine(String.Join(",", outputData.ToArray()));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Finalise()
         {
             dailySW.Close();

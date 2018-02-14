@@ -8,8 +8,8 @@ namespace HowLeaky.Tools.DataObjects
 {
     public class ProfileData
     {
-        List<int> jdays;
-        Dictionary<string, List<double>> values;
+       public List<int> jdays;
+       public Dictionary<string, List<double>> values;
 
         int dayIndex = 0;
         /// <summary>

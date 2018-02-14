@@ -38,7 +38,7 @@ namespace HowLeaky.DataModels
     }
 
     [XmlRoot("PesticideType")]
-    public class PesticideObjectDataModel : InputModel
+    public class PesticideInputModel : InputModel
     {
         //Input Parameters
         public PestApplicationTiming PestApplicationTiming { get; set; }
@@ -100,6 +100,6 @@ namespace HowLeaky.DataModels
         /// <summary>
         /// 
         /// </summary>
-        public PesticideObjectDataModel() { }
+        public PesticideInputModel() { }
     }
 }

@@ -25,7 +25,7 @@ namespace HowLeaky
 
     //}
 
-    public class Simulation : HLController
+    public class Simulation : HLController, ISimulation
     {
         public static int ROBINSON_CN = 0;
         public static int PERFECT_CN = 1;
@@ -35,6 +35,42 @@ namespace HowLeaky
         public bool CanLog { get; set; }
         public bool Use2008CurveNoFn { get; set; }
         public bool Force2011CurveNoFn { get; set; }
+
+        public override string Name
+        {
+            get
+            {
+                if (base.Name == null)
+                {
+                    List<string> ModelNames = new List<string>();
+                    foreach (HLController hlc in ActiveControlllers)
+                    {
+                        if (hlc.GetType().GetInterface("ISimulation") == null)
+                        {
+                            if (hlc.GetType().BaseType == typeof(HLObjectController))
+                            {
+                                foreach (HLController h in ((HLObjectController)hlc).ChildControllers)
+                                {
+                                    ModelNames.Add(h.GetInputModel().Name);
+                                }
+                            }
+                            else
+                            {
+                                ModelNames.Add(hlc.GetInputModel().Name);
+                            }
+                        }
+                    }
+                    return String.Join(";", ModelNames.ToArray());
+                }
+                else
+                {
+                    return base.Name;
+                }
+            }
+
+            set { base.Name = value; }
+        }
+
 
         //--------------------------------------------------------------------------
         // Submodel Controllers
@@ -118,6 +154,8 @@ namespace HowLeaky
             SolutesController = null;
             ModelOptionsController = null;
             OutputModelController = null;
+
+            InitOutputModel();
         }
 
         /// <summary>
@@ -139,15 +177,15 @@ namespace HowLeaky
 
             //Simulation has to have a Climate, Soil, Vegetion Controllers/Models
             ClimateController = new ClimateController(this, new List<InputModel>(inputDataModels.Where(x => x.GetType() == typeof(ClimateInputModel))));
-            VegetationController = new VegetationController(this, new List<InputModel>(inputDataModels.Where(x => x.GetType().BaseType == (typeof(VegObjectInputDataModel)))));
+            VegetationController = new VegetationController(this, new List<InputModel>(inputDataModels.Where(x => x.GetType().BaseType == (typeof(VegInputModel)))));
             SoilController = new SoilController(this, new List<InputModel>(inputDataModels.Where(x => x.GetType() == typeof(SoilInputModel))));
 
             //Optional Controllers/Models
             IrrigationController = FindInputModels(inputDataModels, typeof(IrrigationInputModel)) == null ? null : new IrrigationController(this, FindInputModels(inputDataModels, typeof(IrrigationInputModel)));
-            TillageController = FindInputModels(inputDataModels, typeof(TillageObjectDataModel)) == null ? null : new TillageController(this, FindInputModels(inputDataModels, typeof(TillageObjectDataModel)));
-            PesticideController = FindInputModels(inputDataModels, typeof(PesticideObjectDataModel)) == null ? null : new PesticideController(this, FindInputModels(inputDataModels, typeof(PesticideObjectDataModel)));
+            TillageController = FindInputModels(inputDataModels, typeof(TillageInputModel)) == null ? null : new TillageController(this, FindInputModels(inputDataModels, typeof(TillageInputModel)));
+            PesticideController = FindInputModels(inputDataModels, typeof(PesticideInputModel)) == null ? null : new PesticideController(this, FindInputModels(inputDataModels, typeof(PesticideInputModel)));
             PhosphorusController = FindInputModels(inputDataModels, typeof(PhosphorusInputModel)) == null ? null : new PhosphorusController(this, FindInputModels(inputDataModels, typeof(PhosphorusInputModel)));
-            NitrateController = FindInputModels(inputDataModels, typeof(NitrateInputDataModel)) == null ? null : new NitrateController(this, FindInputModels(inputDataModels, typeof(NitrateInputDataModel)));
+            NitrateController = FindInputModels(inputDataModels, typeof(NitrateInputModel)) == null ? null : new NitrateController(this, FindInputModels(inputDataModels, typeof(NitrateInputModel)));
             SolutesController = FindInputModels(inputDataModels, typeof(SolutesInputModel)) == null ? null : new SolutesController(this, FindInputModels(inputDataModels, typeof(SolutesInputModel)));
             //ModelOptionsController = FindInputModels(inputDataModels, typeof(ModelOptionsInputModel)) == null ? null : new ModelOptionsController(this, FindInputModels(inputDataModels, typeof(ModelOptionsInputModel)));
             //There is no XML definition found yet
@@ -175,7 +213,7 @@ namespace HowLeaky
             //Set the start date and end dates
             if (StartYear == 0)
             {
-                StartDate = new DateTime(ClimateController.DataModel.StartDate.Value.Ticks);
+                StartDate = new DateTime(ClimateController.InputModel.StartDate.Value.Ticks);
             }
             else
             {
@@ -184,7 +222,7 @@ namespace HowLeaky
 
             if (EndYear == 0)
             {
-                EndDate = new DateTime(ClimateController.DataModel.EndDate.Value.Ticks);
+                EndDate = new DateTime(ClimateController.InputModel.EndDate.Value.Ticks);
             }
             else
             {
@@ -268,7 +306,11 @@ namespace HowLeaky
                 if (!FReset) TryModelIrrigation();
                 if (!FReset) SoilController.TryModelSoilCracking();
                 if (!FReset) SoilController.CalculateRunoff();
+                
                 if (!FReset) SoilController.CalculatSoilEvaporation();
+                //
+                //if (!FReset) SoilController.UpdateWaterBalance();
+                //
                 if (!FReset) TryModelVegetation();
                 if (!FReset) SoilController.UpdateWaterBalance();
                 if (!FReset) TryModelTillage();
@@ -284,7 +326,7 @@ namespace HowLeaky
                 if (!FReset) SoilController.UpdateFallowWaterBalance();
                 if (!FReset) SoilController.UpdateTotalWaterBalance();
                 if (!FReset) TryUpdateRingTankWaterBalance();
-                if (!FReset) SoilController.UpdateMonthlyStatistics();
+                //if (!FReset) SoilController.UpdateMonthlyStatistics();
                 if (!FReset) SoilController.CalculateVolumeBalanceError();
                 if (!FReset) ExportDailyOutputs();
                 if (!FReset) ResetAnyParametersIfRequired();
@@ -401,19 +443,19 @@ namespace HowLeaky
         /// </summary>
         public void ResetToDefault()
         {
-            ModelOptionsController.DataModel.ResetSoilWaterAtDate = false;
-            ModelOptionsController.DataModel.ResetResidueAtDate = false;
-            ModelOptionsController.DataModel.ResetSoilWaterAtPlanting = false;
-            ModelOptionsController.DataModel.CanCalculateLateralFlow = false;
-            ModelOptionsController.DataModel.UsePERFECTGroundCovFn = false;
-            ModelOptionsController.DataModel.IgnoreCropKill = false;
-            ModelOptionsController.DataModel.UsePERFECTDryMatterFn = false;
-            ModelOptionsController.DataModel.UsePERFECTLeafAreaFn = false;
-            ModelOptionsController.DataModel.UsePERFECTUSLELSFn = true;
-            ModelOptionsController.DataModel.UsePERFECTResidueFn = false;
-            ModelOptionsController.DataModel.UsePERFECTSoilEvapFn = false;
-            ModelOptionsController.DataModel.UsePERFECTCurveNoFn = Simulation.DEFAULT_CN;
-            ModelOptionsController.DataModel.InitialPAW = 0.5;
+            ModelOptionsController.InputModel.ResetSoilWaterAtDate = false;
+            ModelOptionsController.InputModel.ResetResidueAtDate = false;
+            ModelOptionsController.InputModel.ResetSoilWaterAtPlanting = false;
+            ModelOptionsController.InputModel.CanCalculateLateralFlow = false;
+            ModelOptionsController.InputModel.UsePERFECTGroundCovFn = false;
+            ModelOptionsController.InputModel.IgnoreCropKill = false;
+            ModelOptionsController.InputModel.UsePERFECTDryMatterFn = false;
+            ModelOptionsController.InputModel.UsePERFECTLeafAreaFn = false;
+            ModelOptionsController.InputModel.UsePERFECTUSLELSFn = true;
+            ModelOptionsController.InputModel.UsePERFECTResidueFn = false;
+            ModelOptionsController.InputModel.UsePERFECTSoilEvapFn = false;
+            ModelOptionsController.InputModel.UsePERFECTCurveNoFn = Simulation.DEFAULT_CN;
+            ModelOptionsController.InputModel.InitialPAW = 0.5;
         }
 
         /// <summary>

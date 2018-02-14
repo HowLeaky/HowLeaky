@@ -47,13 +47,13 @@ namespace HowLeaky.ModelControllers
 
             foreach (InputModel im in inputModels)
             {
-                if (im.GetType() == typeof(LAIVegObjectDataModel))
+                if (im.GetType() == typeof(LAIVegInputModel))
                 {
-                    ChildControllers.Add(new LAIVegObjectController(sim, (LAIVegObjectDataModel)im));
+                    ChildControllers.Add(new LAIVegObjectController(sim, (LAIVegInputModel)im));
                 }
                 else
                 {
-                    ChildControllers.Add(new CoverVegObjectController(sim, (CoverVegObjectDataModel)im));
+                    ChildControllers.Add(new CoverVegObjectController(sim, (CoverVegInputModel)im));
                 }
             }
         }

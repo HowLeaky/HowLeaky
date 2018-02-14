@@ -8,36 +8,36 @@ using HowLeaky.Interfaces;
 
 namespace HowLeaky.ModelControllers
 {
-    public class SolutesOutputDataModel : OutputDataModel, IDailyOutput
-    {
+    //public class SolutesOutputDataModel : OutputDataModel, IDailyOutput
+    //{
 
-    }
+    //}
 
-    public class SolutesMonthlyOutputDataModel : OutputDataModel
-    {
-        [Unit("kg_per_ha")]
-        public List<double> SoluteLeachingLoad { get; set; }
-        [Unit("kg_per_ha")]
-        public List<double> SoluteLoadSoil { get; set; }
-        public List<double> SoluteCount { get; set; }
-    }
+    //public class SolutesMonthlyOutputDataModel : OutputDataModel
+    //{
+    //    [Unit("kg_per_ha")]
+    //    public List<double> SoluteLeachingLoad { get; set; }
+    //    [Unit("kg_per_ha")]
+    //    public List<double> SoluteLoadSoil { get; set; }
+    //    public List<double> SoluteCount { get; set; }
+    //}
 
-    public class SolutesAnnualOutputDataModel : OutputDataModel
-    {
-        [Unit("mg_per_L")]
-        public double SoilWaterSoluteConc { get; set; }         // Soil Water Solute Conc (mg/l).
-        [Unit("kg_per_ha")]
-        public double SoilSoluteLoad { get; set; }              // Soil Solute Load (kg/ha).
-        [Unit("kg_per_ha")]
-        public double LeachingSoluteExport { get; set; }        // Leaching Solute Export (kg/ha).
-        [Unit("mg_per_L")]
-        public double LeachSoluateConc { get; set; }            // Leaching Solute Conc (mg/l).
-        //**************************************************************************
-    }
+    //public class SolutesAnnualOutputDataModel : OutputDataModel
+    //{
+    //    [Unit("mg_per_L")]
+    //    public double SoilWaterSoluteConc { get; set; }         // Soil Water Solute Conc (mg/l).
+    //    [Unit("kg_per_ha")]
+    //    public double SoilSoluteLoad { get; set; }              // Soil Solute Load (kg/ha).
+    //    [Unit("kg_per_ha")]
+    //    public double LeachingSoluteExport { get; set; }        // Leaching Solute Export (kg/ha).
+    //    [Unit("mg_per_L")]
+    //    public double LeachSoluateConc { get; set; }            // Leaching Solute Conc (mg/l).
+    //    //**************************************************************************
+    //}
 
     public class SolutesController : HLController
     {
-        public SolutesInputModel DataModel { get; set; }
+        public SolutesInputModel InputModel { get; set; }
         //public SolutesOutputDataModel Output { get; set; }
 
         //Reportable Outputs
@@ -65,7 +65,9 @@ namespace HowLeaky.ModelControllers
         /// <param name="sim"></param>
         public SolutesController(Simulation sim, List<InputModel> inputModels) : base(sim)
         {
-            DataModel = (SolutesInputModel)inputModels[0];
+            InputModel = (SolutesInputModel)inputModels[0];
+
+            InitOutputModel();
         }
 
         /// <summary>
@@ -89,12 +91,12 @@ namespace HowLeaky.ModelControllers
                     double runoff = Sim.SoilController.Runoff;
                     double irrigationAmountmm = Sim.SoilController.Irrigation;
                     //calculte solute input loadings.
-                    double kgsSoilinLayer1 = Sim.SoilController.DataModel.BulkDensity.Values[0] * 1000.0 * Sim.SoilController.Depth[1] * 10000.0 / 1000.0;//per ha
+                    double kgsSoilinLayer1 = Sim.SoilController.InputModel.BulkDensity.Values[0] * 1000.0 * Sim.SoilController.Depth[1] * 10000.0 / 1000.0;//per ha
                     if (rain > 0)
                     {
                         if (!MathTools.DoublesAreEqual(kgsSoilinLayer1, 0))
                         {
-                            LayerSoluteConcmgPerkg[0] += DataModel.RainfallConcentration * (rain - runoff) * 10000.0 / kgsSoilinLayer1;
+                            LayerSoluteConcmgPerkg[0] += InputModel.RainfallConcentration * (rain - runoff) * 10000.0 / kgsSoilinLayer1;
                         }
                         else
                         {
@@ -106,7 +108,7 @@ namespace HowLeaky.ModelControllers
                     {
                         if (!MathTools.DoublesAreEqual(kgsSoilinLayer1, 0))
                         {
-                            LayerSoluteConcmgPerkg[0] += DataModel.IrrigationConcentration * irrigationAmountmm * 10000.0 / kgsSoilinLayer1;
+                            LayerSoluteConcmgPerkg[0] += InputModel.IrrigationConcentration * irrigationAmountmm * 10000.0 / kgsSoilinLayer1;
                         }
                         else
                         {
@@ -123,7 +125,7 @@ namespace HowLeaky.ModelControllers
 
                         if (!MathTools.DoublesAreEqual(StartOfDaySWRelOD, 0) && !MathTools.DoublesAreEqual(SWRelOD, 0))
                         {
-                            double kgsSoilInLayer = Sim.SoilController.DataModel.BulkDensity.Values[i] * 1000.0 * (Sim.SoilController.DataModel.Depths.Values[i + 1] - Sim.SoilController.DataModel.Depths.Values[i]) * 10000.0 / 1000.0;
+                            double kgsSoilInLayer = Sim.SoilController.InputModel.BulkDensity.Values[i] * 1000.0 * (Sim.SoilController.InputModel.Depths.Values[i + 1] - Sim.SoilController.InputModel.Depths.Values[i]) * 10000.0 / 1000.0;
 
                             //calculate the potential drained loadings (doesn't take into account mixing effects)
                             double potentialDrainedSolutemg = 0;
@@ -134,7 +136,7 @@ namespace HowLeaky.ModelControllers
                                 MathTools.LogDivideByZeroError("CalculateSolutes", "StartOfDay_SW_rel_OD", "potential_drained_solute_mg");
                             }
                             //calculate the actual drained loadings
-                            double actualDrainedSolutemg = DataModel.MixingCoefficient * potentialDrainedSolutemg;
+                            double actualDrainedSolutemg = InputModel.MixingCoefficient * potentialDrainedSolutemg;
 
                             //take the drained solute load away from the balance in the layer
                             if (!MathTools.DoublesAreEqual(kgsSoilInLayer, 0))
@@ -168,7 +170,7 @@ namespace HowLeaky.ModelControllers
                             }
                             if (!MathTools.DoublesAreEqual(SWVolumetric, 0))
                                 /*OUTPUT*/
-                                LayerSoluteConcmgPerL[i] = LayerSoluteConcmgPerkg[i] * Sim.SoilController.DataModel.BulkDensity.Values[i] / SWVolumetric;
+                                LayerSoluteConcmgPerL[i] = LayerSoluteConcmgPerkg[i] * Sim.SoilController.InputModel.BulkDensity.Values[i] / SWVolumetric;
                             else
                             {
                                 LayerSoluteConcmgPerL[i] = 0;
@@ -179,7 +181,7 @@ namespace HowLeaky.ModelControllers
                             //push solute into next layer OR calculate leaching (deep drainage) loadings
                             if (i + 1 < Sim.SoilController.LayerCount)
                             {
-                                double kgsSoilInNextLayer = Sim.SoilController.DataModel.BulkDensity.Values[i + 1] * 1000.0 * (Sim.SoilController.Depth[i + 2] - Sim.SoilController.Depth[i + 1]) * 10000.0 / 1000.0;
+                                double kgsSoilInNextLayer = Sim.SoilController.InputModel.BulkDensity.Values[i + 1] * 1000.0 * (Sim.SoilController.Depth[i + 2] - Sim.SoilController.Depth[i + 1]) * 10000.0 / 1000.0;
                                 if (!MathTools.DoublesAreEqual(kgsSoilInNextLayer, 0))
                                 {
                                     LayerSoluteConcmgPerkg[i + 1] += actualDrainedSolutemg / kgsSoilInNextLayer;
@@ -220,6 +222,15 @@ namespace HowLeaky.ModelControllers
             {
                 throw new Exception(e.Message);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override InputModel GetInputModel()
+        {
+            return InputModel;
         }
 
         /// <summary>

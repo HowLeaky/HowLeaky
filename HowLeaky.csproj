@@ -62,10 +62,13 @@
     <Compile Include="InputModels\Pesticide\PesticideInputModel.cs" />
     <Compile Include="InputModels\PhosphorusInputModel.cs" />
     <Compile Include="InputModels\SoilInputModel.cs" />
+    <Compile Include="Interfaces\IChildController.cs" />
     <Compile Include="Interfaces\IController.cs" />
     <Compile Include="Interfaces\IDataModel.cs" />
     <Compile Include="CustomAttributes\Unit.cs" />
     <Compile Include="Interfaces\IDailyOutput.cs" />
+    <Compile Include="Interfaces\IParentController.cs" />
+    <Compile Include="Interfaces\ISimulation.cs" />
     <Compile Include="ModelControllers\Base\HLController.cs" />
     <Compile Include="ModelControllers\Base\HLObjectController.cs" />
     <Compile Include="ModelControllers\ModelOptionsController.cs" />
@@ -113,8 +116,12 @@
     <None Include="App.config" />
     <None Include="ControllersClassDiagram.cd" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="DataModels\" />
+    <ProjectReference Include="..\Dan Rattray\HowLeakyUI\DBTest\HLDB.csproj">
+      <Project>{20c69975-05e4-42b9-b81c-bb0939295af5}</Project>
+      <Name>HLDB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

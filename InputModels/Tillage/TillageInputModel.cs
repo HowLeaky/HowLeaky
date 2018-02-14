@@ -17,7 +17,7 @@ namespace HowLeaky.DataModels
     }
 
     [XmlRoot("TillageType")]
-    public class TillageObjectDataModel : InputModel
+    public class TillageInputModel : InputModel
     {
         public DayMonthData StartTillWindow { get; set; }
         public DayMonthData EndTillWindow { get; set; }
@@ -41,7 +41,7 @@ namespace HowLeaky.DataModels
         [XmlIgnore]
         public int Type { get { return PrimaryTillType.index; } }
 
-        public TillageObjectDataModel() { }
+        public TillageInputModel() { }
     }
 }
 

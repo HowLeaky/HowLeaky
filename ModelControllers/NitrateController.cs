@@ -8,62 +8,45 @@ using HowLeaky.Interfaces;
 
 namespace HowLeaky.ModelControllers
 {
-
-    //public class NitrateOutputDataModel : OutputDataModel, IDailyOutput
-    //{
-       
-    //}
     public class NitrateController : HLController
     {
-        public NitrateInputDataModel DataModel { get; set; }
+        public NitrateInputModel InputModel { get; set; }
         //public NitrateOutputDataModel Output { get; set; }
 
         public int Nitratesdayindex1 { get; set; }
         public int Nitratesdayindex2 { get; set; }
         public int Nitratesdayindex3 { get; set; }
 
-
         //Reportable Outputs
-        [Output]
-        [Unit("mg_per_L")]
-        public double N03NDissolvedInRunoff { get; set; }        // Dissolved N03 N In Runoff (mg/L)
-        [Output]
-        [Unit("kg_per_ha")]
-        public double N03NRunoffLoad { get; set; }              // N03 Runoff Load (kg/ha)
-        [Output]
-        [Unit("mg_per_L")]
-        public double N03NDissolvedLeaching { get; set; }       // Dissolved N03 N In Leaching (mg/L)
-        [Output]
-        [Unit("kg_per_ha")]
-        public double N03NLeachingLoad { get; set; }            // N03 N Leaching Load (kg/ha)
-        [Output]
-        [Unit("kg_per_ha")]
-        public double ParticNInRunoff { get; set; }             // Particulate N in Runoff (kg/ha)
-        [Output]
-        [Unit("kg_per_ha")]
-        public double N03NStoreTopLayer { get; set; }           // N03 N Store in top layer (kg/ha)
-        [Output]
-        [Unit("kg_per_ha")]
-        public double N03NStoreBotLayer { get; set; }           // N03 N Store in bot layer (kg/ha)
-        [Output]
-        [Unit("kg_per_ha")]
-        public double TotalNStoreTopLayer { get; set; }         // Total N Store in top layer (kg/ha)
-        [Output]
-        [Unit("kg_per_ha")]
-        public double PNHLCa { get; set; }                      // PNHLC (kg/ha)
-        [Output]
-        [Unit("mm")]
-        public double DrainageInN03Period { get; set; }         //
-        [Output]
-        [Unit("mm")]
-        public double RunoffInN03Period { get; set; }           //
+        [Output("Dissolved N03 N In Runoff", "mg/L")]
+        public double N03NDissolvedInRunoff { get; set; }
+        [Output("N03 Runoff Load", "kg/ha")]
+        public double N03NRunoffLoad { get; set; }
+        [Output("Dissolved N03 N In Leaching", "mg/L")]
+        public double N03NDissolvedLeaching { get; set; }
+        [Output("N03 N Leaching Load", "kg/ha")]
+        public double N03NLeachingLoad { get; set; }
+        [Output("Particulate N in Runoff", "kg/ha")]
+        public double ParticNInRunoff { get; set; }
+        [Output("N03 N Store in top layer", "kg/ha")]
+        public double N03NStoreTopLayer { get; set; }
+        [Output("N03 N Store in bot layer", "kg/ha")]
+        public double N03NStoreBotLayer { get; set; }
+        [Output("Total N Store in top layer", "kg/ha")]
+        public double TotalNStoreTopLayer { get; set; }
+        [Output("PNHLC", "kg/ha")]
+        public double PNHLCa { get; set; }
+        [Output("","")]
+        public double DrainageInN03Period { get; set; }
+        [Output("", "")]
+        public double RunoffInN03Period { get; set; }
 
-        /// <summary>
+        /// <summary>                                                     
         /// 
         /// </summary>
         public NitrateController(Simulation sim) : base(sim)
         {
-           // Output = new NitrateOutputDataModel();
+
         }
 
         /// <summary>
@@ -72,7 +55,8 @@ namespace HowLeaky.ModelControllers
         /// <param name="sim"></param>
         public NitrateController(Simulation sim, List<InputModel> inputModels) : this(sim)
         {
-            DataModel = (NitrateInputDataModel)inputModels[0];
+            InputModel = (NitrateInputModel)inputModels[0];
+            InitOutputModel();
         }
         /// <summary>
         /// 
@@ -97,7 +81,7 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                bool CanSimulateNitrate = (DataModel.DissolvedNInRunoffInputOptions != 0 || DataModel.DissolvedNInLeachingInputOptions != 0 || DataModel.ParticulateNInRunoffInputOptions != 0);
+                bool CanSimulateNitrate = (InputModel.DissolvedNInRunoffInputOptions != 0 || InputModel.DissolvedNInLeachingInputOptions != 0 || InputModel.ParticulateNInRunoffInputOptions != 0);
                 if (CanSimulateNitrate)
                 {
                     if (CanCalculateDissolvedNInRunoff())
@@ -120,55 +104,68 @@ namespace HowLeaky.ModelControllers
                 throw new Exception(e.Message);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override InputModel GetInputModel()
+        {
+            return InputModel;
+        }
+
         /// <summary>
         /// 
         /// </summary>
         public void UpdateNitrateSummaryValues() { }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public bool CanCalculateDissolvedNInRunoff()
         {
-            if (DataModel.DissolvedNInRunoffInputOptions == 1)
+            if (InputModel.DissolvedNInRunoffInputOptions == 1)
             {
-                return DataModel.NLoadInSurfaceLayerTimeSeries.GetCount() != 0;
+                return InputModel.NLoadInSurfaceLayerTimeSeries.GetCount() != 0;
             }
-            else if (DataModel.DissolvedNInRunoffInputOptions == 2)
+            else if (InputModel.DissolvedNInRunoffInputOptions == 2)
             {
                 return true;
             }
             return false;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public bool CanCalculateDissolvedNInLeaching()
         {
-            if (DataModel.DissolvedNInLeachingInputOptions == 1)
+            if (InputModel.DissolvedNInLeachingInputOptions == 1)
             {
-                return DataModel.NLoadInLowerLayersTimeSeries.GetCount() != 0;
+                return InputModel.NLoadInLowerLayersTimeSeries.GetCount() != 0;
             }
-            else if (DataModel.DissolvedNInLeachingInputOptions == 2)
+            else if (InputModel.DissolvedNInLeachingInputOptions == 2)
             {
                 return true;
             }
             return false;
         }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public bool CanCalculateParticulateNInRunoff()
         {
-            if (DataModel.ParticulateNInRunoffInputOptions == 1)
+            if (InputModel.ParticulateNInRunoffInputOptions == 1)
             {
-                return (DataModel.SoilInorganicNitrateNTimeSeries.GetCount() != 0 &&
-                          DataModel.SoilInorganicAmmoniumNTimeSeries.GetCount() != 0 &&
-                          DataModel.SoilInorganicAmmoniumNTimeSeries.GetCount() != 0);
+                return (InputModel.SoilInorganicNitrateNTimeSeries.GetCount() != 0 &&
+                          InputModel.SoilInorganicAmmoniumNTimeSeries.GetCount() != 0 &&
+                          InputModel.SoilInorganicAmmoniumNTimeSeries.GetCount() != 0);
             }
-            else if (DataModel.ParticulateNInRunoffInputOptions == 2)
+            else if (InputModel.ParticulateNInRunoffInputOptions == 2)
             {
                 return true;
             }
@@ -196,13 +193,13 @@ namespace HowLeaky.ModelControllers
                 double NLKgHa = GetN03NStoreTopLayerkgPerha();  //Nitrate load in surface layer (From Dairymod)
                 if (!MathTools.DoublesAreEqual(NLKgHa, MathTools.MISSING_DATA_VALUE))
                 {
-                    NLKgHa = NLKgHa * DataModel.SoilNLoadWeighting1;
-                    double k = DataModel.Nk;                           // INPUT parameter that regulates mixing of soil and runoff water
-                    double cv = DataModel.Ncv;                             //INPUT parameter that describes the curvature of change in soil and water runoff at increasing runoff values
+                    NLKgHa = NLKgHa * InputModel.SoilNLoadWeighting1;
+                    double k = InputModel.Nk;                           // INPUT parameter that regulates mixing of soil and runoff water
+                    double cv = InputModel.Ncv;                             //INPUT parameter that describes the curvature of change in soil and water runoff at increasing runoff values
                     double Q = Sim.SoilController.Runoff;    //runoff amount
-                    double d = DataModel.NDepthTopLayer1;           //depth of surface soil layer mm
-                    double phi = Sim.SoilController.DataModel.BulkDensity.Values[0]; //soil density t/m3       ( BulkDensity is in g/cm3)
-                    double NSoil = DataModel.NAlpha * 100.0 * NLKgHa / (d * phi);  //mg/kg
+                    double d = InputModel.NDepthTopLayer1;           //depth of surface soil layer mm
+                    double phi = Sim.SoilController.InputModel.BulkDensity.Values[0]; //soil density t/m3       ( BulkDensity is in g/cm3)
+                    double NSoil = InputModel.NAlpha * 100.0 * NLKgHa / (d * phi);  //mg/kg
                     double DN = NSoil * k * (1 - Math.Exp(-cv * Q));
                     double DL = DN * Q / 100.0;
 
@@ -245,12 +242,12 @@ namespace HowLeaky.ModelControllers
                 double NSoilKgPerHa = GetN03NStoreBotLayerkgPerha();       //nitrate concentrate in the soil (kg/ha)
                 if (!MathTools.DoublesAreEqual(NSoilKgPerHa, MathTools.MISSING_DATA_VALUE))
                 {
-                    NSoilKgPerHa = NSoilKgPerHa * DataModel.SoilNiLoadWeighting2;
-                    double deltadepth = DataModel.NDepthBottomLayer;
+                    NSoilKgPerHa = NSoilKgPerHa * InputModel.SoilNiLoadWeighting2;
+                    double deltadepth = InputModel.NDepthBottomLayer;
                     if (deltadepth > 0)
                     {
-                        double soilwater = (Sim.SoilController.DataModel.Saturation.Values[Sim.SoilController.LayerCount - 1] - Sim.SoilController.DataModel.AirDry.Values[Sim.SoilController.LayerCount - 1]) / 100.0 * deltadepth;
-                        double LE = DataModel.NLeachingEfficiency;                      //Leaching efficiency (INPUT)
+                        double soilwater = (Sim.SoilController.InputModel.Saturation.Values[Sim.SoilController.LayerCount - 1] - Sim.SoilController.InputModel.AirDry.Values[Sim.SoilController.LayerCount - 1]) / 100.0 * deltadepth;
+                        double LE = InputModel.NLeachingEfficiency;                      //Leaching efficiency (INPUT)
                         double D = Sim.SoilController.DeepDrainage;                  //Drainage (mm)
                         double LN = NSoilKgPerHa * 1000000.0 / (soilwater * 10000.0);
                         double LL = (LN / 1000000.0) * D * 10000.0 * LE;
@@ -300,14 +297,14 @@ namespace HowLeaky.ModelControllers
                 double TNSoilKgPerHa = GetTotalNStoreTopLayerkgPerha();     // Total N Concentration in soil (mg/kg) and is sum of organanic and inorgance conc at 0-2cm (Obtained from Dairymod)
                 if (!MathTools.DoublesAreEqual(TNSoilKgPerHa, MathTools.MISSING_DATA_VALUE))
                 {
-                    TNSoilKgPerHa = TNSoilKgPerHa * DataModel.SoilNLoadWeighting3;
+                    TNSoilKgPerHa = TNSoilKgPerHa * InputModel.SoilNLoadWeighting3;
                     double E = Sim.SoilController.HillSlopeErosion * 1000.0;// Gross erosion (kg/ha)
-                    double SDR = Sim.SoilController.DataModel.SedDelivRatio;                         // Sediment delivery ratio.
-                    double NER = DataModel.NEnrichmentRatio;                           // Nitrogen enrighment ratio
-                    double d = DataModel.NDepthTopLayer2;                       // depth of surface soil layer mm
-                    double phi = Sim.SoilController.DataModel.BulkDensity.Values[0];          // soil density t/m3       ( BulkDensity is in g/cm3)
-                    double NSoil = DataModel.NAlpha2 * 100.0 * TNSoilKgPerHa / (d * phi);    // mg/kg
-                    double PN = DataModel.NBeta * E * SDR * NSoil * NER / 1000000.0;
+                    double SDR = Sim.SoilController.InputModel.SedDelivRatio;                         // Sediment delivery ratio.
+                    double NER = InputModel.NEnrichmentRatio;                           // Nitrogen enrighment ratio
+                    double d = InputModel.NDepthTopLayer2;                       // depth of surface soil layer mm
+                    double phi = Sim.SoilController.InputModel.BulkDensity.Values[0];          // soil density t/m3       ( BulkDensity is in g/cm3)
+                    double NSoil = InputModel.NAlpha2 * 100.0 * TNSoilKgPerHa / (d * phi);    // mg/kg
+                    double PN = InputModel.NBeta * E * SDR * NSoil * NER / 1000000.0;
 
                     ParticNInRunoff = PN;
                     if (!MathTools.DoublesAreEqual(SDR, 0) && !MathTools.DoublesAreEqual(Sim.SoilController.UsleLsFactor, 0))
@@ -343,14 +340,14 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                if (DataModel.DissolvedNInRunoffInputOptions == 1 && DataModel.NLoadInSurfaceLayerTimeSeries.GetCount() != 0)
+                if (InputModel.DissolvedNInRunoffInputOptions == 1 && InputModel.NLoadInSurfaceLayerTimeSeries.GetCount() != 0)
                 {
-                    return DataModel.NLoadInSurfaceLayerTimeSeries.GetValueAtDate(Sim.Today);
+                    return InputModel.NLoadInSurfaceLayerTimeSeries.GetValueAtDate(Sim.Today);
                 }
-                else if (DataModel.DissolvedNInRunoffInputOptions == 2)
+                else if (InputModel.DissolvedNInRunoffInputOptions == 2)
                 {
                     //return DataModel.SoilNLoadData1.GetValueForDayIndex("SoilNLoadData1", Nitratesdayindex1, Sim.Today);
-                    return DataModel.SoilNLoadData1.GetValueForDayIndex("SoilNLoadData1", Sim.Today);
+                    return InputModel.SoilNLoadData1.GetValueForDayIndex("SoilNLoadData1", Sim.Today);
                 }
             }
             catch (Exception e)
@@ -371,14 +368,14 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                if (DataModel.DissolvedNInLeachingInputOptions == 1 && DataModel.NLoadInLowerLayersTimeSeries.GetCount() != 0)
+                if (InputModel.DissolvedNInLeachingInputOptions == 1 && InputModel.NLoadInLowerLayersTimeSeries.GetCount() != 0)
                 {
-                    return DataModel.NLoadInLowerLayersTimeSeries.GetValueAtDate(Sim.Today);
+                    return InputModel.NLoadInLowerLayersTimeSeries.GetValueAtDate(Sim.Today);
                 }
-                else if (DataModel.DissolvedNInLeachingInputOptions == 2)
+                else if (InputModel.DissolvedNInLeachingInputOptions == 2)
                 {
                     //return DataModel.SoilNLoadData2.GetValueForDayIndex("SoilNLoadData2", Nitratesdayindex2, Sim.Today);
-                    return DataModel.SoilNLoadData2.GetValueForDayIndex("SoilNLoadData2", Sim.Today);
+                    return InputModel.SoilNLoadData2.GetValueForDayIndex("SoilNLoadData2", Sim.Today);
                 }
             }
             catch (Exception e)
@@ -398,22 +395,22 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                if (DataModel.ParticulateNInRunoffInputOptions == 1)
+                if (InputModel.ParticulateNInRunoffInputOptions == 1)
                 {
                     double value1 = 0;
                     double value2 = 0;
                     double value3 = 0;
-                    if (DataModel.SoilInorganicNitrateNTimeSeries.GetCount() != 0)
+                    if (InputModel.SoilInorganicNitrateNTimeSeries.GetCount() != 0)
                     {
-                        value1 = DataModel.SoilInorganicNitrateNTimeSeries.GetValueAtDate(Sim.Today);
+                        value1 = InputModel.SoilInorganicNitrateNTimeSeries.GetValueAtDate(Sim.Today);
                     }
-                    if (DataModel.SoilInorganicAmmoniumNTimeSeries.GetCount() != 0)
+                    if (InputModel.SoilInorganicAmmoniumNTimeSeries.GetCount() != 0)
                     {
-                        value2 = DataModel.SoilInorganicAmmoniumNTimeSeries.GetValueAtDate(Sim.Today);
+                        value2 = InputModel.SoilInorganicAmmoniumNTimeSeries.GetValueAtDate(Sim.Today);
                     }
-                    if (DataModel.SoilOrganicNTimeSeries.GetCount() != 0)
+                    if (InputModel.SoilOrganicNTimeSeries.GetCount() != 0)
                     {
-                        value3 = DataModel.SoilOrganicNTimeSeries.GetValueAtDate(Sim.Today);
+                        value3 = InputModel.SoilOrganicNTimeSeries.GetValueAtDate(Sim.Today);
                     }
                     if (MathTools.DoublesAreEqual(value1, MathTools.MISSING_DATA_VALUE) || MathTools.DoublesAreEqual(value2, MathTools.MISSING_DATA_VALUE) || MathTools.DoublesAreEqual(value3, MathTools.MISSING_DATA_VALUE))
                     {
@@ -421,10 +418,10 @@ namespace HowLeaky.ModelControllers
                     }
                     return value1 + value1 + value3;
                 }
-                else if (DataModel.ParticulateNInRunoffInputOptions == 2)
+                else if (InputModel.ParticulateNInRunoffInputOptions == 2)
                 {
                     //return DataModel.SoilNLoadData3.GetValueForDayIndex("SoilNLoadData3", Nitratesdayindex3, Sim.Today);
-                    return DataModel.SoilNLoadData3.GetValueForDayIndex("SoilNLoadData3", Sim.Today);
+                    return InputModel.SoilNLoadData3.GetValueForDayIndex("SoilNLoadData3", Sim.Today);
                 }
             }
             catch (Exception e)
@@ -439,7 +436,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public bool CanSimulateNitrate()
         {
-            return (DataModel.DissolvedNInRunoffInputOptions != 0 || DataModel.DissolvedNInLeachingInputOptions != 0 || DataModel.ParticulateNInRunoffInputOptions != 0);
+            return (InputModel.DissolvedNInRunoffInputOptions != 0 || InputModel.DissolvedNInLeachingInputOptions != 0 || InputModel.ParticulateNInRunoffInputOptions != 0);
         }
     }
 }
