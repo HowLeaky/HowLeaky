@@ -10,9 +10,11 @@ namespace HowLeaky.ModelControllers
 {
     public class OutputModelController : HLController
     {
-        public List<OutputDataModel> dailyOutputs;
-        StreamWriter dailySW;
 
+        public List<OutputDataModel> dailyOutputs;
+        StreamWriter outWriter;
+
+        public OutputModelController() { }
         /// <summary>
         /// 
         /// </summary>
@@ -23,7 +25,7 @@ namespace HowLeaky.ModelControllers
 
             //Create some stream writers from the simuation name
             dailyOutputs = new List<OutputDataModel>();
-            dailySW = new StreamWriter(sim.Name + "_daily.csv", false);
+            outWriter = new StreamWriter(sim.Name + "_daily.csv", false);
 
             //Create a list of output models
             foreach (HLController hlc in Sim.ActiveControlllers)
@@ -50,13 +52,13 @@ namespace HowLeaky.ModelControllers
 
             List<string> outputHeaders = new List<string>();
 
-            foreach(OutputDataModel odm in dailyOutputs)
+            foreach (OutputDataModel odm in dailyOutputs)
             {
                 outputHeaders.Add(odm.WriteHeaders());
             }
 
             //Write the headers
-            dailySW.WriteLine(String.Join(",", outputHeaders.ToArray()));
+            outWriter.WriteLine(String.Join(",", outputHeaders.ToArray()));
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace HowLeaky.ModelControllers
             }
 
             //Write the headers
-            dailySW.WriteLine(String.Join(",", outputData.ToArray()));
+            outWriter.WriteLine(String.Join(",", outputData.ToArray()));
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace HowLeaky.ModelControllers
         /// </summary>
         public void Finalise()
         {
-            dailySW.Close();
+            outWriter.Close();
         }
     }
 }

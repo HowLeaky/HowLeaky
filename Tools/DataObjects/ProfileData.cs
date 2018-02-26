@@ -60,7 +60,7 @@ namespace HowLeaky.Tools.DataObjects
             //UpdateDayIndex(dayindex, today);
             //UpdateDayIndex(today);
             List<double> data = values[datakey];
-            int count = values.Count;
+            int count = data.Count;
             for (int i = 0; i < count; ++i)
             {
                 if (dayIndex < jdays[0])

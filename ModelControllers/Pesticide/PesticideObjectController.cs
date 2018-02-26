@@ -60,8 +60,8 @@ namespace HowLeaky.ModelControllers.Pesticide
         public double PestWaterPhaseConc { get; set; }
         [Output("Pest runoff conc. (water+sediment)", "ug/L")]
         public double PestRunoffConc { get; set; }
-        [Output("Sediment delivered", "g/L")]
-        public double SedimentDelivered { get; set; }
+        //[Output("Sediment delivered", "g/L")]
+        //public double SedimentDelivered { get; set; }
         [Output("Pest lost in runoff water", "g/ha")]
         public double PestLostInRunoffWater { get; set; }
         [Output("Pest lost in runoff sediment", "g/ha")]
@@ -157,6 +157,11 @@ namespace HowLeaky.ModelControllers.Pesticide
         /// </summary>
         public void ApplyAnyNewPesticides()
         {
+
+            AppliedPestOnVeg = 0;
+            AppliedPestOnStubble = 0;
+            AppliedPestOnSoil = 0;
+
             ResetPesticideInputs();
             if (InputModel.ApplicationTiming == (int)EPestApplicationTiming.FixedDate)
             {
@@ -512,7 +517,7 @@ namespace HowLeaky.ModelControllers.Pesticide
             if (Sim.SoilController.Runoff > 0)
             {
                 PestLostInRunoffWater = PestWaterPhaseConc * Sim.SoilController.Runoff * 0.01;
-                PestLostInRunoffSediment = PestSedPhaseConc * Sim.SoilController.ErosionTPerHa * Sim.SoilController.InputModel.SedDelivRatio;// spreadsheet uses runoff instead of erosion*SelDelivRatio
+                PestLostInRunoffSediment = PestSedPhaseConc * Sim.SoilController.HillSlopeErosion * Sim.SoilController.InputModel.SedDelivRatio;// spreadsheet uses runoff instead of erosion*SelDelivRatio
                 TotalPestLostInRunoff = PestLostInRunoffWater + PestLostInRunoffSediment;
 
             }

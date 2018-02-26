@@ -55,7 +55,7 @@ namespace HowLeaky.ModelControllers.Veg
         public DateTime LastSowingDate { get; set; } = DateUtilities.NULLDATE;
         public DateTime LastHarvestDate { get; set; } = DateUtilities.NULLDATE;
         public DateTime FirstRotationDate { get; set; } = DateUtilities.NULLDATE;
-        public int DaysSincePlanting { get; set; }
+        //public int DaysSincePlanting { get; set; }
         public int RotationCount { get; set; }
         public int MissedRotationCount { get; set; }
         public int NumberOfPlantings { get; set; }
@@ -90,7 +90,7 @@ namespace HowLeaky.ModelControllers.Veg
 
         //Reportable Outputs
         [Output(" Days since planting", "days")]
-        public double DaysSincePlant { get; set; }         
+        public int DaysSincePlanting { get; set; }         
         [Output("Leaf area index", "LAI")]
         public double LAI { get; set; }                       
         [Output("Living vegetation cover expressed as a percentage of total area","%", 100)]
@@ -178,7 +178,7 @@ namespace HowLeaky.ModelControllers.Veg
         {
             get
             {
-                return VegetationController.GetCropIndex(this);
+                return Sim.VegetationController.GetCropIndex(this);
             }
         }
 
@@ -260,7 +260,7 @@ namespace HowLeaky.ModelControllers.Veg
         public bool GetIsPlanting()
         {
             //TOD:Check this ishould be double
-            return (MathTools.DoublesAreEqual(DaysSincePlant, 0));
+            return (MathTools.DoublesAreEqual(DaysSincePlanting, 0));
         }
         
         /// <summary>
@@ -431,7 +431,7 @@ namespace HowLeaky.ModelControllers.Veg
                 Sim.VegetationController.CurrentCrop.ResetRotationCount();
             }
 
-            DaysSincePlant = 0;
+            DaysSincePlanting = 0;
             ++NumberOfPlantings;
             DryMatter = 0;
             DryMatter = 0;

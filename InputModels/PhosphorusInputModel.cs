@@ -10,6 +10,9 @@ namespace HowLeaky.DataModels
     public class PEnrichmentOption : IndexData
     {
         public double EnrichmentRatio { get; set; }
+        [Unit("pc")]
+        public double ClayPercentage { get; set; }                                              // The percent clay in the soil (clay particles are less than 2um in size).
+
 
         public PEnrichmentOption() { }
     }
@@ -26,9 +29,7 @@ namespace HowLeaky.DataModels
         public double PBI { get; set; }                                                         // The degree to which soils bind P (related to the %clay, clay weathering and Fe content)
         public PEnrichmentOption PEnrichmentOption { get; set; }                                // The choices are between a constant Enrichment Ration, and a simple function based on Clay percentage (good where variations occur in clay%)
         public IndexData DissolvedPOption { get; set; }                                         // Two options.  VIC DPI Method: p_max_sorption = 1447 * (1-exp(-0.001 * PBI)), QLD REEF Method: p_max_sorption=5.84*PBI-0.0096*PBI^2  (min of 50). Phos_Conc_Dissolve_mg_per_L is also calculated slightly differently.
-        [Unit("pc")]
-        public double ClayPercentage { get; set; }                                              // The percent clay in the soil (clay particles are less than 2um in size).
-
+        
         //Getters
         public int PEnrichmentOpt { get { return PEnrichmentOption.index; } }
         public int DissolvedPOpt { get { return DissolvedPOption.index; } }                     // Two options.  VIC DPI Method: p_max_sorption = 1447 * (1-exp(-0.001 * PBI)), QLD REEF Method: p_max_sorption=5.84*PBI-0.0096*PBI^2  (min of 50). Phos_Conc_Dissolve_mg_per_L is also calculated slightly differently.

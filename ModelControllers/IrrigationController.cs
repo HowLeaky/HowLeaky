@@ -310,16 +310,16 @@ namespace HowLeaky.ModelControllers
             {
                 if (Sim.SoilController.EffectiveRain <= 0.1)
                 {
-                    if (InputModel.SWDToIrrigate > 0.0 && Sim.SoilController.Swd > InputModel.SWDToIrrigate)
+                    if (InputModel.SWDToIrrigate > 0.0 && Sim.SoilController.SoilWaterDeficit > InputModel.SWDToIrrigate)
                     {
                         switch (InputModel.TargetAmountOpt)
                         {
-                            case (int)TargetAmountOptions.FieldCapacity: return Sim.SoilController.Swd;
+                            case (int)TargetAmountOptions.FieldCapacity: return Sim.SoilController.SoilWaterDeficit;
                             case (int)TargetAmountOptions.Saturation: return Sim.SoilController.Satd;
                             case (int)TargetAmountOptions.FixedAmount: return InputModel.FixedIrrigationAmount;
-                            case (int)TargetAmountOptions.DULplus25Percent: return Sim.SoilController.Swd + (Sim.SoilController.Satd - Sim.SoilController.Swd) * 0.25;
-                            case (int)TargetAmountOptions.DULplus50Percent: return Sim.SoilController.Swd + (Sim.SoilController.Satd - Sim.SoilController.Swd) * 0.50;
-                            case (int)TargetAmountOptions.DULplus75Percent: return Sim.SoilController.Swd + (Sim.SoilController.Satd - Sim.SoilController.Swd) * 0.75;
+                            case (int)TargetAmountOptions.DULplus25Percent: return Sim.SoilController.SoilWaterDeficit + (Sim.SoilController.Satd - Sim.SoilController.SoilWaterDeficit) * 0.25;
+                            case (int)TargetAmountOptions.DULplus50Percent: return Sim.SoilController.SoilWaterDeficit + (Sim.SoilController.Satd - Sim.SoilController.SoilWaterDeficit) * 0.50;
+                            case (int)TargetAmountOptions.DULplus75Percent: return Sim.SoilController.SoilWaterDeficit + (Sim.SoilController.Satd - Sim.SoilController.SoilWaterDeficit) * 0.75;
                             default: return 0;
                         }
                     }
@@ -449,12 +449,12 @@ namespace HowLeaky.ModelControllers
                     i = layercount;
                 }
             }
-            Sim.SoilController.Swd = 0;
+            Sim.SoilController.SoilWaterDeficit = 0;
             for (int i = 0; i < layercount; ++i)
             {
-                Sim.SoilController.Swd = Sim.SoilController.Swd + (Sim.SoilController.DrainUpperLimitRelWP[i] - Sim.SoilController.SoilWaterRelWP[i]);
+                Sim.SoilController.SoilWaterDeficit = Sim.SoilController.SoilWaterDeficit + (Sim.SoilController.DrainUpperLimitRelWP[i] - Sim.SoilController.SoilWaterRelWP[i]);
             }
-            Sim.SoilController.Sse1 = Math.Max(0, Sim.SoilController.Sse1 - Sim.SoilController.Swd);
+            Sim.SoilController.Sse1 = Math.Max(0, Sim.SoilController.Sse1 - Sim.SoilController.SoilWaterDeficit);
             if (amount > 0)
             {
                 Sim.SoilController.EffectiveRain += amount;

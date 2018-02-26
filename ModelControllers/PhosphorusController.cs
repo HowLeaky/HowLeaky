@@ -52,8 +52,8 @@ namespace HowLeaky.ModelControllers
         public double TotalBioAvailExport { get; set; }   
         [Output("Total Phosphorus export", "kg/ha")]
         public double TotalP { get; set; }                
-        [Output("", "t/ha")]
-        public double CKQ { get; set; }
+        //[Output("", "t/ha")]
+        //public double CKQ { get; set; }
         [Output("", "kg/ha")]
         public double PPHLC { get; set; }
         [Output("","kg/ha" )]
@@ -98,6 +98,18 @@ namespace HowLeaky.ModelControllers
             MaxPhosConcParticmgPerL = 0;
             MaxPhosConcTotalmgPerL = 0;
             MaxPhosConcDissolvemgPerL = 0;
+
+            ParticulateConc = 0;
+            DissolvedConc = 0;
+            BioAvailParticPConc = 0;
+            BioAvailPConc = 0;
+            TotalPConc = 0;
+            ParticPExport = 0;
+            BioAvailParticPExport = 0;
+            TotalBioAvailExport = 0;
+            TotalP = 0;
+            PPHLC = 0;
+            PhosExportDissolve = 0;
         }
         /// <summary>
         /// 
@@ -190,18 +202,18 @@ namespace HowLeaky.ModelControllers
                 //The following is the original fn published at MODSIM11:
                 if (phosSaturationIndex < 5)
                 {
-                    DissolvedConc = (10.0 * phosSaturationIndex / 1000.0);
+                    DissolvedConc = 10.0 * phosSaturationIndex / 1000.0;
                 }
                 else
                 {
-                    DissolvedConc = ((-100.0 + 30 * phosSaturationIndex) / 1000.0);
+                    DissolvedConc = (-100.0 + 30 * phosSaturationIndex) / 1000.0;
                 }
             }
             else
             {
                 if (phosSaturationIndex < 10)
                 {
-                    DissolvedConc = (7.5 * phosSaturationIndex / 1000.0);
+                    DissolvedConc = 7.5 * phosSaturationIndex / 1000.0;
                 }
                 else
                 {
@@ -224,7 +236,6 @@ namespace HowLeaky.ModelControllers
             }
             // convert sed conc from g/L to mg/L and totalPconc from mg/kg (I assume it is in mg/kg) to g/g
             ParticulateConc = (pSedConcGPerL * 1000.0 * InputModel.TotalPConc / 1000000.0 * pEnrich);
-
             ParticPExport = (ParticulateConc / 1000000.0 * Sim.SoilController.Runoff * 10000.0);
         }
         /// <summary>
@@ -242,7 +253,7 @@ namespace HowLeaky.ModelControllers
             {
                 //Clay%.  This function is based on a few data from Qld field experiments.
                 //Penrichment=MIN(10,MAX(1,15-0.33*clay)). The results of this funtion are:
-                return Math.Min(10.0, Math.Max(1, 15 - 0.33 * InputModel.ClayPercentage));
+                return Math.Min(10.0, Math.Max(1, 15 - 0.33 * InputModel.PEnrichmentOption.ClayPercentage));
             }
             return 0;
         }
@@ -301,7 +312,7 @@ namespace HowLeaky.ModelControllers
             {
                 PPHLC = 0;
             }
-            CKQ = (Sim.SoilController.SedCatchmod);
+            //CKQ = (Sim.SoilController.SedCatchmod);
         }
 
         /// <summary>
@@ -314,6 +325,18 @@ namespace HowLeaky.ModelControllers
             MaxPhosConcParticmgPerL = 0;
             MaxPhosConcTotalmgPerL = 0;
             MaxPhosConcDissolvemgPerL = 0;
+
+            ParticulateConc = 0;
+            DissolvedConc = 0;
+            BioAvailParticPConc = 0;
+            BioAvailPConc = 0;
+            TotalPConc = 0;
+            ParticPExport = 0;
+            BioAvailParticPExport = 0;
+            TotalBioAvailExport = 0;
+            TotalP = 0;
+            PPHLC = 0;
+            PhosExportDissolve = 0;
         }
         /// <summary>
         /// 

@@ -29,6 +29,10 @@ namespace HowLeaky
         public int CurrentSimIndex = 0;
         public int NoSimsComplete = 0;
 
+        public delegate void SimCompleteNotifier();
+
+        public SimCompleteNotifier Notifier;
+
         /// <summary>
         /// Need default constructor for populating via Entity Framework 
         /// </summary>
@@ -170,6 +174,11 @@ namespace HowLeaky
             int noCoresToUse = numberOfThreads;
             int noCores = Environment.ProcessorCount;
 
+            //Simulation sim = SimulationFactory.GenerateSimulationXML(SimulationElements[0], InputDataModels);
+            //sim.Run();
+
+            //return;
+            
             if (numberOfThreads <= 0)
             {
                 noCoresToUse = noCores + numberOfThreads;
@@ -193,9 +202,10 @@ namespace HowLeaky
 
                 XElement xe = GetSimulationElement();
 
-                if(xe != null)
+                if (xe != null)
                 {
-                    BackgroundWorkers[i].RunWorkerAsync(xe);
+                    // BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { xe, handler }));
+                    BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { xe }));
                 }
             }
         }
@@ -231,7 +241,9 @@ namespace HowLeaky
         /// <param name="e"></param>
         private void HLBackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            XElement simElement = (XElement)e.Argument;
+            List<object> Arguments = e.Argument as List<object>;
+
+            XElement simElement = (XElement)Arguments[0];
 
             Simulation sim = SimulationFactory.GenerateSimulationXML(simElement, InputDataModels);
             sim.Run();
@@ -255,6 +267,11 @@ namespace HowLeaky
             else
             {
 
+            }
+
+            if (Notifier != null)
+            {
+                Notifier();
             }
 
             NoSimsComplete++;
