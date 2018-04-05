@@ -5,10 +5,11 @@ using Encoding = System.Text.Encoding;
 using System.Globalization;
 using System.Collections.Generic;
 using HowLeaky.Tools.Helpers;
+using System.Xml.Serialization;
 
 namespace HowLeaky.DataModels
 {
-    public enum EvaporationInputOptions { Use_EPan }
+    public enum EEvaporationInputOptions { Use_EPan }
 
     public class ClimateInputModel : InputModel
 
@@ -25,18 +26,35 @@ namespace HowLeaky.DataModels
         public DateTime? EndDate { get; set; } = null;
         public DateTime? StartDate { get; set; } = null;
 
+        [XmlIgnore]
         public List<double> Rain { get; set; }
+        [XmlIgnore]
         public List<double> MaxT { get; set; }
+        [XmlIgnore]
         public List<double> MinT { get; set; }
+        [XmlIgnore]
         public List<double> PanEvap { get; set; }
+        [XmlIgnore]
         public List<double> Radiation { get; set; }
+        [XmlIgnore]
         public List<double> VP { get; set; }
 
         public string ImportedBy { get; set; }
 
         public DateTime? ImportedDate { get; set; }
 
-        public EvaporationInputOptions EvaporationInputOptions { get; set; } = EvaporationInputOptions.Use_EPan;
+        public EEvaporationInputOptions _EvaporationInputOptions { get; set; } = EEvaporationInputOptions.Use_EPan;
+        public int EvaporationInputOptions
+        {
+            get
+            {
+                return (int)_EvaporationInputOptions;
+            }
+            set
+            {
+                _EvaporationInputOptions = (EEvaporationInputOptions)value;
+            }
+        }
         public double PanEvapMultiplier { get; set; } = 1;
         public double RainfallMultiplier { get; set; } = 1;
 

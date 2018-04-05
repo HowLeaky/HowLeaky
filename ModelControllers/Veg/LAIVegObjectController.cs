@@ -165,7 +165,7 @@ namespace HowLeaky.ModelControllers.Veg
         {
             if (InputModel.PlantingRulesOptions == (int)EPlantingRules.FixedAnualPlaning)
             {
-                if (InputModel.PlantDate.MatchesDate(Sim.Today))
+                if (InputModel.PlantingFormat.PlantDate.MatchesDate(Sim.Today))
                 {
                     return true;
                 }
@@ -174,16 +174,16 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 // run ALL planting tests up front before testing results so that results
                 // can be added to the annotations on the time-series charts.
-                bool satisifies_window_conditions = SatisifiesWindowConditions();
-                bool satisifies_fallow_conditions = SatisifiesFallowConditions();
-                bool satisifies_planting_rain_conditions = SatisifiesPlantingRainConditions();
-                bool satisifies_soil_water_conditions = SatisifiesSoilWaterConditions();
-                bool satisifies_MultiPlantInWindow = SatisifiesMultiPlantInWindow();
-                if (satisifies_window_conditions && satisifies_MultiPlantInWindow)
+                bool satisifiesWindowConditions = SatisifiesWindowConditions();
+                bool satisifiesFallowConditions = SatisifiesFallowConditions();
+                bool satisifiesPlantingRainConditions = SatisifiesPlantingRainConditions();
+                bool satisifiesSoilWaterConditions = SatisifiesSoilWaterConditions();
+                bool satisifiesMultiPlantInWindow = SatisifiesMultiPlantInWindow();
+                if (satisifiesWindowConditions && satisifiesMultiPlantInWindow)
                 {
-                    if (satisifies_fallow_conditions)
+                    if (satisifiesFallowConditions)
                     {
-                        if (satisifies_planting_rain_conditions && satisifies_soil_water_conditions)
+                        if (satisifiesPlantingRainConditions && satisifiesSoilWaterConditions)
                         {
                             return true;
                         }
@@ -257,7 +257,7 @@ namespace HowLeaky.ModelControllers.Veg
             if (InputModel.PlantingRainSwitch)
             {
                 int actualSowingDelay = InputModel.SowingDelay;
-                double sumrain = 0;
+                double sumRain = 0;
                 int index;
                 int count_rainfreedays = 0;
                 int max = 3 * InputModel.SowingDelay;
@@ -536,8 +536,14 @@ namespace HowLeaky.ModelControllers.Veg
         /// </summary>
         public void Scurve()
         {
-            if (MathTools.DoublesAreEqual(InputModel.PercentOfMaxLai1, 1)) InputModel.PercentOfMaxLai1 = 0.99999;
-            if (MathTools.DoublesAreEqual(InputModel.PercentOfMaxLai2, 1)) InputModel.PercentOfMaxLai2 = 0.99999;
+            if (MathTools.DoublesAreEqual(InputModel.PercentOfMaxLai1, 1))
+            {
+                InputModel.PercentOfMaxLai1 = 0.99999;
+            }
+            if (MathTools.DoublesAreEqual(InputModel.PercentOfMaxLai2, 1))
+            {
+                InputModel.PercentOfMaxLai2 = 0.99999;
+            }
             if (InputModel.PercentOfMaxLai1 > 0 && InputModel.PercentOfMaxLai2 > 0)
             {
                 double value1 = InputModel.PercentOfGrowSeason1 / InputModel.PercentOfMaxLai1 - InputModel.PercentOfGrowSeason1;

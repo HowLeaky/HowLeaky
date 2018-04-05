@@ -74,7 +74,7 @@ namespace HowLeaky.ModelControllers
                 todayIndex = (Sim.Today - InputModel.StartDate.Value).Days;
                 Temperature = InputModel.MaxT[todayIndex] + InputModel.MinT[todayIndex] / 2.0;
 
-                Rain = InputModel.Rain[todayIndex];
+                Rain = InputModel.Rain[todayIndex] * InputModel.RainfallMultiplier;
                 if (todayIndex > 0)
                 {
                     YesterdaysRain = InputModel.Rain[todayIndex - 1];
@@ -86,7 +86,7 @@ namespace HowLeaky.ModelControllers
                 MaxTemp = InputModel.MaxT[todayIndex];
                 MinTemp = InputModel.MinT[todayIndex];
 
-                PanEvap = InputModel.PanEvap[todayIndex];
+                PanEvap = InputModel.PanEvap[todayIndex] * InputModel.PanEvapMultiplier;
                 SolarRadiation = InputModel.Radiation[todayIndex];
             }
             catch (Exception e)

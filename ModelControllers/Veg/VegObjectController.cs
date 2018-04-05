@@ -124,7 +124,7 @@ namespace HowLeaky.ModelControllers.Veg
         [Output("Crop Soil Evaporation", "mm")]
         public double SoilEvaporation { get; set; }        
         [Output("Crop Transpiration", "mm")]
-        public double Transpiration { get; set; }          
+        public double CropTranspiration { get; set; }          
         [Output(" Crop Evapotranspiration", "mm")]
         public double CropEvapoTranspiration { get; set; } //Not currently set
         [Output("Crop Drainage", "mm")]
@@ -398,8 +398,8 @@ namespace HowLeaky.ModelControllers.Veg
             }
             AccumulatedTranspiration += TotalTranspiration;
 
-            Transpiration = TotalTranspiration;
-            CropEvapoTranspiration = Transpiration + Sim.SoilController.SoilEvap;
+            CropTranspiration = TotalTranspiration;
+            CropEvapoTranspiration = CropTranspiration + Sim.SoilController.SoilEvap;
         }
         
         /// <summary>

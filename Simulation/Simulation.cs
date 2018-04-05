@@ -36,31 +36,71 @@ namespace HowLeaky
         public bool Use2008CurveNoFn { get; set; }
         public bool Force2011CurveNoFn { get; set; }
 
+        public int Id { get; set; }
+
+        public List<InputModel> InputModels
+        {
+            get
+            {
+                List<InputModel> models = new List<InputModel>();
+
+                foreach (HLController hlc in ActiveControlllers)
+                {
+                    if (hlc.GetType().GetInterface("ISimulation") == null)
+                    {
+                        if (hlc.GetType().BaseType == typeof(HLObjectController))
+                        {
+                            foreach (HLController h in ((HLObjectController)hlc).ChildControllers)
+                            {
+                                models.Add(h.GetInputModel());
+                            }
+                        }
+                        else
+                        {
+                            models.Add(hlc.GetInputModel());
+                        }
+                    }
+                }
+
+                return models;
+            }
+        }
+
+        public List<HLController> Controllers
+        {
+            get
+            {
+                List<HLController> controllers = new List<HLController>();
+
+                foreach (HLController hlc in ActiveControlllers)
+                {
+                    if (hlc.GetType().GetInterface("ISimulation") == null)
+                    {
+                        if (hlc.GetType().BaseType == typeof(HLObjectController))
+                        {
+                            foreach (HLController h in ((HLObjectController)hlc).ChildControllers)
+                            {
+                                controllers.Add(h);
+                            }
+                        }
+                        else
+                        {
+                            controllers.Add(hlc);
+                        }
+                    }
+                }
+                return controllers;
+            }
+        }
+
         public override string Name
         {
             get
             {
                 if (base.Name == null)
                 {
-                    List<string> ModelNames = new List<string>();
-                    foreach (HLController hlc in ActiveControlllers)
-                    {
-                        if (hlc.GetType().GetInterface("ISimulation") == null)
-                        {
-                            if (hlc.GetType().BaseType == typeof(HLObjectController))
-                            {
-                                foreach (HLController h in ((HLObjectController)hlc).ChildControllers)
-                                {
-                                    ModelNames.Add(h.GetInputModel().Name);
-                                }
-                            }
-                            else
-                            {
-                                ModelNames.Add(hlc.GetInputModel().Name);
-                            }
-                        }
-                    }
-                    return String.Join(";", ModelNames.ToArray());
+                    List<string> ModelNames = new List<string>(InputModels.Select(m => m.LongName));
+                    return String.Join(",", ModelNames.ToArray());
                 }
                 else
                 {
@@ -71,6 +111,7 @@ namespace HowLeaky
             set { base.Name = value; }
         }
 
+        public Project Project { get; set; }
 
         //--------------------------------------------------------------------------
         // Submodel Controllers
@@ -162,8 +203,10 @@ namespace HowLeaky
         /// 
         /// </summary>
         /// <param name="inputDataModels"></param>
-        public Simulation(List<InputModel> inputDataModels, int startYear = 0, int endYear = 0) : this()
+        public Simulation(Project Project, List<InputModel> inputDataModels, int startYear = 0, int endYear = 0) : this()
         {
+            this.Project = Project;
+
             StartYear = startYear;
             EndYear = EndYear;
 
@@ -208,6 +251,7 @@ namespace HowLeaky
             }
 
             //Instantiate the output controller
+            //This is now done in the Project as it has the relevant path and setup information
             OutputModelController = new OutputModelController(this);
 
             //Set the start date and end dates
@@ -241,8 +285,6 @@ namespace HowLeaky
 
             SoilController.InitialiseSoilParameters();
 
-            DateTime start = DateTime.Now;
-
             //Initialse the controllers
             foreach (HLController controller in ActiveControlllers)
             {
@@ -255,22 +297,20 @@ namespace HowLeaky
                 this.SimulateDay();
 
                 //Write output and go to next day
-                OutputModelController.WriteData();
+                OutputModelController.WriteDailyData();
                 Today += new TimeSpan(1, 0, 0, 0);
             }
 
             //Output all of the summary data
             //OutputModelController.WriteToFile(false);
 
-            OutputModelController.Finalise();
+            //OutputModelController.Finalise();
 
-            DateTime end = DateTime.Now;
-
-            TimeSpan ts = end - start;
-
-            Console.WriteLine(ts);
+            
 
             //Do any necessary cleaup or output
+
+            //OutputModelController.Finalise();
         }
 
         /// <summary>

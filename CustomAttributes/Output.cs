@@ -8,6 +8,8 @@ namespace HowLeaky.CustomAttributes
         public String Unit { get; set;}
         public double Scale { get; set; } = 1;
 
+        public Output() { }
+
         public Output(string Description ="", string Unit = "", double Scale = 1)
         {
             this.Description = Description;

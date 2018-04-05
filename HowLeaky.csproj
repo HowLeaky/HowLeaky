@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DynamicInterop, Version=0.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Dan Rattray\HowLeakyUI\packages\DynamicInterop.0.7.4\lib\net40\DynamicInterop.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\Dan Rattray\HowLeakyUI\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -72,6 +75,9 @@
     <Compile Include="Factories\SimInputModelFactory.cs" />
     <Compile Include="Factories\RawInputModelFactory.cs" />
     <Compile Include="Factories\SimulationFactory.cs" />
+    <Compile Include="HLBackgroundWorker\HLBackGroundWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="InputModels\ClimateInputModel.cs" />
     <Compile Include="InputModels\Cover\CoverVegInputModel.cs" />
     <Compile Include="InputModels\Cover\LAIVegInputModel.cs" />
@@ -95,6 +101,9 @@
     <Compile Include="ModelControllers\Base\HLObjectController.cs" />
     <Compile Include="ModelControllers\ModelOptionsController.cs" />
     <Compile Include="ModelControllers\Outputs\CSVOutputModelController.cs" />
+    <Compile Include="ModelControllers\Outputs\netcdfCSwrapper.cs" />
+    <Compile Include="ModelControllers\Outputs\NetCDFOutputModelController - Copy.cs" />
+    <Compile Include="ModelControllers\Outputs\NetCDFOutputModelController.cs" />
     <Compile Include="ModelControllers\Outputs\OutputModelController.cs" />
     <Compile Include="ModelControllers\Outputs\SQLiteOutputModelController.cs" />
     <Compile Include="ModelControllers\Pesticide\PesticideObjectController.cs" />
@@ -112,6 +121,7 @@
     <Compile Include="ModelControllers\Veg\LAIVegObjectController.cs" />
     <Compile Include="ModelControllers\Veg\VegObjectController.cs" />
     <Compile Include="OutputModels\OutputDataModel.cs" />
+    <Compile Include="OutputModels\OutputOptionsController.cs" />
     <Compile Include="ParameterModels\ParameterModelElement.cs" />
     <Compile Include="SyncModels\CustomSyncModel.cs" />
     <Compile Include="InputModels\InputModel.cs" />
@@ -139,9 +149,18 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="ControllersClassDiagram.cd" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="hdf5.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="netcdf.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\Dan Rattray\HowLeakyUI\packages\System.Data.SQLite.Core.1.0.107.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\Dan Rattray\HowLeakyUI\packages\System.Data.SQLite.Core.1.0.107.0\build\net451\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -246,7 +246,7 @@ namespace HowLeaky.ModelControllers
         [Output("Total residue cover - based on all crops present", "%")]
         public double TotalResidueCover { get; set; }
         [Output("Total cover - based on all crops present", "%")]
-        public double TotalCover { get; set; }
+        public double TotalCoverAllCrops { get; set; }
         [Output("Soil water in each layer", "mm")]
         public List<double> SoilWater { get; set; }
         [Output("Drainage in each layer", "mm")]
@@ -340,7 +340,7 @@ namespace HowLeaky.ModelControllers
                     SumFallowDrainage += DeepDrainage;
                     SumFallowSoilerosion += HillSlopeErosion;
 
-                    if (TotalCover > 0.5)
+                    if (TotalCoverAllCrops > 0.5)
                     {
                         ++FallowDaysWithMore50pcCov;
                     }
@@ -369,9 +369,9 @@ namespace HowLeaky.ModelControllers
                 TotalCropResidue = Sim.VegetationController.GetTotalCropResidue();
                 TotalResidueCover = Sim.VegetationController.GetTotalResidueCover();
                 TotalResidueCoverPercent = Sim.VegetationController.GetTotalResidueCoverPercent();
-                TotalCover = Sim.VegetationController.GetTotalCover();
+                TotalCoverAllCrops = Sim.VegetationController.GetTotalCover();
                 CropCover = Sim.VegetationController.GetCropCover();
-                TotalCoverPercent = TotalCover * 100.0;
+                TotalCoverPercent = TotalCoverAllCrops * 100.0;
                 AccumulatedCover += TotalCoverPercent;
             }
             catch (Exception e)
@@ -853,7 +853,9 @@ namespace HowLeaky.ModelControllers
                         Sse2 = Math.Max(0, Sse2 - Math.Max(0, Infiltration - Sse1));
                         Sse1 = Math.Max(0, Sse1 - Infiltration);
                         if (!MathTools.DoublesAreEqual(InputModel.Stage2SoilEvapCona, 0))
+                        {
                             Dsr = Math.Pow(Sse2 / InputModel.Stage2SoilEvapCona, 2);
+                        }
                         else
                         {
                             Dsr = 0;
@@ -890,10 +892,13 @@ namespace HowLeaky.ModelControllers
                             //  * If sse2 is zero, then use Ritchie's empirical transition constant (0.6).  *
                             //  *****************************************************************************
                             if (Sse2 > 0.0)
+                            {
                                 Se2 = Math.Min(PotSoilEvap - Se1, InputModel.Stage2SoilEvapCona * Math.Pow(Dsr, 0.5) - Sse2);
+                            }
                             else
+                            {
                                 Se2 = 0.6 * (PotSoilEvap - Se1);
-
+                            }
                             //  **********************************************************
                             //  *  Calculate stage two evaporation from layers 1 and 2.  *
                             //  **********************************************************
@@ -1095,7 +1100,7 @@ namespace HowLeaky.ModelControllers
                 else
                 {
                     double conc = 0;
-                    double cover = TotalCover * 100;
+                    double cover = TotalCoverAllCrops * 100;
 
                     if (Sim.IrrigationController != null)
                     {

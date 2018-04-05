@@ -61,16 +61,22 @@ namespace HowLeaky.Tools.DataObjects
         {
             List<String> parts = new List<string>(_Value.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
 
-            foreach (String s in parts)
+            //foreach (String s in parts)
+            for(int i = 0; i < parts.Count; i+=2)
             {
+                string s = parts[i];
+
                 List<String> seqParts = new List<string>(s.Split(new string[] { "\"", ",", " " }, StringSplitOptions.RemoveEmptyEntries));
                 DateTime? thisDate = parseDate(seqParts[0]);
 
                 if(thisDate.HasValue)
                 {
                     Dates.Add(thisDate.Value);
+
+                    string[] valParts = parts[i + 1].Split(new string[] { "\"", ",", " " }, StringSplitOptions.RemoveEmptyEntries);
+
                     double value = -1;
-                    double.TryParse(seqParts[1], out value);
+                    double.TryParse(valParts[0], out value);
                     Values.Add(value);
                 }
 

@@ -1,4 +1,4 @@
-namespace DBTest
+namespace HLRDB
 {
     using SQLite.CodeFirst;
     using System;
@@ -58,19 +58,46 @@ namespace DBTest
         int Id { get; set; }
     }
 
-    public class Data : IEntity
+    public class Data
     {
-        [Autoincrement]
+        //[Autoincrement]
         public int Id { get; set; }
 
-        public DateTime Date { get; set; }
+        public int Day { get; set; } //public DateTime Date { get; set; }
         public double Value { get; set; }
 
         public int SimulationId { get; set; }
-        public virtual Simulation Simulation { get; set; }
+       // public virtual Simulation Simulation { get; set; }
 
         public int OutputId { get; set; }
-        public Output Output { get; set; }
+        //public virtual Output Output { get; set; }
+
+        public Data() { }
+
+        //public Data(Simulation Simulation, Output Output, DateTime Date, double Value)
+        //{
+        //    this.Simulation = Simulation;
+        //    this.Output = Output;
+        //    this.Date = Date;
+        //    this.Value = Value;
+        //}
+
+        //public Data(int SimulationId, int OutputId, DateTime Date, double Value)
+        //{
+        //    this.SimulationId = SimulationId;
+        //    this.OutputId = OutputId;
+        //    this.Date = Date;
+        //    this.Value = Value;
+        //}
+
+        public Data(int SimulationId, int OutputId, int Day, double Value)
+        {
+            this.SimulationId = SimulationId;
+            this.OutputId = OutputId;
+            this.Day = Day;
+            this.Value = Value;
+        }
+
     }
 
     public class Output : IEntity
@@ -78,6 +105,7 @@ namespace DBTest
         [Autoincrement]
         public int Id { get; set; }
 
+        public string Type { get; set; }
         public string Name { get; set; }
         public string Unit { get; set; }
     }
@@ -87,6 +115,7 @@ namespace DBTest
         [Autoincrement]
         public int Id { get; set; }
 
+        public string Type { get; set; }
         public string Name { get; set; }
         public string Content { get; set; }
     }
@@ -101,5 +130,7 @@ namespace DBTest
         public virtual List<Model> Models { get; set; }
 
         public virtual List<Data> Data { get; set; }
+
+        public Simulation() { }
     }
 }

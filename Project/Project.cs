@@ -11,34 +11,57 @@ using HowLeaky.Tools.Helpers;
 using HowLeaky.Factories;
 using HowLeaky.Tools.XML;
 using System.ComponentModel;
+using HowLeaky.ModelControllers.Outputs;
+using HLRDB;
+using System.Data.SQLite;
+using System.IO;
+using HowLeaky.ModelControllers;
+using HowLeaky.OutputModels;
+using System.Text;
 
 namespace HowLeaky
 {
+    public enum OutputType { CSVOutput, SQLiteOutput, NetCDF }
+
     public class Project : CustomSyncModel, IXmlSerializable
     {
-        //public List<Simulation> Simulations { get; set; }
+        public List<Simulation> Simulations { get; set; }
         //Xml Simulation elements for lazy loading the simualtions
         public List<XElement> SimulationElements { get; set; }
         //Base input data models from the parameter files
         public List<InputModel> InputDataModels { get; set; }
 
-        public List<BackgroundWorker> BackgroundWorkers;
+        public List<OutputDataElement> OutputDataElements { get; set; }
+
+        public DateTime StartRunTime;
+
+        public List<HLBackGroundWorker> BackgroundWorkers;
 
         public string ContactDetails { get; set; }
 
         public int CurrentSimIndex = 0;
         public int NoSimsComplete = 0;
 
+        public OutputType OutputType = OutputType.SQLiteOutput;
+        //public OutputType OutputType = OutputType.NetCDF;
+
         public delegate void SimCompleteNotifier();
 
         public SimCompleteNotifier Notifier;
+
+        //Members for the output model
+        public SQLiteConnection SQLConn;
+        //public HLDBContext DBContext = null;
+        public HLNCFile HLNC = null;
+        public string OutputPath { get; set; } = null;
+        public string FileName { get; set; }
 
         /// <summary>
         /// Need default constructor for populating via Entity Framework 
         /// </summary>
         public Project()
         {
-            //Simulations = new List<Simulation>();
+            Simulations = new List<Simulation>();
             SimulationElements = new List<XElement>();
             InputDataModels = new List<InputModel>();
         }
@@ -48,6 +71,7 @@ namespace HowLeaky
         /// <param name="fileName"></param>
         public Project(string fileName) : this()
         {
+            FileName = fileName;
             //Assume this a a legitimate hlk file
             ReadXml(XmlReader.Create(fileName));
 
@@ -82,9 +106,8 @@ namespace HowLeaky
             {
                 List<InputModel> simModels = SimInputModelFactory.GenerateSimInputModels(xe, InputDataModels);
 
-                Simulation sim = new Simulation(simModels);
+                Simulation sim = new Simulation(this, simModels);
             }
-
         }
 
         /// <summary>
@@ -132,7 +155,19 @@ namespace HowLeaky
                 }
             }
             //Read all of the simualtions
-            SimulationElements = new List<XElement>(projectElement.Elements("Simulations").Elements("SimulationObject"));
+            SimulationElements = new List<XElement>();
+
+            foreach (XElement simChild in projectElement.Elements("Simulations").Elements())
+            {
+                if (simChild.Name.ToString() == "SimulationObject")
+                {
+                    SimulationElements.Add(simChild);
+                }
+                else if (simChild.Name.ToString() == "Folder")
+                {
+                    SimulationElements.AddRange(simChild.Elements("SimulationObject"));
+                }
+            }
 
             InputDataModels = new List<InputModel>();
 
@@ -155,6 +190,18 @@ namespace HowLeaky
             {
                 im.Init();
             }
+
+            //Create the simualtions
+            foreach (XElement xe in SimulationElements)
+            {
+                Simulations.Add(SimulationFactory.GenerateSimulationXML(this, xe, InputDataModels));
+            }
+
+            //Just one for testing
+            //Simulations = new List<Simulation>();
+            //Simulations.Add(SimulationFactory.GenerateSimulationXML(SimulationElements[0], InputDataModels));
+
+            OutputDataElements = OutputModelController.GetProjectOutputs(this);
         }
         /// <summary>
         /// 
@@ -174,49 +221,169 @@ namespace HowLeaky
             int noCoresToUse = numberOfThreads;
             int noCores = Environment.ProcessorCount;
 
-            //Simulation sim = SimulationFactory.GenerateSimulationXML(SimulationElements[0], InputDataModels);
-            //sim.Run();
-
-            //return;
-            
-            if (numberOfThreads <= 0)
+            if(noCoresToUse <= 0)
             {
-                noCoresToUse = noCores + numberOfThreads;
+                noCoresToUse += noCores;
             }
-            //Create database for outputs
+
+            //Set up outputs (on main thread)
+            if (OutputType == OutputType.CSVOutput)
+            {
+                FileInfo hlkFile = new FileInfo(FileName);
+
+                if (OutputPath == null)
+                {
+                    OutputPath = hlkFile.Directory.FullName;
+                }
+
+                if (!OutputPath.Contains(":"))
+                {
+                    DirectoryInfo outDir = new DirectoryInfo(Path.Combine(hlkFile.Directory.FullName, OutputPath));
+                    if (!outDir.Exists)
+                    {
+                        outDir.Create();
+                    }
+
+                    OutputPath = outDir.FullName;
+                }
+            }
+            else if (OutputType == OutputType.SQLiteOutput)
+            {
+                if (OutputPath == null)
+                {
+                    OutputPath = FileName.Replace(".hlk", ".sqlite");
+                }
+
+                //if (DBContext == null)
+                //{
+                //    DBContext = new HLDBContext(new SQLiteConnection("data source=" + OutputPath + ";foreign keys=false"), true);
+
+                //    DBContext.Configuration.AutoDetectChangesEnabled = false;
+                //    DBContext.Configuration.ValidateOnSaveEnabled = false;
+
+                //    //DBContext.SaveChanges();
+                //}
+
+                //List<string> OutputIndicies = new List<string>();
+
+                //for(int i = 0; i < OutputDataElements.Count; i++)
+                //{
+                //    OutputIndicies.Add("x" + (i + 1).ToString());
+                //}
+
+                SQLiteConnection.CreateFile(OutputPath);
+
+                SQLConn = new SQLiteConnection("Data Source=" + OutputPath + ";Version=3;");
+                SQLConn.Open();
+
+                //Will need to create tables
+                //Data
+                string sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputDataElements.Select(x=>x.Name)) + " double)";
+               // sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputIndicies) + " double)";
+
+                SQLiteCommand command = new SQLiteCommand(sql, SQLConn);
+                command.ExecuteNonQuery();
+
+                //Annual sum data
+                sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputDataElements.Select(x => x.Name)) + " double)";
+               // sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputIndicies) + " double)";
+
+                command = new SQLiteCommand(sql, SQLConn);
+                command.ExecuteNonQuery();
+
+                //Annual sum average data
+                sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputDataElements.Select(x => x.Name)) + " double)";
+               // sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputIndicies) + " double)";
+
+                command = new SQLiteCommand(sql, SQLConn);
+                command.ExecuteNonQuery();
+
+                //Outputs
+                sql = "create table outputs (Name string, Description string, Units string, Controller string)";
+
+                command = new SQLiteCommand(sql, SQLConn);
+                command.ExecuteNonQuery();
+
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append("INSERT INTO OUTPUTS (Name, Description , Units, Controller) VALUES ");
+
+                foreach (OutputDataElement ode in OutputDataElements)
+                {
+                    string comma = ",";
+
+                    if(ode == OutputDataElements.First())
+                    {
+                        comma = "";
+                    }
+
+                    sb.Append(comma + "(\"" + ode.Name + "\",\"" + ode.Output.Description + "\",\"" + ode.Output.Unit + "\",\"" + ode.HLController.GetType().Name + "\")");
+                }
+
+                sql = sb.ToString();
+
+                command = new SQLiteCommand(sql, SQLConn);
+                command.ExecuteNonQuery();
+
+                
+
+                //Simulations
+                sql = "create table simulations (Id int, Name string, StartDate DATETIME, EndDate DATETIME)";
+
+                command = new SQLiteCommand(sql, SQLConn);
+                command.ExecuteNonQuery();
+
+                //Models
+                sql = "create table models (SimId int, Name string, InputType string)";
+
+                command = new SQLiteCommand(sql, SQLConn);
+                command.ExecuteNonQuery();
+            }
+            else if (OutputType == OutputType.NetCDF)
+            {
+                if (HLNC == null)
+                {
+                  //  HLNC = new HLNCFile(this, this.Simulations[0].StartDate, this.Simulations[0].EndDate, FileName.Replace(".hlk", ".nc"));
+                }
+            }
             //SQLite
 
             //Reset the counters
             CurrentSimIndex = 0;
             NoSimsComplete = 0;
 
+            StartRunTime = DateTime.Now;
+
             //Create a list of background workers
-            BackgroundWorkers = new List<BackgroundWorker>(noCoresToUse);
+            BackgroundWorkers = new List<HLBackGroundWorker>(noCoresToUse);
 
             //Populate the Background workers and run
             for (int i = 0; i < noCoresToUse; i++)
             {
-                BackgroundWorkers.Add(new BackgroundWorker());
+                BackgroundWorkers.Add(new HLBackGroundWorker());
                 BackgroundWorkers[i].DoWork += HLBackgroundWorker_DoWork;
                 BackgroundWorkers[i].RunWorkerCompleted += HLBackgroundWorker_RunWorkerCompleted;
 
-                XElement xe = GetSimulationElement();
+                Simulation sim = GetSimulationElement();
 
-                if (xe != null)
+                if (sim != null)
                 {
                     // BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { xe, handler }));
-                    BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { xe }));
+                    BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { sim }));
                 }
             }
         }
-
-        public XElement GetSimulationElement()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Simulation GetSimulationElement()
         {
-            XElement result = null;
+            Simulation result = null;
 
-            if (SimulationElements.Count > CurrentSimIndex)
+            if (Simulations.Count > CurrentSimIndex)
             {
-                result = SimulationElements[CurrentSimIndex];
+                result = Simulations[CurrentSimIndex];
                 CurrentSimIndex++;
             }
             return result;
@@ -241,12 +408,47 @@ namespace HowLeaky
         /// <param name="e"></param>
         private void HLBackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+            HLBackGroundWorker hlbw = (HLBackGroundWorker)sender;
+
             List<object> Arguments = e.Argument as List<object>;
 
-            XElement simElement = (XElement)Arguments[0];
+            Simulation sim = (Simulation)Arguments[0];
 
-            Simulation sim = SimulationFactory.GenerateSimulationXML(simElement, InputDataModels);
-            sim.Run();
+            //hlbw.Sim = SimulationFactory.GenerateSimulationXML(simElement, InputDataModels);
+            //hlbw.Sim.Id = SimulationElements.IndexOf(simElement) + 1;
+
+            hlbw.Sim = sim;
+            hlbw.Sim.Id = Simulations.IndexOf(sim) + 1;
+
+            //Setup output controllers
+
+            if (OutputType == OutputType.CSVOutput)
+            {
+                hlbw.Sim.OutputModelController = new CSVOutputModelController(hlbw.Sim, OutputPath);
+            }
+            else if (OutputType == OutputType.SQLiteOutput)
+            {
+                hlbw.Sim.OutputModelController = new SQLiteOutputModelController(hlbw.Sim, SQLConn);
+
+                //HLRDB.Simulation DBSim = new HLRDB.Simulation { Id = hlbw.Sim.Id, Name = hlbw.Sim.Name };
+                //DBSim.Data = new List<HLRDB.Data>();
+                //DBSim.Models = new List<Model>();
+
+                //foreach (InputModel im in hlbw.Sim.InputModels)
+                //{
+                //    DBSim.Models.Add(new HLRDB.Model { Name = im.Name, Type = im.GetType().ToString(), Content = "" });
+                //}
+
+                //DBContext.Simulations.Add(new HLRDB.Simulation { Id = hlbw.Sim.Id, Name = hlbw.Sim.Name });
+
+                //DBContext.SaveChanges();
+            }
+            else if (OutputType == OutputType.NetCDF)
+            {
+                //hlbw.Sim.OutputModelController = new NetCDFOutputModelController(hlbw.Sim, HLNC);
+            }
+
+            hlbw.Sim.Run();
         }
 
         /// <summary>
@@ -274,22 +476,38 @@ namespace HowLeaky
                 Notifier();
             }
 
+            HLBackGroundWorker hlbw = (HLBackGroundWorker)sender;
+
+            hlbw.Sim.OutputModelController.Finalise();
+            
+
             NoSimsComplete++;
 
             //Update Progress
             Console.WriteLine("{0} % Done.", ((double)NoSimsComplete / SimulationElements.Count * 100).ToString("0.00"));
 
+
+            if (NoSimsComplete > Simulations.Count)
+            {
+                DateTime end = DateTime.Now;
+
+                TimeSpan ts = end - StartRunTime;
+
+                Console.WriteLine(ts);
+            }
+
+           
             BackgroundWorker bw = (BackgroundWorker)sender;
 
-            XElement nextSim = GetSimulationElement();
+            Simulation nextSim = GetSimulationElement();
 
-            if(nextSim == null)
+            if (nextSim == null)
             {
                 return;
             }
             else
             {
-                bw.RunWorkerAsync(nextSim);
+                bw.RunWorkerAsync(new List<object>(new object[] { nextSim }));
             }
         }
     }

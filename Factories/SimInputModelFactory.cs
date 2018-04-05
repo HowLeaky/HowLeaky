@@ -26,7 +26,7 @@ namespace HowLeaky.Factories
         {
             List<InputModel> simInputModels = new List<InputModel>();
 
-            foreach(XElement xe in element.Elements())
+            foreach (XElement xe in element.Elements())
             {
                 //Firstly find the target
                 InputModel rawInputModel = rawInputModels.Where(x => x.FileName == xe.Attribute("href").Value.ToString()).FirstOrDefault();
@@ -36,11 +36,11 @@ namespace HowLeaky.Factories
                 simInputModels.Add(simInputModel);
 
                 //Then apply any overrides
-                foreach(XElement child in xe.Elements())
+                foreach (XElement child in xe.Elements())
                 {
-                    if(child.Elements().Count() == 0)
+                    if (child.Elements().Count() == 0)
                     {
-                        if(child.Value != null)
+                        if (child.Value != null)
                         {
                             simInputModel.Overrides.Add(child.Name.ToString(), child.Value);
                         }
@@ -65,6 +65,51 @@ namespace HowLeaky.Factories
                 simInputModel.ApplyOverrides();
             }
             return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static string GenerateSimInputModelDescription(XElement element)
+        {
+            List<string> modelDescriptions = new List<string>();
+            foreach (XElement xe in element.Elements())
+            {
+                string modelDescription = xe.Name.ToString();
+
+                string[] ModelNameParts = xe.Attribute("href").Value.ToString().Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+
+                modelDescription += ("=" + ModelNameParts[ModelNameParts.Length - 1].Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries)[0]);
+
+                //Then apply any overrides
+                foreach (XElement child in xe.Elements())
+                {
+                    if (child.Elements().Count() == 0)
+                    {
+                        if (child.Value != null)
+                        {
+                            modelDescription += (";" + child.Name.ToString() + "=" + child.Value.ToString());
+                        }
+                        else
+                        {
+                            //Should have an index
+                            modelDescription += (";" + child.Name.ToString() + "=" + child.Attribute("index").Value.ToString());
+                         }
+                    }
+                    else
+                    {
+                        //Should be override parameters
+                        //Check-----
+                        if (child.Attribute("Active").Value == "true")
+                        {
+                            modelDescription += (";" + child.Name.ToString() + "=" + child.Element("Value").Value.ToString());
+                        }
+                    }
+                }
+                modelDescriptions.Add(modelDescription);
+            }
+            return String.Join(",",modelDescriptions.ToArray());
         }
     }
 }

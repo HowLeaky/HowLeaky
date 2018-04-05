@@ -15,14 +15,14 @@ namespace HowLeaky.Tools.DataObjects
         /// <summary>
         /// 
         /// </summary>
-        public ProfileData()
+        public ProfileData(List<string> columns)
         {
             jdays = new List<int>();
             values = new Dictionary<string, List<double>>
             {
-                { "Green Cover", new List<double>() },
-                { "Residue Cover", new List<double>() },
-                { "Root Depth", new List<double>() }
+                { columns[0], new List<double>() },
+                { columns[1], new List<double>() },
+                { columns[2], new List<double>() }
             };
 
             dayIndex = 0;

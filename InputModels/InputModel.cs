@@ -19,7 +19,7 @@ namespace HowLeaky.DataModels
         public string Description { get; set; }
         [XmlIgnore]
         public Dictionary<string, object> Overrides { get; set; }
-        
+        public string LongName { get; set; }
         public override string Name
         {
             get
@@ -35,7 +35,7 @@ namespace HowLeaky.DataModels
                     {
                         name = new FileInfo(FileName).Name.Split(new char[] { '.' })[0];
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         name = "";
                     }
@@ -70,7 +70,7 @@ namespace HowLeaky.DataModels
         /// </summary>
         public void ApplyOverrides()
         {
-        foreach(KeyValuePair<string, object> entry in Overrides)
+            foreach (KeyValuePair<string, object> entry in Overrides)
             {
                 SetPropertyValue(entry.Key, this, entry.Value);
             }
@@ -83,18 +83,68 @@ namespace HowLeaky.DataModels
         /// <param name="value"></param>
         private void SetPropertyValue(string propertyName, object target, object value)
         {
-            foreach (PropertyInfo p in target.GetType().GetProperties())
-            {
-                if(p.Name == propertyName)
-                {
-                    p.SetValue(target, value);
-                }
+            PropertyInfo p = target.GetType().GetProperty(propertyName);
 
-                if(p.ReflectedType.IsClass)
-                {
-                    SetPropertyValue(propertyName, p.GetValue(target), value) ;
-                }
+            int intVal;
+
+            if(int.TryParse(value.ToString(), out intVal))
+            {
+                p.SetValue(target, intVal);
             }
+            else
+            {
+                p.SetValue(target, double.Parse(value.ToString()));
+            }
+            //if (value.GetType() == typeof(double))
+            //{
+            //    val = double.Parse(value.ToString());
+            //}
+            //else
+
+            //{
+            //    val = int.Parse(value.ToString());
+            //}
+
+            //p.SetValue(target, val);
+
+            return;
+
+
+            //foreach (PropertyInfo p in target.GetType().GetProperties())
+            //{
+            //    if (p.Name == propertyName)
+            //    {
+            //        object val;
+
+            //        try
+            //        {
+            //            val = int.Parse(value.ToString());
+            //        }
+            //        catch(Exception ex)
+            //        {
+            //            val = double.Parse(value.ToString());
+            //        }
+
+            //        //if (int.TryParse(value.ToString(), out intVal))
+            //        //{
+            //        //    p.SetValue(target, intVal);
+
+            //        //}
+            //        //else if (double.TryParse(value.ToString(), out doubleVal))
+            //        //{
+            //        //    p.SetValue(target, double.Parse(value.ToString()));
+            //        //}
+
+            //        p.SetValue(target, val);
+
+            //        return;
+            //    }
+
+            //    if (p.PropertyType.GetProperties().Length > 0)
+            //    {
+            //        SetPropertyValue(propertyName, p.GetValue(target), value);
+            //    }
+            //}
         }
     }
 }

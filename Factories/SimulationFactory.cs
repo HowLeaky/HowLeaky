@@ -9,7 +9,7 @@ namespace HowLeaky.Factories
 {
     public class SimulationFactory
     {
-        public static Simulation GenerateSimulationXML(XElement simElement, List<InputModel> allModels)
+        public static Simulation GenerateSimulationXML(Project Project, XElement simElement, List<InputModel> allModels)
         {
             List<InputModel> simModels = new List<InputModel>();
 
@@ -30,9 +30,15 @@ namespace HowLeaky.Factories
                 {
                     try
                     {
-                        InputModel model = allModels.Where(im => im.FileName == element.Attribute("href").Value).FirstOrDefault();
+                        string fileName = element.Attribute("href").Value;
+
+                        InputModel model = allModels.Where(im => im.FileName == fileName).FirstOrDefault();
 
                         InputModel model2 = Cloner.DeepClone<InputModel>(model);
+
+                        string modelDescription = model.GetType().Name;
+
+                        modelDescription += (":" + model.Name);
 
                         //Check for child nodes
                         foreach (XElement childElement in element.Elements())
@@ -41,6 +47,7 @@ namespace HowLeaky.Factories
                             {
                                 //Add the override to the model
                                 model2.Overrides.Add(childElement.Attribute("Keyword").Value, childElement.Element("Value").Value);
+                                modelDescription += (";" + childElement.Attribute("Keyword").Value + "=" + childElement.Element("Value").Value);
                             }
                             else
                             {
@@ -50,15 +57,36 @@ namespace HowLeaky.Factories
                                     if (childElement.Attribute("index") != null)
                                     {
                                         model2.Overrides.Add(childElement.Name.ToString(), childElement.Attribute("index").Value);
+                                        modelDescription += (";" + childElement.Name.ToString() + "=" + childElement.Attribute("index").Value);
                                     }
                                     else
                                     {
                                         model2.Overrides.Add(childElement.Name.ToString(), childElement.Value);
+                                        modelDescription += (";" + childElement.Name.ToString() + "=" + childElement.Value);
                                     }
                                 }
                             }
                         }
+                        if (element.Name == "ptrStation")
+                        {
+                            //Map the data to the original model
+                            ClimateInputModel cimNew = (ClimateInputModel)model2;
+                            ClimateInputModel cimOrig = (ClimateInputModel)model;
+
+                            cimNew.Rain = cimOrig.Rain;
+                            cimNew.MaxT = cimOrig.MaxT;
+                            cimNew.MinT = cimOrig.MinT;
+                            cimNew.PanEvap = cimOrig.PanEvap;
+                            cimNew.Radiation = cimOrig.Radiation;
+                            cimNew.VP = cimOrig.VP;
+
+                        }
+                        model2.ApplyOverrides();
+
+                        model2.LongName = modelDescription;
+
                         simModels.Add(model2);
+
                     }
                     catch (Exception e)
                     {
@@ -68,7 +96,7 @@ namespace HowLeaky.Factories
 
             }
 
-            return new Simulation(simModels, startYear, endYear);
+            return new Simulation(Project, simModels, startYear, endYear);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Xml.Serialization;
 using System.Xml;
 using HowLeaky.XmlObjects;
 using HowLeaky.CustomAttributes;
+using System.Collections.Generic;
 
 namespace HowLeaky.DataModels
 {
@@ -71,7 +72,7 @@ namespace HowLeaky.DataModels
         /// </summary>
         public void InitialiseCoverProfile()
         {
-            CoverProfile = new ProfileData();
+            CoverProfile = new ProfileData(new List<string> (new string[] { "Green Cover", "Residue Cover","Root Depth" }));
 
             foreach(Data d in CropFactorMatrix)
             {
@@ -79,7 +80,6 @@ namespace HowLeaky.DataModels
                 CoverProfile.AddValue("Green Cover", d.Y);
                 CoverProfile.AddValue("Residue Cover", d.Z);
                 CoverProfile.AddValue("Root Depth", d.A);
-
             }
         }
     }

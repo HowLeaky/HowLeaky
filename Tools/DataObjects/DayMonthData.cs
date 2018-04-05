@@ -41,7 +41,7 @@ namespace HowLeaky.Tools.DataObjects
             {
                 return false;
             }
-            return (date == new DateTime(date.Year, Day, Month));
+            return (date == new DateTime(date.Year, Month, Day));
         }
     }
 }
