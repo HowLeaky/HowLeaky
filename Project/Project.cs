@@ -484,7 +484,7 @@ namespace HowLeaky
             NoSimsComplete++;
 
             //Update Progress
-            Console.WriteLine("{0} % Done.", ((double)NoSimsComplete / SimulationElements.Count * 100).ToString("0.00"));
+            Console.Write("\r{0} % Done.", ((double)NoSimsComplete / SimulationElements.Count * 100).ToString("0.00"));
 
 
             if (NoSimsComplete > Simulations.Count)

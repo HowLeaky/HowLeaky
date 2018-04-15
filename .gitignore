@@ -1,2 +1,7 @@
 obj/
 bin/
+HL Packages/
+hdf5.dll
+netcdf.dll
+packages/
+.vs/
