@@ -19,7 +19,7 @@ namespace HowLeaky.ModelControllers.Outputs
         /// <param name="Sim"></param>
         public CSVOutputModelController(Simulation Sim, string OutputPath) : base(Sim)
         {
-            outWriter = new StreamWriter(Path.Combine(OutputPath, Sim.Id + "_daily.csv"), false);
+            outWriter = new StreamWriter(Path.Combine(OutputPath, Sim.Index + "_daily.csv"), false);
 
             PrepareVariableNamesForOutput();
         }

@@ -36,7 +36,7 @@ namespace HowLeaky
         public bool Use2008CurveNoFn { get; set; }
         public bool Force2011CurveNoFn { get; set; }
 
-        public int Id { get; set; }
+        public int Index { get; set; }
 
         public List<InputModel> InputModels
         {

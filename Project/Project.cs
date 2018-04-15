@@ -52,7 +52,7 @@ namespace HowLeaky
         //Members for the output model
         public SQLiteConnection SQLConn;
         //public HLDBContext DBContext = null;
-        public HLNCFile HLNC = null;
+        //public HLNCFile HLNC = null;
         public string OutputPath { get; set; } = null;
         public string FileName { get; set; }
 
@@ -341,10 +341,10 @@ namespace HowLeaky
             }
             else if (OutputType == OutputType.NetCDF)
             {
-                if (HLNC == null)
-                {
-                  //  HLNC = new HLNCFile(this, this.Simulations[0].StartDate, this.Simulations[0].EndDate, FileName.Replace(".hlk", ".nc"));
-                }
+                //if (HLNC == null)
+                //{
+                //  //  HLNC = new HLNCFile(this, this.Simulations[0].StartDate, this.Simulations[0].EndDate, FileName.Replace(".hlk", ".nc"));
+                //}
             }
             //SQLite
 
@@ -418,7 +418,7 @@ namespace HowLeaky
             //hlbw.Sim.Id = SimulationElements.IndexOf(simElement) + 1;
 
             hlbw.Sim = sim;
-            hlbw.Sim.Id = Simulations.IndexOf(sim) + 1;
+            hlbw.Sim.Index = Simulations.IndexOf(sim) + 1;
 
             //Setup output controllers
 

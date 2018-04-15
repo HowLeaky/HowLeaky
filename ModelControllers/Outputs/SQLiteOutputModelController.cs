@@ -74,7 +74,7 @@ namespace HowLeaky.ModelControllers.Outputs
             AnnualAverageValues = new List<double>(Outputs.Count).Fill(0);
 
             //Add sim number to the average values
-            AnnualAverageValues.Insert(0, Sim.Id);
+            AnnualAverageValues.Insert(0, Sim.Index);
 
             //OutputNames.Insert(0, "Day");
             //OutputNames.Insert(0, "SimId");
@@ -130,7 +130,7 @@ namespace HowLeaky.ModelControllers.Outputs
 
             //Add the simulation
             string sql = "INSERT INTO SIMULATIONS (Id, Name, StartDate, EndDate) VALUES (" +
-                Sim.Id.ToString() + ",\"" + Sim.Name + "\",\"" + Sim.StartDate.ToLongDateString() +
+                Sim.Index.ToString() + ",\"" + Sim.Name + "\",\"" + Sim.StartDate.ToLongDateString() +
                 "\",\"" + Sim.EndDate.ToLongDateString() + "\")";
 
             command = new SQLiteCommand(sql, SQLConn);
@@ -150,7 +150,7 @@ namespace HowLeaky.ModelControllers.Outputs
                 if (im.LongName != null)
                 {
                     string[] nameParts = im.LongName.Split(new char[] { ':' });
-                    iString.Append(comma + "(" + Sim.Id.ToString() + ",\"" + nameParts[1] + "\",\"" + nameParts[0] + "\")");
+                    iString.Append(comma + "(" + Sim.Index.ToString() + ",\"" + nameParts[1] + "\",\"" + nameParts[0] + "\")");
                 }
             }
 
@@ -180,7 +180,7 @@ namespace HowLeaky.ModelControllers.Outputs
 
                 //Add SimID and year to the sums
                 AnnualSumValues[AnnualSumValues.Count - 1].Insert(0, currentYear);
-                AnnualSumValues[AnnualSumValues.Count - 1].Insert(0, Sim.Id);
+                AnnualSumValues[AnnualSumValues.Count - 1].Insert(0, Sim.Index);
             }
 
             //Add values to the annual sums
@@ -196,7 +196,7 @@ namespace HowLeaky.ModelControllers.Outputs
             }
 
             TodaysValues.Insert(0, Day);
-            TodaysValues.Insert(0, Sim.Id);
+            TodaysValues.Insert(0, Sim.Index);
 
             Values.Add(TodaysValues);
         }
