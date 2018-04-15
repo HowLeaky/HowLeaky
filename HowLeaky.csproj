@@ -101,9 +101,6 @@
     <Compile Include="ModelControllers\Base\HLObjectController.cs" />
     <Compile Include="ModelControllers\ModelOptionsController.cs" />
     <Compile Include="ModelControllers\Outputs\CSVOutputModelController.cs" />
-    <Compile Include="ModelControllers\Outputs\netcdfCSwrapper.cs" />
-    <Compile Include="ModelControllers\Outputs\NetCDFOutputModelController - Copy.cs" />
-    <Compile Include="ModelControllers\Outputs\NetCDFOutputModelController.cs" />
     <Compile Include="ModelControllers\Outputs\OutputModelController.cs" />
     <Compile Include="ModelControllers\Outputs\SQLiteOutputModelController.cs" />
     <Compile Include="ModelControllers\Pesticide\PesticideObjectController.cs" />
