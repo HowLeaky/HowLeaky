@@ -1,5 +1,5 @@
 ﻿using HowLeaky.DataModels;
-using HowLeaky.ModelControllers.Veg;
+using HowLeaky.InputModels;
 using HowLeaky.Tools.Serialiser;
 using System;
 using System.Collections.Generic;
@@ -27,6 +27,7 @@ namespace HowLeaky.Factories
             { "SolutesType", typeof(SolutesInputModel)},
             { "DataFile", typeof(ClimateInputModel) },
             { "NitratesType", typeof(NitrateInputModel) },
+            { "DINNitratesType", typeof(DINNitrateInputModel) },
             //Vegetation models
             { "VegetationType", null },
             { "LAIVegDataTemplate", typeof(LAIVegInputModel) },
@@ -37,7 +38,7 @@ namespace HowLeaky.Factories
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        public static InputModel GenerateRawInputModel(XElement element)
+        public static InputModel GenerateRawInputModel(string homeDir, XElement element)
         {
             string elementName = element.Name.ToString();
 
@@ -45,7 +46,12 @@ namespace HowLeaky.Factories
 
             XAttribute fileNameAttribute = element.Attribute("href");
 
-            string fileName = fileNameAttribute == null ? "" : fileNameAttribute.Value.ToString();
+            string fileName = fileNameAttribute == null ? "" : fileNameAttribute.Value.ToString().Replace("\\","/");
+
+            if(fileName.Contains("./"))
+            {
+                fileName = homeDir + "/" + fileName;
+            }
 
             if (elementType == null)
             {
@@ -57,7 +63,7 @@ namespace HowLeaky.Factories
                 elementType = inputModelMap.FirstOrDefault(x => x.Key == childTypeName).Value;
             }
 
-            InputModel model = (InputModel)Serialiser.Deserialise<InputModel> (fileName, elementName, elementType);
+            InputModel model = (InputModel)Serialiser.Deserialise<InputModel>(fileName, elementName, elementType);
 
             model.FileName = fileName;
 

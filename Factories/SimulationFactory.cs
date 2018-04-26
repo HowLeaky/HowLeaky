@@ -2,6 +2,7 @@
 using HowLeaky.Tools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -30,7 +31,12 @@ namespace HowLeaky.Factories
                 {
                     try
                     {
-                        string fileName = element.Attribute("href").Value;
+                        string fileName = element.Attribute("href").Value.ToString().Replace("\\","/") ;
+
+                        if(fileName.Contains("./"))
+                        {
+                            fileName = Path.GetDirectoryName(Project.FileName).Replace("\\", "/") + "/" + fileName;
+                        }
 
                         InputModel model = allModels.Where(im => im.FileName == fileName).FirstOrDefault();
 
@@ -79,6 +85,9 @@ namespace HowLeaky.Factories
                             cimNew.PanEvap = cimOrig.PanEvap;
                             cimNew.Radiation = cimOrig.Radiation;
                             cimNew.VP = cimOrig.VP;
+
+                            //cimNew.StartDate = cimOrig.StartDate;
+                            //cimNew.EndDate = cimOrig.EndDate;
 
                         }
                         model2.ApplyOverrides();

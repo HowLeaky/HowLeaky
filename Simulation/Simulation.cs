@@ -228,7 +228,10 @@ namespace HowLeaky
             TillageController = FindInputModels(inputDataModels, typeof(TillageInputModel)) == null ? null : new TillageController(this, FindInputModels(inputDataModels, typeof(TillageInputModel)));
             PesticideController = FindInputModels(inputDataModels, typeof(PesticideInputModel)) == null ? null : new PesticideController(this, FindInputModels(inputDataModels, typeof(PesticideInputModel)));
             PhosphorusController = FindInputModels(inputDataModels, typeof(PhosphorusInputModel)) == null ? null : new PhosphorusController(this, FindInputModels(inputDataModels, typeof(PhosphorusInputModel)));
+
             NitrateController = FindInputModels(inputDataModels, typeof(NitrateInputModel)) == null ? null : new NitrateController(this, FindInputModels(inputDataModels, typeof(NitrateInputModel)));
+            NitrateController = FindInputModels(inputDataModels, typeof(DINNitrateInputModel)) == null ? null : new DINNitrateController(this, FindInputModels(inputDataModels, typeof(DINNitrateInputModel)));
+
             SolutesController = FindInputModels(inputDataModels, typeof(SolutesInputModel)) == null ? null : new SolutesController(this, FindInputModels(inputDataModels, typeof(SolutesInputModel)));
             //ModelOptionsController = FindInputModels(inputDataModels, typeof(ModelOptionsInputModel)) == null ? null : new ModelOptionsController(this, FindInputModels(inputDataModels, typeof(ModelOptionsInputModel)));
             //There is no XML definition found yet

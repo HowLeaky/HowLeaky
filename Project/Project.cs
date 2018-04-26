@@ -174,14 +174,20 @@ namespace HowLeaky
             //Create input models from the xml elements
             foreach (XElement xe in TypeElements)
             {
-                InputDataModels.Add(RawInputModelFactory.GenerateRawInputModel(xe));
+                InputDataModels.Add(RawInputModelFactory.GenerateRawInputModel(Path.GetDirectoryName(FileName).Replace("\\", "/"), xe));
             }
 
             //Create the Climate models - these aren't deserialised so don't come out of the factory
             foreach (XElement xe in ClimateDatalements)
             {
                 ClimateInputModel cim = new ClimateInputModel();
-                cim.FileName = xe.Attribute("href").Value.ToString();
+                cim.FileName = xe.Attribute("href").Value.ToString().Replace("\\", "/");
+
+                if(cim.FileName.Contains("./"))
+                {
+                    cim.FileName =(Path.GetDirectoryName(FileName).Replace("\\", "/") + "/" + cim.FileName);
+                }
+
                 InputDataModels.Add(cim);
             }
 
@@ -199,7 +205,7 @@ namespace HowLeaky
 
             //Just one for testing
             //Simulations = new List<Simulation>();
-            //Simulations.Add(SimulationFactory.GenerateSimulationXML(SimulationElements[0], InputDataModels));
+            //Simulations.Add(SimulationFactory.GenerateSimulationXML(this, SimulationElements[0], InputDataModels));
 
             OutputDataElements = OutputModelController.GetProjectOutputs(this);
         }
