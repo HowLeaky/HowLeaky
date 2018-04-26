@@ -11,10 +11,13 @@ namespace HowLeaky.DataModels
     public class NitrateInputModel : InputModel
     {
         [XmlElement("DissolvedNinRunoffOptions")]
+        [Input("DissolvedNinRunoff")]
         public DissolvedNinRunoffOptions DissolvedNinRunoff { get; set; }
         [XmlElement("DissolvedNinLeachingOptions")]
+        [Input("DissolvedNinLeaching")]
         public DissolvedNinLeachingOptions DissolvedNinLeaching { get; set; }
         [XmlElement("ParticulateNinRunoffOptions")]
+        [Input("ParticulateNinRunoff")]
         public ParticulateNinRunoffOptions ParticulateNinRunoff { get; set; }
 
         //public ProfileData SoilNLoadData2 { get; set; }                             //
@@ -55,24 +58,37 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class DissolvedNinRunoffOptions : IndexData
     {
+        [Input("NDepthTopLayer1")]
         public Sequence FertilizerInputDateSequences { get; set; } = null;
+        [Input("NDepthTopLayer1")]
         public TimeSeriesData NLoadInSurfaceLayerTimeSeries { get; set; } = null;
 
+        [Input("NDepthTopLayer1")]
         public double NDepthTopLayer1 { get; set; }
+        [Input("Nk")]
         public double Nk { get; set; }
+        [Input("Ncv")]
         public double Ncv { get; set; }
+        [Input("NAlpha")]
         public double NAlpha { get; set; }
         //public double NitrateSourceData { get; set; }  //Has child SoilNitrateTimeseries
+        [Input("SoilNitrateLoadWeighting1")]
         public double SoilNitrateLoadWeighting1 { get; set; }
         [XmlArrayItem("Data")]
+        [Input("SoilNitrateLevels")]
         public Data[] SoilNitrateLevels { get; set; } = null;
         [XmlIgnore]
+        [Input("SoilNLoadData1")]
         public ProfileData SoilNLoadData1 { get; set; } = null;
+        [Input("N_DanRat_Alpha")]
         public double N_DanRat_Alpha { get; set; }
+        [Input("N_DanRat_Beta")]
         public double N_DanRat_Beta { get; set; }
+        [Input("N_DanRat_MaxRunOffConc")]
         public double N_DanRat_MaxRunOffConc { get; set; }
+        [Input("N_DanRat_MinRunOffConc")]
         public double N_DanRat_MinRunOffConc { get; set; }
-
+       
         public DissolvedNinRunoffOptions() { }
     }
     /// <summary>
@@ -82,14 +98,20 @@ namespace HowLeaky.DataModels
     {
         //       public NitrateSourceData NitrateSourceData { get; set; }
         [XmlArrayItem("Data")]
+        [Input("SoilNitrateLevels")]
         public Data[] SoilNitrateLevels { get; set; } = null;
         [XmlIgnore]
+        [Input("SoilNLoadData2")]
         public ProfileData SoilNLoadData2 { get; set; } = null;
+        [Input("DepthBottomLayer")]
         public double DepthBottomLayer { get; set; }
+        [Input("NitrateLeachingEfficiency")]
         public double NitrateLeachingEfficiency { get; set; }
+        [Input("SoilNitrateLoadWeighting2")]
         public double SoilNitrateLoadWeighting2 { get; set; }
         //SoilNitrateLevels
 
+        [Input("NLoadInLowerLayersTimeSeries")]
         public TimeSeriesData NLoadInLowerLayersTimeSeries { get; set; } = null;
 
         public DissolvedNinLeachingOptions() { }
@@ -101,14 +123,21 @@ namespace HowLeaky.DataModels
     {
         public NitrateSourceData NitrateSourceData { get; set; }
 
+        [Input("NDepthTopLayer2")]
         public double NDepthTopLayer2 { get; set; }
+        [Input("NEnrichmentRatio")]
         public double NEnrichmentRatio { get; set; }
+        [Input("NAlpha")]
         public double NAlpha { get; set; }
+        [Input("NBeta")]
         public double NBeta { get; set; }
+        [Input("SoilNitrateLoadWeighting3")]
         public double SoilNitrateLoadWeighting3 { get; set; }
         [XmlArrayItem("Data")]
+        [Input("SoilNitrateLevels")]
         public Data[] SoilNitrateLevels { get; set; } = null;
         [XmlIgnore]
+        [Input("SoilNLoadData3")]
         public ProfileData SoilNLoadData3 { get; set; } = null;
 
         public ParticulateNinRunoffOptions() { }
@@ -118,9 +147,13 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class NitrateSourceData : IndexData
     {
+        [Input("InorganicNitrateNTimeseries")]
         public TimeSeriesData InorganicNitrateNTimeseries { get; set; }
+        [Input("InorganicAmmoniumNTimeseries")]
         public TimeSeriesData InorganicAmmoniumNTimeseries { get; set; }
+        [Input("OrganicNTimeseries")]
         public TimeSeriesData OrganicNTimeseries { get; set; }
+        [Input("SoilNitrateTimeseries")]
         public TimeSeriesData SoilNitrateTimeseries { get; set; }
 
         public NitrateSourceData() { }
