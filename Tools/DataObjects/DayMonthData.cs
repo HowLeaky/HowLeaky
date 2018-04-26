@@ -1,4 +1,5 @@
-﻿using HowLeaky.Tools.Helpers;
+﻿using HowLeaky.CustomAttributes;
+using HowLeaky.Tools.Helpers;
 using System;
 using System.Xml.Serialization;
 
@@ -7,8 +8,10 @@ namespace HowLeaky.Tools.DataObjects
     public class DayMonthData
     {
         [XmlAttribute]
+        [Input("Day")]
         public int Day { get; set; }
         [XmlAttribute]
+        [Input("Month")]
         public int Month { get; set; }
         [XmlAttribute]
         public bool Enabled { get; set; } = true;
