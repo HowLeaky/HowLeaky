@@ -7,23 +7,34 @@ namespace HowLeaky.DataModels
     public class SolutesInputModel : InputModel
     {
         //Input Parameters
+        [Input("StartConcOption")]
         public int StartConcOption { get; set; }
-        [Unit("mg_per_kg")]
+
+        [Input("Layer1InitialConc", "mg/kg")]
         public double Layer1InitialConc { get; set; }
-        [Unit("mg_per_kg")]
+
+        [Input("Layer2InitialConc", "mg/kg")]
         public double Layer2InitialConc { get; set; }
-        [Unit("mg_per_kg")]
+
+        [Input("Layer3InitialConc", "mg/kg")]
         public double Layer3InitialConc { get; set; }
-        [Unit("mg_per_kg")]
+
+        [Input("Layer4InitialConc", "mg/kg")]
         public double Layer4InitialConc { get; set; }
-        [Unit("mg_per_kg")]
+
+        [Input("Layer5InitialConc", "mg/kg")]
         public double Layer5InitialConc { get; set; }
-        [Unit("mg_per_kg")]
+
+        [Input("DefaultInitialConc", "mg/kg")]
         public double DefaultInitialConc { get; set; }
-        [Unit("mg_per_L")]
+
+        [Input("RainfallConcentration", "mg/L")]
         public double RainfallConcentration { get; set; }
-        [Unit("mg_per_L")]
+
+        [Input("IrrigationConcentration", "mg/L")]
         public double IrrigationConcentration { get; set; }
+
+        [Input("MixingCoefficient")]
         public double MixingCoefficient { get; set; }                   
     }
 }

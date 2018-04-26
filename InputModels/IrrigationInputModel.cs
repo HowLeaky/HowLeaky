@@ -13,19 +13,25 @@ namespace HowLeaky.DataModels
     {
         //Input Parameters
         //Xml Elements
-        [Unit("mm")]
+        [Input("SWDToIrrigate","mm")]
         public double SWDToIrrigate { get; set; }                                                                                   // Soil water deficit amount for which to trigger an irrigation (mm).      
+        [Input("FixedIrrigationAmount")]
         public double FixedIrrigationAmount { get; set; }                                                                           // Irrigation amount to apply during each irrigation (mm).        
-        [Unit("days")]
+        [Input("IrrigationBufferPeriod", "days")]
         public int IrrigationBufferPeriod { get; set; }                                                                             // Minimum days that should elapse between irrigations (days)        
+        [Input("IrrigationFormat")]
         public IrrigationFormat IrrigationFormat { get; set; }
+        [Input("TargetAmountOptions")]
         public TargetAmountOptions TargetAmountOptions { get; set; }
+        [Input("IrrigationRunoffOptions")]
         public IrrigationRunoffOptions IrrigationRunoffOptions { get; set; }
+        [Input("IrrigationEvaporationOptions")]
         public IrrigationEvaporationOptions IrrigationEvaporationOptions { get; set; }
+        [Input("UseRingTank")]
         public StateData Ponding { get; set; }
         [XmlElement("UseRingTank")]
+        [Input("RingTank")]
         public RingTank RingTank { get; set; }
-        [Unit("mm")]
         
         //Getters
         //IrrigationFormat
@@ -107,8 +113,11 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class IrrigationFormat : IndexData
     {
+        [Input("IrrigationDates")]
         public Sequence IrrigationDates { get; set; }
+        [Input("StartIrrigationWindow")]
         public DayMonthData StartIrrigationWindow { get; set; }
+        [Input("EndIrrigationWindow")]
         public DayMonthData EndIrrigationWindow { get; set; }
 
         public IrrigationFormat() { }
@@ -118,6 +127,7 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class TargetAmountOptions : IndexData
     {
+        [Input("IrrigationAmount")]
         public double IrrigationAmount { get; set; }
 
         public TargetAmountOptions() { }
@@ -127,10 +137,14 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class IrrigationRunoffOptions : IndexData
     {
+        [Input("IrrigationRunoffSequence")]
         public Sequence IrrigationRunoffSequence { get; set; }
+        [Input("tbIrrigationCoverEffects")]
         public IndexData tbIrrigationCoverEffects { get; set; }
 
+        [Input("IrrigationRunoffProportion1")]
         public double IrrigationRunoffProportion1 { get; set; }
+        [Input("IrrigationRunoffProportion2")]
         public double IrrigationRunoffProportion2 { get; set; }
 
         public IrrigationRunoffOptions() { }
@@ -140,6 +154,7 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class IrrigationEvaporationOptions : IndexData
     {
+        [Input("IrrigationEvaporationProportion")]
         public double IrrigationEvaporationProportion { get; set; }
 
         public IrrigationEvaporationOptions() { }
@@ -149,16 +164,26 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class RingTank : StateData
     {
+        [Input("AdditionalInflowFormat")]
         public AdditionalInflowFormat AdditionalInflowFormat { get; set; }
+        [Input("ResetRingTank")]
         public ResetRingTank ResetRingTank { get; set; }
 
+        [Input("RingTankDepth")]
         public double RingTankDepth { get; set; }
+        [Input("RingTankArea")]
         public double RingTankArea { get; set; }
+        [Input("CatchmentArea")]
         public double CatchmentArea { get; set; }
+        [Input("IrrigatedArea")]
         public double IrrigatedArea { get; set; }
+        [Input("RunoffCaptureRate")]
         public double RunoffCaptureRate { get; set; }
+        [Input("RingTankSeepage")]
         public double RingTankSeepage { get; set; }
+        [Input("RingTankEvapCoeficient")]
         public double RingTankEvapCoeficient { get; set; }
+        [Input("IrrigationDeliveryEfficiency")]
         public double IrrigationDeliveryEfficiency { get; set; }
 
         public RingTank() { }
@@ -168,7 +193,9 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class AdditionalInflowFormat : IndexData
     {
+        [Input("AdditionalInflow")]
         public double AdditionalInflow { get; set; }
+        [Input("AdditionalInflowDateSequences")]
         public Sequence AdditionalInflowDateSequences { get; set; }
 
         public AdditionalInflowFormat() { }
@@ -178,7 +205,9 @@ namespace HowLeaky.DataModels
     /// </summary>
     public class ResetRingTank : StateData
     {
+        [Input("RingTankResetDate")]
         public DayMonthData RingTankResetDate { get; set; }
+        [Input("CapactityAtReset")]
         public double CapactityAtReset { get; set; }
 
         public ResetRingTank() { }

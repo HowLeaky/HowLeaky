@@ -1,4 +1,5 @@
-﻿using HowLeaky.SyncModels;
+﻿using HowLeaky.CustomAttributes;
+using HowLeaky.SyncModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ namespace HowLeaky.DataModels
     public class InputModel : CustomSyncModel
     {
         //This could be an attribute but may be out of date
+        [Input("Filename")]
         public string FileName { get; set; }
         [XmlAttribute("text")]
         public string Text { get; set; }

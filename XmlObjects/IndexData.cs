@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using HowLeaky.CustomAttributes;
+using System.Xml.Serialization;
 
 namespace HowLeaky.XmlObjects
 {
@@ -6,8 +7,10 @@ namespace HowLeaky.XmlObjects
     public class IndexData
     {
         [XmlAttribute]
+        [Input("index")]
         public int index { get; set; }
         [XmlAttribute]
+        [Input("text")]
         public string text { get; set; }
 
         public IndexData() { }

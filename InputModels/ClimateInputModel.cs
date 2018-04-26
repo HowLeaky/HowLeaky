@@ -176,50 +176,51 @@ namespace HowLeaky.DataModels
                 bool foundheader = false;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    List<String> items = new List<String>(line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries));
-
-                    if (foundheader == false)
-                    {
-                        //Parse the header
-
-                        float lat;
-                        float lon;
-                        if (float.TryParse(items[0], out lat))
+                    List<String> items = new List<String>(line.Trim().Split(new string[] { " ", "\t" }, StringSplitOptions.RemoveEmptyEntries));
+                    if (items[0] != "//") {
+                        if (foundheader == false)
                         {
-                            Latitude = lat;
-                        }
-                        if (float.TryParse(items[1], out lon))
-                        {
-                            Latitude = lon;
-                        }
+                            //Parse the header
 
-                        items.RemoveRange(0, 2);
-                        Comments = String.Join(" ", items.ToArray());
-
-                        foundheader = true;
-
-                    }
-                    else
-                    {
-                        if (items.Count() == 8)
-                        {
-
-                            var date = DateUtilities.TryParseDate(items[0]);
-                            if (date != null)
+                            float lat;
+                            float lon;
+                            if (float.TryParse(items[0], out lat))
                             {
-                                if (StartDate == null)
-                                {
-                                    StartDate = date;
-                                }
-                                //Parse the met data
-                                EndDate = date;
+                                Latitude = lat;
+                            }
+                            if (float.TryParse(items[1], out lon))
+                            {
+                                Latitude = lon;
+                            }
 
-                                MaxT.Add(double.Parse(items[2]));
-                                MinT.Add(double.Parse(items[3]));
-                                Rain.Add(double.Parse(items[4]));
-                                PanEvap.Add(double.Parse(items[5]));
-                                Radiation.Add(double.Parse(items[6]));
-                                VP.Add(double.Parse(items[7]));
+                            items.RemoveRange(0, 2);
+                            Comments = String.Join(" ", items.ToArray());
+
+                            foundheader = true;
+
+                        }
+                        else
+                        {
+                            if (items.Count() == 8)
+                            {
+
+                                var date = DateUtilities.TryParseDate(items[0]);
+                                if (date != null)
+                                {
+                                    if (StartDate == null)
+                                    {
+                                        StartDate = date;
+                                    }
+                                    //Parse the met data
+                                    EndDate = date;
+
+                                    MaxT.Add(double.Parse(items[2]));
+                                    MinT.Add(double.Parse(items[3]));
+                                    Rain.Add(double.Parse(items[4]));
+                                    PanEvap.Add(double.Parse(items[5]));
+                                    Radiation.Add(double.Parse(items[6]));
+                                    VP.Add(double.Parse(items[7]));
+                                }
                             }
                         }
                     }
