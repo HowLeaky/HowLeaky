@@ -52,7 +52,11 @@ namespace HowLeaky
             p.RunSimulations(numberOfCores);
 
             Console.WriteLine("Press any key to exit when sims completed...\n");
-            Console.ReadKey();
+
+            if (argsList.Contains("-WAIT"))
+            {
+                Console.ReadKey();
+            } 
         }
 
         public static void PrintHelp()
