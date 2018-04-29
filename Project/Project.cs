@@ -239,7 +239,7 @@ namespace HowLeaky
 
                 if (OutputPath == null)
                 {
-                    OutputPath = hlkFile.Directory.FullName;
+                    OutputPath = hlkFile.Directory.FullName.Replace("\\","/");
                 }
 
                 if (!OutputPath.Contains(":"))
@@ -258,6 +258,7 @@ namespace HowLeaky
                 if (OutputPath == null)
                 {
                     OutputPath = FileName.Replace(".hlk", ".sqlite");
+                    OutputPath = OutputPath.Replace("\\", "/");
                 }
 
                 //if (DBContext == null)
