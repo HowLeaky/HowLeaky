@@ -3,6 +3,7 @@ using HowLeaky.ModelControllers;
 using HowLeaky.SyncModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -11,17 +12,30 @@ using System.Xml.Serialization;
 
 namespace HowLeaky.OutputModels
 {
-    public class OutputDataElement
+    public class OutputDataElement : INotifyPropertyChanged
     {
         [XmlIgnore]
         public PropertyInfo PropertyInfo { get; set; }
         public Output Output { get; set; }
-       // public List<int> DBIndicies { get; set; }
-        public bool IsSelected { get; set; } = true;
+        // public List<int> DBIndicies { get; set; }
+        private bool _IsSelected = true;
+
+        public bool IsSelected
+        {
+            get { return _IsSelected; }
+            set
+            {
+                _IsSelected = value;
+                OnPropertyChanged("IsSelected");
+            }
+        }
+
         public string Suffix { get; set; }
         public string Name { get; set; }
         public int Index { get; set; } = -1;
         public HLController HLController { get; set; } = null;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public OutputDataElement() { }
 
@@ -32,6 +46,16 @@ namespace HowLeaky.OutputModels
             this.Suffix = Suffix;
 
             //DBIndicies = new List<int>();
+        }
+
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
         }
 
         public double Value
@@ -53,11 +77,11 @@ namespace HowLeaky.OutputModels
                     {
                         if (value.GetType() == typeof(double))
                         {
-                            return((double)value);
+                            return ((double)value);
                         }
                         else
                         {
-                            return((int)value);
+                            return ((int)value);
                         }
                     }
                 }

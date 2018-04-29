@@ -1,4 +1,5 @@
 ﻿
+using HowLeaky.CustomAttributes;
 using HowLeaky.Tools.XML;
 using HowLeaky.XmlObjects;
 using System;
@@ -64,39 +65,60 @@ namespace HowLeaky.DataModels
     public class SoilInputModel : InputModel
     {
 
-
+        [Input("HorizonCount")]
         public int HorizonCount { get; set; }
         [XmlElement("LayerDepth")]
+        [Input("Depths")]
         public SoilLayers Depths { get; set; }
         [XmlElement("InSituAirDryMoist")]
+        [Input("AirDry")]
         public SoilLayers AirDry { get; set; }
+        [Input("WiltingPoint")]
         public SoilLayers WiltingPoint { get; set; }
+        [Input("FieldCapacity")]
         public SoilLayers FieldCapacity { get; set; }
         [XmlElement("SatWaterCont")]
+        [Input("Saturation")]
         public SoilLayers Saturation { get; set; }
         //public SoilLayers MaxDailyDrainVolume { get; set; }
+        [Input("MaxDailyDrainRate")]
         public SoilLayers MaxDailyDrainRate { get; set; }
+        [Input("BulkDensity")]
         public SoilLayers BulkDensity { get; set; }
 
+        [Input("SoilCrack")]
         public StateData SoilCrack { get; set; }
 
         [XmlElement("Stage2SoilEvap_Cona")]
+        [Input("Stage2SoilEvapCona")]
         public double Stage2SoilEvapCona { get; set; }
         [XmlElement("Stage1SoilEvap_U")]
+        [Input("Stage1SoilEvapU")]
         public double Stage1SoilEvapU { get; set; }
+        [Input("RunoffCurveNumber")]
         public double RunoffCurveNumber { get; set; }
+        [Input("RedInCNAtFullCover")]
         public double RedInCNAtFullCover { get; set; }
+        [Input("MaxRedInCNDueToTill")]
         public double MaxRedInCNDueToTill { get; set; }
+        [Input("RainToRemoveRough")]
         public double RainToRemoveRough { get; set; }
         [XmlElement("USLE_K")]
+        [Input("USLEK")]
         public double USLEK { get; set; }
         [XmlElement("USLE_P")]
+        [Input("USLEP")]
         public double USLEP { get; set; }
+        [Input("FieldSlope")]
         public double FieldSlope { get; set; }
+        [Input("SlopeLength")]
         public double SlopeLength { get; set; }
+        [Input("RillRatio")]
         public double RillRatio { get; set; }
 
+        [Input("MaxInfiltIntoCracks")]
         public double MaxInfiltIntoCracks { get; set; }
+        [Input("SedDelivRatio")]
         public double SedDelivRatio { get; set; }
 
         ////public virtual ParameterModel CnReductionAtFullCover { get; set; }
