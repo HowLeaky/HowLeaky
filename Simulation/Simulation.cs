@@ -99,7 +99,7 @@ namespace HowLeaky
             {
                 if (base.Name == null)
                 {
-                    List<string> ModelNames = new List<string>(InputModels.Select(m => m.LongName));
+                    List<string> ModelNames = new List<string>(InputModels.Where(x => x != null).Select(m => m.LongName));
                     return String.Join(",", ModelNames.ToArray());
                 }
                 else
@@ -239,7 +239,7 @@ namespace HowLeaky
 
             //Add the non-null controllers to the activecontroller list
             List<PropertyInfo> controllers = new List<PropertyInfo>(this.GetType().GetProperties().Where(
-                x => x.PropertyType.BaseType == typeof(HLController) || x.PropertyType.BaseType == typeof(HLObjectController)));
+                x => x.PropertyType.BaseType == typeof(HLController) || x.PropertyType.BaseType.BaseType == typeof(HLController) || x.PropertyType.BaseType == typeof(HLObjectController)));
 
             ActiveControlllers = new List<HLController>();
 
@@ -307,7 +307,7 @@ namespace HowLeaky
             //Output all of the summary data
             //OutputModelController.WriteToFile(false);
 
-            //OutputModelController.Finalise();
+            OutputModelController.Finalise();
 
             
 

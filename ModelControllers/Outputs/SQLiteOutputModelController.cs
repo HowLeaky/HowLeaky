@@ -141,16 +141,19 @@ namespace HowLeaky.ModelControllers.Outputs
             iString.Append("INSERT INTO MODELS (SimID, Name, InputType) VALUES ");
             foreach (InputModel im in Sim.InputModels)
             {
-                string comma = ",";
+                if (im != null)
+                {
+                    string comma = ",";
 
-                if (im == Sim.InputModels.First())
-                {
-                    comma = "";
-                }
-                if (im.LongName != null)
-                {
-                    string[] nameParts = im.LongName.Split(new char[] { ':' });
-                    iString.Append(comma + "(" + Sim.Index.ToString() + ",\"" + nameParts[1] + "\",\"" + nameParts[0] + "\")");
+                    if (im == Sim.InputModels.First())
+                    {
+                        comma = "";
+                    }
+                    if (im.LongName != null)
+                    {
+                        string[] nameParts = im.LongName.Split(new char[] { ':' });
+                        iString.Append(comma + "(" + Sim.Index.ToString() + ",\"" + nameParts[1] + "\",\"" + nameParts[0] + "\")");
+                    }
                 }
             }
 

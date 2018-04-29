@@ -262,6 +262,7 @@ namespace HowLeaky.ModelControllers
             AddOutputOutputElements(Outputs, typeof(IrrigationController), Project.Simulations, false);
             //Nitrate
             AddOutputOutputElements(Outputs, typeof(NitrateController), Project.Simulations, false);
+            AddOutputOutputElements(Outputs, typeof(DINNitrateController), Project.Simulations, false);
             //Phosphorus
             AddOutputOutputElements(Outputs, typeof(PhosphorusController), Project.Simulations, false);
             //Solutes

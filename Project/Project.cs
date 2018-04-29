@@ -484,9 +484,8 @@ namespace HowLeaky
 
             HLBackGroundWorker hlbw = (HLBackGroundWorker)sender;
 
-            hlbw.Sim.OutputModelController.Finalise();
+            //hlbw.Sim.OutputModelController.Finalise();
             
-
             NoSimsComplete++;
 
             //Update Progress
