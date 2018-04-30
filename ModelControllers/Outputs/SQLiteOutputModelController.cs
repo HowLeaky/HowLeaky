@@ -28,16 +28,16 @@ namespace HowLeaky.ModelControllers.Outputs
         //public HLRDB.Simulation DBSim = null;
         //public List<HLRDB.Data> Data = new List<HLRDB.Data>();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Sim"></param>
-        public SQLiteOutputModelController(Simulation Sim, HLDBContext DBContext) : base(Sim)
-        {
-            //  this.DBContext = DBContext;
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="Sim"></param>
+        //public SQLiteOutputModelController(Simulation Sim, HLDBContext DBContext) : base(Sim)
+        //{
+        //    //  this.DBContext = DBContext;
 
-            PrepareVariableNamesForOutput();
-        }
+        //    PrepareVariableNamesForOutput();
+        //}
         /// <summary>
         /// 
         /// </summary>
