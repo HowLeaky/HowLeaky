@@ -39,16 +39,17 @@ namespace HowLeaky.ModelControllers
 
         public List<OutputDataModel> OutputDataModels;
 
-        public virtual bool DateIsOutput { get; set; } = true;
+        public bool DateIsOutput { get; set; } = true;
 
         public OutputModelController() { }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sim"></param>
-        public OutputModelController(Simulation sim)
+        public OutputModelController(Simulation sim, bool DateIsOutput = true)
         {
             this.Sim = sim;
+            this.DateIsOutput = DateIsOutput;
 
             //Create some stream writers from the simuation name
             OutputDataModels = new List<OutputDataModel>();

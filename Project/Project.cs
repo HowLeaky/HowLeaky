@@ -200,12 +200,11 @@ namespace HowLeaky
             //Create the simualtions
             foreach (XElement xe in SimulationElements)
             {
+                //For Testing
+                //if(xe == SimulationElements[0])
+                //
                 Simulations.Add(SimulationFactory.GenerateSimulationXML(this, xe, InputDataModels));
             }
-
-            //Just one for testing
-            //Simulations = new List<Simulation>();
-            //Simulations.Add(SimulationFactory.GenerateSimulationXML(this, SimulationElements[0], InputDataModels));
 
             OutputDataElements = OutputModelController.GetProjectOutputs(this);
         }
@@ -371,13 +370,25 @@ namespace HowLeaky
                 BackgroundWorkers[i].DoWork += HLBackgroundWorker_DoWork;
                 BackgroundWorkers[i].RunWorkerCompleted += HLBackgroundWorker_RunWorkerCompleted;
 
+                BackgroundWorkers[i].WorkerReportsProgress = true;
+                BackgroundWorkers[i].WorkerSupportsCancellation = true;
+
+
                 Simulation sim = GetSimulationElement();
 
                 if (sim != null)
                 {
+                    BackgroundWorkers[i].Sim = sim;
                     // BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { xe, handler }));
-                    BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { sim }));
+                    //BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { sim }));
+                    BackgroundWorkers[i].RunWorkerAsync();
+                
                 }
+            }
+
+            while(NoSimsComplete < Simulations.Count)
+            {
+                System.Threading.Thread.Sleep(500);
             }
         }
         /// <summary>
@@ -392,6 +403,11 @@ namespace HowLeaky
             {
                 result = Simulations[CurrentSimIndex];
                 CurrentSimIndex++;
+            }
+
+            if(result !=null)
+            {
+                result.Index = Simulations.IndexOf(result) + 1;
             }
             return result;
         }
@@ -417,45 +433,25 @@ namespace HowLeaky
         {
             HLBackGroundWorker hlbw = (HLBackGroundWorker)sender;
 
-            List<object> Arguments = e.Argument as List<object>;
+            //List<object> Arguments = e.Argument as List<object>;
 
-            Simulation sim = (Simulation)Arguments[0];
+            //Simulation sim = (Simulation)Arguments[0];
 
-            //hlbw.Sim = SimulationFactory.GenerateSimulationXML(simElement, InputDataModels);
-            //hlbw.Sim.Id = SimulationElements.IndexOf(simElement) + 1;
+            ////hlbw.Sim = SimulationFactory.GenerateSimulationXML(simElement, InputDataModels);
+            ////hlbw.Sim.Id = SimulationElements.IndexOf(simElement) + 1;
 
-            hlbw.Sim = sim;
-            hlbw.Sim.Index = Simulations.IndexOf(sim) + 1;
+            //hlbw.Sim = sim;
+            //hlbw.Sim
 
             //Setup output controllers
-
-            if (OutputType == OutputType.CSVOutput)
+            try
             {
-                hlbw.Sim.OutputModelController = new CSVOutputModelController(hlbw.Sim, OutputPath);
+                hlbw.Sim.Run();
             }
-            else if (OutputType == OutputType.SQLiteOutput)
+            catch(Exception ex)
             {
-                hlbw.Sim.OutputModelController = new SQLiteOutputModelController(hlbw.Sim, SQLConn);
-
-                //HLRDB.Simulation DBSim = new HLRDB.Simulation { Id = hlbw.Sim.Id, Name = hlbw.Sim.Name };
-                //DBSim.Data = new List<HLRDB.Data>();
-                //DBSim.Models = new List<Model>();
-
-                //foreach (InputModel im in hlbw.Sim.InputModels)
-                //{
-                //    DBSim.Models.Add(new HLRDB.Model { Name = im.Name, Type = im.GetType().ToString(), Content = "" });
-                //}
-
-                //DBContext.Simulations.Add(new HLRDB.Simulation { Id = hlbw.Sim.Id, Name = hlbw.Sim.Name });
-
-                //DBContext.SaveChanges();
+                Console.WriteLine(ex.Message);
             }
-            else if (OutputType == OutputType.NetCDF)
-            {
-                //hlbw.Sim.OutputModelController = new NetCDFOutputModelController(hlbw.Sim, HLNC);
-            }
-
-            hlbw.Sim.Run();
         }
 
         /// <summary>
@@ -502,9 +498,6 @@ namespace HowLeaky
                 Console.WriteLine(ts);
             }
 
-           
-            BackgroundWorker bw = (BackgroundWorker)sender;
-
             Simulation nextSim = GetSimulationElement();
 
             if (nextSim == null)
@@ -513,7 +506,9 @@ namespace HowLeaky
             }
             else
             {
-                bw.RunWorkerAsync(new List<object>(new object[] { nextSim }));
+                hlbw.Sim = nextSim;
+                //hlbw.RunWorkerAsync(new List<object>(new object[] { nextSim }));
+                hlbw.RunWorkerAsync();
             }
         }
     }

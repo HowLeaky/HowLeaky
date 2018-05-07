@@ -4,6 +4,7 @@ using HowLeaky.DataModels;
 using HowLeaky.InputModels;
 using HowLeaky.Interfaces;
 using HowLeaky.ModelControllers;
+using HowLeaky.ModelControllers.Outputs;
 using HowLeaky.OutputModels;
 using HowLeaky.SyncModels;
 using HowLeaky.Tools;
@@ -279,11 +280,44 @@ namespace HowLeaky
             Today = StartDate;
         }
 
+
+        void SetupOutput()
+        {
+            if(Project.OutputType == OutputType.CSVOutput)
+            {
+                this.OutputModelController = new CSVOutputModelController(this, Project.OutputPath);
+            }
+            else if (Project.OutputType == OutputType.SQLiteOutput)
+            {
+                this.OutputModelController = new SQLiteOutputModelController(this, Project.SQLConn);
+
+                //HLRDB.Simulation DBSim = new HLRDB.Simulation { Id = hlbw.Sim.Id, Name = hlbw.Sim.Name };
+                //DBSim.Data = new List<HLRDB.Data>();
+                //DBSim.Models = new List<Model>();
+
+                //foreach (InputModel im in hlbw.Sim.InputModels)
+                //{
+                //    DBSim.Models.Add(new HLRDB.Model { Name = im.Name, Type = im.GetType().ToString(), Content = "" });
+                //}
+
+                //DBContext.Simulations.Add(new HLRDB.Simulation { Id = hlbw.Sim.Id, Name = hlbw.Sim.Name });
+
+                //DBContext.SaveChanges();
+            }
+            else if (Project.OutputType == OutputType.NetCDF)
+            {
+                //hlbw.Sim.OutputModelController = new NetCDFOutputModelController(hlbw.Sim, HLNC);
+            }
+
+            this.OutputModelController.PrepareVariableNamesForOutput();
+        }
         /// <summary>
         /// 
         /// </summary>
         public void Run()
         {
+            SetupOutput();
+
             ResetToDefault();
 
             SoilController.InitialiseSoilParameters();

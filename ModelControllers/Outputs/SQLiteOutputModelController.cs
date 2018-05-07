@@ -14,7 +14,7 @@ namespace HowLeaky.ModelControllers.Outputs
     public class SQLiteOutputModelController : OutputModelController
     {
         string InsertString = "";
-        public override bool DateIsOutput { get; set; } = false;
+        // override bool DateIsOutput { get; set; } = false;
 
         //public HLDBContext DBContext;
         public SQLiteConnection SQLConn { get; set; }
