@@ -10,19 +10,26 @@ namespace HowLeaky.ModelControllers.Outputs
 {
     public class CSVOutputModelController : OutputModelController
     {
-        public override bool DateIsOutput { get; set; } = false;
+        //public override bool DateIsOutput { get; set; } = false;
         StreamWriter outWriter;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="Sim"></param>
-        public CSVOutputModelController(Simulation Sim, string OutputPath) : base(Sim)
+        public CSVOutputModelController(Simulation Sim, string OutputPath) : base(Sim, false)
         {
-            outWriter = new StreamWriter(Path.Combine(OutputPath, Sim.Index + "_daily.csv"), false);
-
-            PrepareVariableNamesForOutput();
+            try
+            {
+                outWriter = new StreamWriter(Path.Combine(OutputPath, Sim.Index.ToString() + "_daily.csv"), false);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            //PrepareVariableNamesForOutput();
         }
+
 
         /// <summary>
         /// 
