@@ -16,19 +16,19 @@ namespace HowLeaky.DataModels
         [Input("PlantDate")]
         public DayMonthData PlantDate { get; set; }
         [Input("ForcePlanting")]
-        public StateData ForcePlanting { get; set; }
+        public StateData ForcePlanting { get; set; } = new StateData() { State = true };
         [Input("MultiPlantInWindow")]
-        public StateData MultiPlantInWindow { get; set; }
+        public StateData MultiPlantInWindow { get; set; } = new StateData() { State = true };
         [Input("RotationOptions")]
         public RotationOptions RotationOptions { get; set; }
         [Input("PlantingDates")]
         public Sequence PlantingDates { get; set; }
         [Input("FallowSwitch")]
-        public FallowSwitch FallowSwitch { get; set; }
+        public FallowSwitch FallowSwitch { get; set; } = new FallowSwitch() { State = true };
         [Input("RainfallSwitch")]
-        public RainfallSwitch RainfallSwitch { get; set; }
+        public RainfallSwitch RainfallSwitch { get; set; } = new RainfallSwitch() { State = true };
         [Input("SoilWaterSwitch")]
-        public SoilWaterSwitch SoilWaterSwitch { get; set; }
+        public SoilWaterSwitch SoilWaterSwitch { get; set; } = new SoilWaterSwitch() { State = true };
         [Input("RatoonCrop")]
         public RatoonCrop RatoonCrop { get; set; }
 
@@ -38,11 +38,11 @@ namespace HowLeaky.DataModels
     public class RotationOptions : IndexData
     {
         [Input("MinContinuousRotations")]
-        public int MinContinuousRotations { get; set; }
+        public int MinContinuousRotations { get; set; } = 1;
         [Input("MaxContinuousRotations")]
-        public int MaxContinuousRotations { get; set; }
+        public int MaxContinuousRotations { get; set; } = 999;
         [Input("MinYearsBetweenSowing")]
-        public int MinYearsBetweenSowing { get; set; }
+        public int MinYearsBetweenSowing { get; set; } = 0;
 
         public RotationOptions() { }
     }
@@ -62,7 +62,7 @@ namespace HowLeaky.DataModels
         [Input("DaysToTotalRain")]
         public int DaysToTotalRain { get; set; }
         [Input("SowingDelay")]
-        public int SowingDelay { get; set; }
+        public int SowingDelay { get; set; } = 0;
 
         public RainfallSwitch() { }
     }
@@ -94,9 +94,9 @@ namespace HowLeaky.DataModels
     public class Waterlogging : StateData
     {
         [Input("WaterLoggingFactor1")]
-        public double WaterLoggingFactor1 { get; set; }
+        public double WaterLoggingFactor1 { get; set; } = 1;
         [Input("WaterLoggingFactor2")]
-        public double WaterLoggingFactor2 { get; set; }
+        public double WaterLoggingFactor2 { get; set; } = 1;
 
         public Waterlogging() { }
     }
@@ -106,6 +106,7 @@ namespace HowLeaky.DataModels
     {
         //Input Parameters
         [Input("PotMaxLAI")]
+        [XmlElement("PotMaxLai")]
         public double PotMaxLAI { get; set; }                   // The upper limit of the leaf area index (LAI) - development curve.
         [Input("PropGrowSeaForMaxLai")]
         public double PropGrowSeaForMaxLai { get; set; }        // The development stage for potential maximum LAI.
@@ -114,7 +115,7 @@ namespace HowLeaky.DataModels
         [Input("DailyRootGrowth", "mm/day")]
         public double DailyRootGrowth { get; set; }             // The daily increment in root depth.
         [Input("PropGDDEnd")]
-        public double PropGDDEnd { get; set; }                  // Set the proportion of the growth cycle for which irrigation is possible.
+        public double PropGDDEnd { get; set; } = 80;            // Set the proportion of the growth cycle for which irrigation is possible.
         [Input("DaysOfStressToDeath")]
         public double DaysOfStressToDeath { get; set; }         // The number of consecutive days that water supply is less than threshold before the crop is killed.
         [Input("PercentOfMaxLai1")]
@@ -140,7 +141,7 @@ namespace HowLeaky.DataModels
         [Input("MaxRootDepth", "mm")]
         public double MaxRootDepth { get; set; }                // located in CustomVegObject - >The maximum depth of the roots from the soil surface.  For the LAI model, the model calculates daily root growth from the root depth increase parameter
         [Input("SWPropForNoStress")]
-        public double SWPropForNoStress { get; set; }           // Ratio of water supply to potential water supply that indicates a stress day
+        public double SWPropForNoStress { get; set; } = 0.3;    // Ratio of water supply to potential water supply that indicates a stress day
         [Input("MaxResidueLoss")]
         public double MaxResidueLoss { get; set; }              //Decomposition Rate
 
