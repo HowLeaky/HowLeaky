@@ -41,10 +41,10 @@ namespace HowLeaky.DataModels
         public Data[] CropFactorMatrix { get; set; }
         [XmlElement("PanPlantDay")]
         [Input("PlantDay")]
-        public int PlantDay { get; set; }
+        public int PlantDay { get; set; } = 1;
         [XmlIgnore]
         [Input("CoverDataType")]
-        public int CoverDataType { get; set; } = 0; //for no time series
+        public int CoverDataType { get; set; } = 0;             //for no time series
         [XmlIgnore]
         [Input("CoverProfile")]
         public ProfileData CoverProfile { get; set; }
@@ -67,19 +67,19 @@ namespace HowLeaky.DataModels
         public int DaysPlantingToHarvest { get; set; }          // The number of days between planting and harvest.
         [XmlElement("GreenBioMassToCoverFactor")]
         [Input("GreenCoverMultiplier")]
-        public double GreenCoverMultiplier { get; set; }        // Scaling factor for green cover
+        public double GreenCoverMultiplier { get; set; } = 1;   // Scaling factor for green cover
         [XmlElement("ResidueBioMassToCoverFactor")]
         [Input("ResidueCoverMultiplier")]
-        public double ResidueCoverMultiplier { get; set; }      // Scaling factor for residue cover
+        public double ResidueCoverMultiplier { get; set; } = 1; // Scaling factor for residue cover
         [XmlElement("RootBioMassToDepthFactor")]
         [Input("RootDepthMultiplier")]
-        public double RootDepthMultiplier { get; set; }         // Scaling factor for root depth
+        public double RootDepthMultiplier { get; set; } = 1;    // Scaling factor for root depth
         [Input("MaxAllowTotalCover")]
-        public double MaxAllowTotalCover { get; set; }          // Maximum allowable total cover
+        public double MaxAllowTotalCover { get; set; } = 1;     // Maximum allowable total cover
         [Input("MaxRootDepth","mm")]
-        public double MaxRootDepth { get; set; }  // located in CustomVegObject - >The maximum depth of the roots from the soil surface.  For the LAI model, the model calculates daily root growth from the root depth increase parameter
+        public double MaxRootDepth { get; set; }                // located in CustomVegObject - >The maximum depth of the roots from the soil surface.  For the LAI model, the model calculates daily root growth from the root depth increase parameter
         [Input("SWPropForNoStress")]
-        public double SWPropForNoStress { get; set; }
+        public double SWPropForNoStress { get; set; } = 0.3;
 
         /// <summary>
         /// 
@@ -104,7 +104,4 @@ namespace HowLeaky.DataModels
             }
         }
     }
-
-
-
 }
