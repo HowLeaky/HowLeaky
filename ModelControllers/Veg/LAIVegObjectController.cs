@@ -66,7 +66,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <summary>
         /// 
         /// </summary>
-        public void SimulateCrop()
+        public override void Simulate()
         {
             if (ExistsInTheGround)
             {
@@ -92,6 +92,8 @@ namespace HowLeaky.ModelControllers.Veg
                         CalculateLeafAreaIndex();
                         CalculateBioMass();
                         CalculateRootGrowth();
+
+                        CalculateResidue();
                         //	lai=0;
                     }
                     else
@@ -770,7 +772,7 @@ namespace HowLeaky.ModelControllers.Veg
         public void CalculateRootGrowth()
         {
             RootDepth = RootDepth + InputModel.DailyRootGrowth;
-            RootDepth = MathTools.CheckConstraints(RootDepth, MaximumRootDepth, 0);
+            RootDepth = MathTools.CheckConstraints(RootDepth, InputModel.MaxRootDepth, 0);
         }
 
         /// <summary>
