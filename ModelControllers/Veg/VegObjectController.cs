@@ -357,7 +357,6 @@ namespace HowLeaky.ModelControllers.Veg
                 psup = 0;
                 for (int i = 0; i < Sim.SoilController.LayerCount; ++i)
                 {
-
                     if (rootPenetration[i] < 1.0 && Sim.SoilController.MCFC[i] <= (1.0 - rootPenetration[i]))
                     {
                         Sim.SoilController.LayerTranspiration[i] = 0.0;
@@ -371,7 +370,6 @@ namespace HowLeaky.ModelControllers.Veg
                         Sim.SoilController.LayerTranspiration[i] = Math.Max(0.0, Sim.SoilController.SoilWaterRelWP[i]);
                     }
                     psup = psup + Sim.SoilController.LayerTranspiration[i];
-
                 }
 
                 // reduce transpiration if more than potential transpiration
