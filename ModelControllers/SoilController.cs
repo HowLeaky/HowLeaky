@@ -952,6 +952,8 @@ namespace HowLeaky.ModelControllers
                         //  **************************************
                     }
                     SoilEvap = Se1 + Se2;
+
+                    EvapoTransp = SoilEvap;
                 }
             }
             catch (Exception e)
@@ -1071,11 +1073,13 @@ namespace HowLeaky.ModelControllers
             for (int i = 0; i < LayerCount; ++i)
             {
                 TotalSoilWater += SoilWaterRelWP[i];
+                
             }
 
             for (int i = 0; i < LayerCount; i++)
             {
                 SoilWater[i] = SoilWaterRelWP[i];
+                Drainage[i] = Seepage[i];
             }
         }
 

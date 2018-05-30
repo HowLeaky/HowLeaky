@@ -241,7 +241,7 @@ namespace HowLeaky
                     OutputPath = hlkFile.Directory.FullName.Replace("\\","/");
                 }
 
-                if (!OutputPath.Contains(":"))
+                if (!OutputPath.Contains(":") || OutputPath.Contains("./"))
                 {
                     DirectoryInfo outDir = new DirectoryInfo(Path.Combine(hlkFile.Directory.FullName, OutputPath));
                     if (!outDir.Exists)

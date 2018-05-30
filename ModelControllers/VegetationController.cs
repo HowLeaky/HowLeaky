@@ -78,6 +78,11 @@ namespace HowLeaky.ModelControllers
             DaysSinceHarvest = 0;
             TotalTranspiration = 0;
             TotalEvapotranspiration = 0;
+
+            foreach(HLController hlc in ChildControllers )
+            {
+                hlc.Initialise();
+            }
         }
 
         /// <summary>
@@ -524,6 +529,7 @@ namespace HowLeaky.ModelControllers
                 TotalResidueCover = 0;
                 LAIVegObjectController crop = (LAIVegObjectController)CurrentCrop;
                 TotalResidueCover = crop.ResidueCover;
+                crop.CalculateResidue();
                 int count = ChildControllers.Count;
                 for (int i = 1; i < count; ++i)
                 {

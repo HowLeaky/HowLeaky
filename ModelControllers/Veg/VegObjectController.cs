@@ -330,7 +330,9 @@ namespace HowLeaky.ModelControllers.Veg
                         {
                             if (!MathTools.DoublesAreEqual(MaximumRootDepth, 300))
                             {
-                                density[i] = Math.Max(0.0, (1.0 - 0.50 * Math.Min(1.0, (Sim.SoilController.Depth[i + 1] - 300.0) / (MaximumRootDepth - 300.0))));
+                                //density[i] = Math.Max(0.0, (1.0 - 0.50 * Math.Min(1.0, (Sim.SoilController.Depth[i + 1] - 300.0) / (MaximumRootDepth - 300.0))));
+                                density[i] = Math.Max(0.0, (1.0 - 0.50 * Math.Min(1.0, (Sim.SoilController.Depth[i + 1] - 300.0) / (RootDepth - 300.0))));
+
                             }
                             else
                             {
@@ -397,7 +399,11 @@ namespace HowLeaky.ModelControllers.Veg
             AccumulatedTranspiration += TotalTranspiration;
 
             CropTranspiration = TotalTranspiration;
+            
             CropEvapoTranspiration = CropTranspiration + Sim.SoilController.SoilEvap;
+
+            Sim.SoilController.EvapoTransp += CropTranspiration;
+            Sim.SoilController.Transpiration = CropTranspiration;
         }
         
         /// <summary>

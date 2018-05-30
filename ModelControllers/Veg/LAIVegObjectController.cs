@@ -76,7 +76,8 @@ namespace HowLeaky.ModelControllers.Veg
                 if (CheckCropSurvives())
                 {
                     Sim.UpdateManagementEventHistory(ManagementEvent.CropGrowing, Sim.VegetationController.GetCropIndex(this));
-                    if (TodayIsPlantDay) //remove this once debugging is done
+                    //if (TodayIsPlantDay) //remove this once debugging is done
+                    if(DaysSincePlanting == 1)
                     {
 
                         LAI = 0.02;       // this is here just to replicate the old code... see Brett about it.
@@ -130,9 +131,10 @@ namespace HowLeaky.ModelControllers.Veg
                     return Sim.ClimateController.PanEvap * (1.0 - GreenCover);
                 }
             }
-            return Sim.ClimateController.PanEvap * (1.0 - CropCover);
+            //return Sim.ClimateController.PanEvap * (1.0 - CropCover);
+            return Sim.ClimateController.PanEvap * (1.0 - GetTotalCover());// TotalCover);
         }
-       
+
         /// <summary>
         /// 
         /// </summary>
@@ -449,7 +451,8 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         public override double GetTotalCover()
         {
-            TotalCover = Math.Min(1.0, CropCover + ResidueCover * (1 - CropCover));
+            TotalCover = Math.Min(1.0, GreenCover + ResidueCover * (1 - GreenCover));
+            //TotalCover = Math.Min(1.0, CropCover + ResidueCover * (1 - CropCover));
             //REVIEW
             //TotalCoverPc = TotalCover * 100.0;
             return TotalCover;
@@ -548,13 +551,13 @@ namespace HowLeaky.ModelControllers.Veg
             }
             if (InputModel.PercentOfMaxLai1 > 0 && InputModel.PercentOfMaxLai2 > 0)
             {
-                double value1 = InputModel.PercentOfGrowSeason1 / InputModel.PercentOfMaxLai1 - InputModel.PercentOfGrowSeason1;
-                double value2 = InputModel.PercentOfGrowSeason2 / InputModel.PercentOfMaxLai2 - InputModel.PercentOfGrowSeason2;
+                double value1 = (InputModel.PercentOfGrowSeason1 / 100) / (InputModel.PercentOfMaxLai1 / 100) - (InputModel.PercentOfGrowSeason1 / 100);
+                double value2 = (InputModel.PercentOfGrowSeason2 / 100) / (InputModel.PercentOfMaxLai2 / 100) - (InputModel.PercentOfGrowSeason2 / 100);
                 if (!MathTools.DoublesAreEqual(value1, 0) && !MathTools.DoublesAreEqual(value2, 0))
                 {
                     double x = Math.Log(value1);
-                    LAICurveY2active = (x - Math.Log(value2)) / (InputModel.PercentOfGrowSeason2 - InputModel.PercentOfGrowSeason1);
-                    LAICurveY1active = x + InputModel.PercentOfGrowSeason1 * LAICurveY2active;
+                    LAICurveY2active = (x - Math.Log(value2)) / ((InputModel.PercentOfGrowSeason2 / 100) - (InputModel.PercentOfGrowSeason1 / 100));
+                    LAICurveY1active = x + (InputModel.PercentOfGrowSeason1 / 100) * LAICurveY2active;
                 }
                 else
                 {
@@ -713,8 +716,8 @@ namespace HowLeaky.ModelControllers.Veg
             else
             {
                 par = 0.5 * rad;
-                DryMatter += effectiverue * par * WaterStressIndex * TempStressIndex * GreenCover;
-                DryMatter = DryMatter * 10.0;
+                DryMatter += (effectiverue * par * WaterStressIndex * TempStressIndex * GreenCover) * 10;
+                //DryMatter = DryMatter * 10.0;
             }
         }
 
@@ -811,12 +814,16 @@ namespace HowLeaky.ModelControllers.Veg
             //    soil_water_at_harvest=sim.total_soil_water;
             // ++number_of_fallows;
             //	CropStatus=csInFallow;
-            Yield = InputModel.HarvestIndex * DryMatter * 10.0;
+            //Yield = InputModel.HarvestIndex * DryMatter * 10.0;
+            Yield = InputModel.HarvestIndex * DryMatter;
             //REVIEW
             //Output.Yield = Yield / 1000.0;
-            ResidueAmount = ResidueAmount + (DryMatter - Yield / 10.0) * 0.95 * 10.0;
-          
+            //ResidueAmount = ResidueAmount + (DryMatter - Yield / 10.0) * 0.95 * 10.0;
+            ResidueAmount = ResidueAmount + (DryMatter - Yield ) * 0.95;
+            
             GreenCover = 0;
+
+            //CalculateResidue();
 
             Sim.VegetationController.CalculateTotalResidue();
 
@@ -977,7 +984,7 @@ namespace HowLeaky.ModelControllers.Veg
                 CalculateResidueBR();
             }
             TotalCover = GetTotalCover();
-            TotalCover = TotalCover * 100.0;
+            //TotalCover = TotalCover * 100.0;
             AccumulatedResidue += ResidueCover * 100.0;
         }
         
@@ -1012,7 +1019,7 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 ResidueCover = 0;
             }
-            ResidueCover = ResidueCover * 100.0;
+            //ResidueCover = ResidueCover * 100.0;
 
         }
        

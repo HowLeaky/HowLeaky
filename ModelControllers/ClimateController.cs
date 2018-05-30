@@ -72,7 +72,7 @@ namespace HowLeaky.ModelControllers
             try
             {
                 todayIndex = (Sim.Today - InputModel.StartDate.Value).Days;
-                Temperature = InputModel.MaxT[todayIndex] + InputModel.MinT[todayIndex] / 2.0;
+                Temperature = (InputModel.MaxT[todayIndex] + InputModel.MinT[todayIndex]) / 2.0;
 
                 Rain = InputModel.Rain[todayIndex] * InputModel.RainfallMultiplier;
                 if (todayIndex > 0)
