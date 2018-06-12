@@ -343,7 +343,9 @@ namespace HowLeaky.ModelControllers
         {
             foreach (VegObjectController crop in ChildControllers)
             {
-                crop.CropResidue = crop.CropResidue * cresmultiplier;
+                //crop.CropResidue = crop.CropResidue * cresmultiplier;
+                crop.ResidueAmount = crop.ResidueAmount * cresmultiplier;
+
             }
             CalculateTotalResidue();
         }
@@ -543,7 +545,7 @@ namespace HowLeaky.ModelControllers
                 }
                 for (int i = 0; i < count; ++i)
                 {
-                    TotalCropResidue += ((VegObjectController)ChildControllers[i]).CropResidue;
+                    TotalCropResidue += ((VegObjectController)ChildControllers[i]).ResidueAmount;
                 }
 
             }
