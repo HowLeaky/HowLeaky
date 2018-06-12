@@ -25,7 +25,7 @@ namespace HowLeaky.ModelControllers.Tillage
         /// <param name="sim"></param>
         public TillageObjectController(Simulation sim, TillageInputModel dataModel) : base(sim)
         {
-            TillageController = sim.TillageController;
+            //TillageController = sim.TillageController;
             this.InputModel = dataModel;
 
             InitOutputModel();
@@ -38,7 +38,7 @@ namespace HowLeaky.ModelControllers.Tillage
         {
             if (CanTillToday())
             {
-                TillageController.UpdateTillageParameters((ETillageType)InputModel.Type, InputModel.CropResidueMultiplier, InputModel.RoughnessRatio);
+                Sim.TillageController.UpdateTillageParameters((ETillageType)InputModel.Type, InputModel.PrimaryTillType.CropResMultiplier, InputModel.PrimaryTillType.RoughnessRatio);
             }
         }
         

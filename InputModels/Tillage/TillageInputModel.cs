@@ -12,9 +12,12 @@ namespace HowLeaky.DataModels
     public class TillageTypeData : IndexData
     {
         [Input("PrimaryCropResMultiplier")]
-        public double PrimaryCropResMultiplier { get; set; }
+        [XmlElement("PrimaryCropResMultiplier")]
+        public double CropResMultiplier { get; set; }
+
         [Input("PrimaryRoughnessRatio")]
-        public double PrimaryRoughnessRatio { get; set; }
+        [XmlElement("PrimaryRoughnessRatio")]
+        public double RoughnessRatio { get; set; }
 
         public TillageTypeData() { }
     }
