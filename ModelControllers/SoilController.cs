@@ -610,7 +610,7 @@ namespace HowLeaky.ModelControllers
                 //  ***************************************************
                 //  *  Calculate cover effect on curve number (cn2).  *
                 //  ***************************************************}
-                CropCover = Sim.VegetationController.GetCropCoverIfLAIModel(CropCover);  //LAI Model uses cover from the end of the previous day whereas Cover model predefines at the start of the day
+         // Something bad to test       CropCover = Sim.VegetationController.GetCropCoverIfLAIModel(CropCover);  //LAI Model uses cover from the end of the previous day whereas Cover model predefines at the start of the day
                 RunoffCurveNo = InputModel.RunoffCurveNumber - InputModel.RedInCNAtFullCover /* Check this -- in_CurveNumberReduction*/ * Math.Min(1.0, CropCover + TotalResidueCover * (1 - CropCover));
                 progress = 1;
 
