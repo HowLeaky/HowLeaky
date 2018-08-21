@@ -14,7 +14,7 @@ namespace HowLeaky.ModelControllers.Outputs
     public class SQLiteOutputModelController : OutputModelController
     {
         string InsertString = "";
-        // override bool DateIsOutput { get; set; } = false;
+        //override bool DateIsOutput { get; set; } = false;
 
         //public HLDBContext DBContext;
         public SQLiteConnection SQLConn { get; set; }
@@ -43,11 +43,18 @@ namespace HowLeaky.ModelControllers.Outputs
         /// </summary>
         /// <param name="Sim"></param>
         /// <param name="SQLConn"></param>
-        public SQLiteOutputModelController(Simulation Sim, SQLiteConnection SQLConn) : base(Sim)
+        public SQLiteOutputModelController(Simulation Sim, SQLiteConnection SQLConn) : base(Sim, false)
         {
             //  this.DBContext = DBContext;
+            DateIsOutput = false;
             this.SQLConn = SQLConn;
             PrepareVariableNamesForOutput();
+        }
+
+
+        static void PrepareConnection()
+        {
+
         }
 
         /// <summary>
@@ -57,7 +64,7 @@ namespace HowLeaky.ModelControllers.Outputs
         {
             base.PrepareVariableNamesForOutput();
 
-            List<string> OutputNames = new List<string>(Outputs.Select(x => x.Name));
+            List<string> OutputNames = new List<string>(Outputs.Where(j=>j.IsSelected).Select(x => x.Name));
 
          //   List<string> OutputIndicies = new List<string>();
 
@@ -71,7 +78,7 @@ namespace HowLeaky.ModelControllers.Outputs
 
             //Prepare an array for annual outputs
             AnnualSumValues = new List<List<double>>();
-            AnnualAverageValues = new List<double>(Outputs.Count).Fill(0);
+            AnnualAverageValues = new List<double>(new List<OutputDataElement>(Outputs.Where(x => x.IsSelected)).Count).Fill(0);
 
             //Add sim number to the average values
             AnnualAverageValues.Insert(0, Sim.Index);
@@ -138,7 +145,7 @@ namespace HowLeaky.ModelControllers.Outputs
 
             //Models
             iString = new StringBuilder();
-            iString.Append("INSERT INTO MODELS (SimID, Name, InputType) VALUES ");
+            iString.Append("INSERT INTO MODELS (SimID, Name, InputType, LongName) VALUES ");
             foreach (InputModel im in Sim.InputModels)
             {
                 if (im != null)
@@ -152,7 +159,7 @@ namespace HowLeaky.ModelControllers.Outputs
                     if (im.LongName != null)
                     {
                         string[] nameParts = im.LongName.Split(new char[] { ':' });
-                        iString.Append(comma + "(" + Sim.Index.ToString() + ",\"" + nameParts[1] + "\",\"" + nameParts[0] + "\")");
+                        iString.Append(comma + "(" + Sim.Index.ToString() + ",\"" + im.Name + "\",\"" + nameParts[0] + "\",\"" + nameParts[1] + "\")");
                     }
                 }
             }
@@ -178,7 +185,7 @@ namespace HowLeaky.ModelControllers.Outputs
             //Add to annualData
             if (currentYear != Year)
             {
-                AnnualSumValues.Add(new List<double>(Outputs.Count).Fill(0));
+                AnnualSumValues.Add(new List<double>(new List<OutputDataElement>(Outputs.Where(x => x.IsSelected)).Count).Fill(0));
                 currentYear = Year;
 
                 //Add SimID and year to the sums

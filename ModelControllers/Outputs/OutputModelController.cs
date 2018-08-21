@@ -1,4 +1,5 @@
-﻿using HowLeaky.OutputModels;
+﻿using HowLeaky.ModelControllers.Pesticide;
+using HowLeaky.OutputModels;
 using HowLeaky.Tools;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,8 @@ namespace HowLeaky.ModelControllers
             }
         }
     }
+
+    public enum AggregationType { Mean, Sum };
 
     public class OutputModelController : HLController
     {
@@ -76,6 +79,17 @@ namespace HowLeaky.ModelControllers
                     }
                 }
             }
+
+            //Turn off ODMs that aren't selected
+            //foreach(OutputDataModel odm in OutputDataModels)
+            //{
+            //    foreach(OutputDataElement ode in odm.OutputDataElements)
+            //    {
+            //        OutputDataElement projODE = sim.Project.OutputDataElements.Where(x => x.Name == ode.Name && x.HLController.Name == ode.HLController.Name).FirstOrDefault();
+            //        ode.IsSelected = projODE.IsSelected;
+            //    }
+            //}
+
             if (!DateIsOutput)
             {
                 Sim.Output.OutputDataElements.Where(h => h.PropertyInfo.Name == "Today").FirstOrDefault().IsSelected = false;
@@ -90,7 +104,7 @@ namespace HowLeaky.ModelControllers
 
             foreach (OutputDataModel odm in OutputDataModels)
             {
-                if (odm.HLController.GetType() != typeof(PesticideController))
+                if (odm.HLController.GetType() != typeof(PesticideObjectController))
                 {
                     Outputs.AddRange(GetOutputs(odm, false));
                 }
@@ -98,6 +112,11 @@ namespace HowLeaky.ModelControllers
                 {
                     Outputs.AddRange(GetOutputs(odm, true));
                 }
+            }
+            foreach (OutputDataElement ode in Outputs)
+            {
+                OutputDataElement projODE = Sim.Project.OutputDataElements.Where(x => x.Name == ode.Name && x.HLController.Name == ode.HLController.Name).FirstOrDefault();
+                ode.IsSelected = projODE.IsSelected;
             }
         }
         /// <summary>
@@ -149,7 +168,7 @@ namespace HowLeaky.ModelControllers
                             OutputDataElement o = Cloner.DeepClone(v);
 
                             o.Index = layerCount - 1;
-                            o.Name = v.PropertyInfo.Name + "Layer" + layerCount.ToString() + (suffix == "" ? "" : ("-" + suffix));
+                            o.Name = v.PropertyInfo.Name + "Layer" + layerCount.ToString() + (suffix == "" ? "" : ("_" + suffix));
                             o.HLController = odm.HLController;
                             o.PropertyInfo = v.PropertyInfo;
 
@@ -160,7 +179,7 @@ namespace HowLeaky.ModelControllers
                     else
                     {
                         OutputDataElements.Add(v);
-                        v.Name = v.PropertyInfo.Name + (suffix == "" ? "" : ("-" + suffix));
+                        v.Name = v.PropertyInfo.Name + (suffix == "" ? "" : ("_" + suffix));
                         v.HLController = odm.HLController;
                     }
                 }
@@ -178,10 +197,14 @@ namespace HowLeaky.ModelControllers
 
             foreach (OutputDataElement v in Outputs)
             {
-                propertyValues.Add(v.Value);
+                if (v.IsSelected)
+                {
+                    propertyValues.Add(v.Value);
+                }
             }
             return propertyValues;
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -320,8 +343,8 @@ namespace HowLeaky.ModelControllers
                 //Need to check for child controllers
                 List<HLController> objectControllers = new List<HLController>(simulations.SelectMany(y => y.ActiveControlllers.Where(x => x.GetType() == controllerType)));
 
-                List<HLController> controllers = new List<HLController>(objectControllers.SelectMany(o => ((HLObjectController)o).ChildControllers).DistinctBy(x => x.Name));
-
+                //List<HLController> controllers = new List<HLController>(objectControllers.SelectMany(o => ((HLObjectController)o).ChildControllers).DistinctBy(x => x.Name));
+                List<HLController> controllers = new List<HLController>(objectControllers.SelectMany(o => ((HLObjectController)o).ChildControllers).DistinctBy(t => t.GetInputModel().FileName));
                 foreach (HLController hlc in controllers)
                 {
                     AddOutputElements(Outputs, hlc, useSuffix);

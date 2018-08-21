@@ -285,7 +285,7 @@ namespace HowLeaky
         {
             if(Project.OutputType == OutputType.CSVOutput)
             {
-                this.OutputModelController = new CSVOutputModelController(this, Project.OutputPath);
+                this.OutputModelController = new CSVOutputModelController(this, Project.OutputPath, Project.WriteMonthlyData, Project.WriteYearlyData, Project.AggregationType);
             }
             else if (Project.OutputType == OutputType.SQLiteOutput)
             {
