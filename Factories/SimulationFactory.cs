@@ -51,9 +51,12 @@ namespace HowLeaky.Factories
                         {
                             if (childElement.Name == "OverrideParameter")
                             {
-                                //Add the override to the model
-                                model2.Overrides.Add(childElement.Attribute("Keyword").Value, childElement.Element("Value").Value);
-                                modelDescription += (";" + childElement.Attribute("Keyword").Value + "=" + childElement.Element("Value").Value);
+                                if (childElement.Attribute("Keyword").Value.ToString() == "" && childElement.Attribute("Active").Value.ToString() != "false")
+                                {
+                                    //Add the override to the model
+                                    model2.Overrides.Add(childElement.Attribute("Keyword").Value, childElement.Element("Value").Value);
+                                    modelDescription += (";" + childElement.Attribute("Keyword").Value + "=" + childElement.Element("Value").Value);
+                                }
                             }
                             else
                             {
