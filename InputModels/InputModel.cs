@@ -74,7 +74,15 @@ namespace HowLeaky.DataModels
         {
             foreach (KeyValuePair<string, object> entry in Overrides)
             {
-                SetPropertyValue(entry.Key, this, entry.Value);
+                try
+                {
+                    SetPropertyValue(entry.Key, this, entry.Value);
+
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
         }
         /// <summary>
@@ -89,7 +97,7 @@ namespace HowLeaky.DataModels
 
             int intVal;
 
-            if(int.TryParse(value.ToString(), out intVal))
+            if (int.TryParse(value.ToString(), out intVal))
             {
                 p.SetValue(target, intVal);
             }
