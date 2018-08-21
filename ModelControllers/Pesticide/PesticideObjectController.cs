@@ -172,10 +172,11 @@ namespace HowLeaky.ModelControllers.Pesticide
             }
             else if (InputModel.ApplicationTiming == (int)EPestApplicationTiming.FromSequenceFile)
             {
-                int index = DateUtilities.isDateInSequenceList(Sim.Today, InputModel.PestApplicationDateList);
-                if (index >= 0 && index < InputModel.PestApplicationValueList.Count)
+                //int index = DateUtilities.isDateInSequenceList(Sim.Today, InputModel.PestApplicationTiming.PesticideDatesAndRates);
+                int index = InputModel.PestApplicationTiming.PesticideDatesAndRates.Dates.IndexOf(Sim.Today);
+                if (index >= 0 && index < InputModel.PestApplicationTiming.PesticideDatesAndRates.Values.Count)
                 {
-                    ProductRateApplied = InputModel.PestApplicationValueList[index];
+                    ProductRateApplied = InputModel.PestApplicationTiming.PesticideDatesAndRates.Values[index];
                 }
             }
             else

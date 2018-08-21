@@ -235,7 +235,7 @@ namespace HowLeaky.ModelControllers.Veg
         public bool HasAlreadyPlantedInThisWindow()
         {
             //Note there was a possible error here in previous version where the wrong year could have been used.
-            return DateUtilities.isDateInWindow(LastSowingDate, InputModel.PlantingWindowStartDate, InputModel.PlantingWindowEndDate);
+            return DateUtilities.IsDateInWindow(LastSowingDate, InputModel.PlantingWindowStartDate, InputModel.PlantingWindowEndDate);
         }
         
         /// <summary>
@@ -244,7 +244,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// <returns></returns>
         bool SatisifiesWindowConditions()
         {
-            bool result = DateUtilities.isDateInWindow(Sim.Today, InputModel.PlantingWindowStartDate, InputModel.PlantingWindowEndDate);
+            bool result = DateUtilities.IsDateInWindow(Sim.Today, InputModel.PlantingWindowStartDate, InputModel.PlantingWindowEndDate);
             if (result)
             {
                 Sim.UpdateManagementEventHistory(ManagementEvent.InPlantingWindow, Sim.VegetationController.GetCropIndex(this));
