@@ -213,7 +213,7 @@ namespace HowLeaky.Tools.Helpers
         /// <param name="longformat"></param>
         /// <param name="joiner"></param>
         /// <returns></returns>
-        public static String getFormattedPeriodTextForStartDate(DateTime start, DateTime end,
+        public static String GetFormattedPeriodTextForStartDate(DateTime start, DateTime end,
             String shortformat, String longformat, String joiner)
         {
             try
@@ -381,7 +381,7 @@ namespace HowLeaky.Tools.Helpers
         /// <param name="date"></param>
         /// <param name="sequence"></param>
         /// <returns></returns>
-        public static int isDateInSequenceList(DateTime date, Sequence sequence)
+        public static int IsDateInSequenceList(DateTime date, Sequence sequence)
         {
             return sequence.Dates.IndexOf(date);
         }
@@ -392,7 +392,7 @@ namespace HowLeaky.Tools.Helpers
         /// <param name="startWindow"></param>
         /// <param name="endWindow"></param>
         /// <returns></returns>
-        public static bool isDateInWindow(DateTime date, DayMonthData startWindow, DayMonthData endWindow)
+        public static bool IsDateInWindow(DateTime date, DayMonthData startWindow, DayMonthData endWindow)
         {
             int currYear = date.Year;
 
@@ -447,5 +447,10 @@ namespace HowLeaky.Tools.Helpers
 
             return null;
         }
+
+        //public static int DaysInMonth(int month, int year)
+        //{
+        //    return 0;
+        //}
     }
 }

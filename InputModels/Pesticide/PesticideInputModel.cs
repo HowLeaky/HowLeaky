@@ -50,6 +50,10 @@ namespace HowLeaky.DataModels
         public double ProductRate { get; set; }
         [Input("SubsequentProductRate")]
         public double SubsequentProductRate { get; set; }
+        [Input("PesticideDatesAndRates")]
+        public Sequence PesticideDatesAndRates { get; set; }
+
+
 
         public PestApplicationTiming() { }
     }

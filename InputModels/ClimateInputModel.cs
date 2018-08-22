@@ -176,7 +176,7 @@ namespace HowLeaky.DataModels
                 bool foundheader = false;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    List<String> items = new List<String>(line.Trim().Split(new string[] { " ", "\t" }, StringSplitOptions.RemoveEmptyEntries));
+                    List<String> items = new List<String>(line.Trim().Split(new string[] { " ", "\t", "," }, StringSplitOptions.RemoveEmptyEntries));
                     if (items[0] != "//") {
                         if (foundheader == false)
                         {

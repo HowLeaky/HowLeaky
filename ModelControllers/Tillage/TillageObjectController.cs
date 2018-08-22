@@ -80,7 +80,7 @@ namespace HowLeaky.ModelControllers.Tillage
         public bool IsFallowAndInWindow()
         {
             bool check1 = Sim.VegetationController.InFallow();
-            bool check2 = DateUtilities.isDateInWindow(Sim.Today, InputModel.StartTillWindow, InputModel.EndTillWindow);
+            bool check2 = DateUtilities.IsDateInWindow(Sim.Today, InputModel.StartTillWindow, InputModel.EndTillWindow);
             bool check3 = (TillageController.DaysSinceTillage >= InputModel.MinDaysBetweenTills || TillageController.DaysSinceTillage == -1);
             bool check4 = (Sim.ClimateController.SumRain(InputModel.NoDaysToTotalRain, 0) >= InputModel.RainForPrimaryTill);
             return check1 && check2 && check3 && check4;

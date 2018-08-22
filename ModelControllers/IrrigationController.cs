@@ -279,7 +279,7 @@ namespace HowLeaky.ModelControllers
         /// <returns></returns>
         public bool IsDateinIrrigationWindow()
         {
-            return DateUtilities.isDateInWindow(Sim.Today, InputModel.IrrigWindowStartDate, InputModel.IrrigWindowEndDate);
+            return DateUtilities.IsDateInWindow(Sim.Today, InputModel.IrrigWindowStartDate, InputModel.IrrigWindowEndDate);
         }
 
         /// <summary>

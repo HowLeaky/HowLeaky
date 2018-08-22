@@ -49,6 +49,26 @@ namespace HowLeaky
                 p.OutputType = OutputType.CSVOutput;
             }
 
+            if (argsList.Contains("-M"))
+            {
+                p.WriteMonthlyData = true;
+            }
+
+            if (argsList.Contains("-Y"))
+            {
+                p.WriteYearlyData = true;
+            }
+
+            if (argsList.Contains("-Sum"))
+            {
+                p.AggregationType = ModelControllers.AggregationType.Sum;
+            }
+
+            if (argsList.Contains("-Mean"))
+            {
+                p.AggregationType = ModelControllers.AggregationType.Mean;
+            }
+
             p.RunSimulations(numberOfCores);
 
             Console.WriteLine("Press any key to exit when sims completed...\n");
@@ -66,8 +86,13 @@ namespace HowLeaky
             Console.WriteLine("Optional Parameters:");
             Console.WriteLine("    -O <outputpath>        | The default path will be the same as the hlk file unlsess this is set");
             Console.WriteLine("    -P <No. of Processors> | The default is -1, which means HL will leave 1 processor spare. If you want to use specify the number of processors set this");
-            Console.WriteLine("    -CSV                   | Output to CSV files. Default if not set");
+            Console.WriteLine("    -CSV                   | Output to CSV files. [Default output stream if none selected]");
             Console.WriteLine("    -SQL                   | Output to SQL file");
+            Console.WriteLine("    -M                     | Output Monthly summaries (CSV option only) [Not set by Default]");
+            Console.WriteLine("    -Y                     | Output Annual summaries (CSV option only) [Not set by Default]");
+            Console.WriteLine("    -Sum                   | Aggregate annual and / or monthly summaries by Sum (CSV option only) [Default aggregation if none selected]");
+            Console.WriteLine("    -Mean                  | Aggregate annual and / or monthly summaries by Mean (CSV option only) [Not set by Default]");
+
             Console.WriteLine("");
         }
     }

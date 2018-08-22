@@ -31,6 +31,8 @@ namespace HowLeaky
         //Base input data models from the parameter files
         public List<InputModel> InputDataModels { get; set; }
 
+        public List<XElement> TypeElements { get; set; }
+
         public List<OutputDataElement> OutputDataElements { get; set; }
 
         public DateTime StartRunTime;
@@ -41,6 +43,8 @@ namespace HowLeaky
 
         public int CurrentSimIndex = 0;
         public int NoSimsComplete = 0;
+
+        public bool HasOwnExecutableSpace = true;
 
         public OutputType OutputType = OutputType.SQLiteOutput;
         //public OutputType OutputType = OutputType.NetCDF;
@@ -55,6 +59,11 @@ namespace HowLeaky
         //public HLNCFile HLNC = null;
         public string OutputPath { get; set; } = null;
         public string FileName { get; set; }
+
+        public bool WriteMonthlyData = false;
+        public bool WriteYearlyData = false;
+
+        public AggregationType AggregationType = AggregationType.Sum;
 
         /// <summary>
         /// Need default constructor for populating via Entity Framework 
@@ -145,7 +154,8 @@ namespace HowLeaky
 
             //Read all of the models
             List<XElement> TemplateElements = new List<XElement>(projectElement.Elements().Where(x => x.Name.ToString().Contains("Templates")));
-            List<XElement> TypeElements = new List<XElement>();
+            //List<XElement> TypeElements = new List<XElement>();
+            TypeElements = new List<XElement>();
 
             foreach (XElement te in TemplateElements)
             {
@@ -276,6 +286,16 @@ namespace HowLeaky
                 //{
                 //    OutputIndicies.Add("x" + (i + 1).ToString());
                 //}
+                if (SQLConn != null && SQLConn.State == System.Data.ConnectionState.Open)
+                {
+                    SQLConn.Close();
+                    
+                }
+
+                if(File.Exists(OutputPath))
+                {
+                    File.Delete(OutputPath);
+                }
 
                 SQLiteConnection.CreateFile(OutputPath);
 
@@ -284,21 +304,21 @@ namespace HowLeaky
 
                 //Will need to create tables
                 //Data
-                string sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputDataElements.Select(x=>x.Name)) + " double)";
+                string sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputDataElements.Where(j=>j.IsSelected==true).Select(x=>x.Name)) + " double)";
                // sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputIndicies) + " double)";
 
                 SQLiteCommand command = new SQLiteCommand(sql, SQLConn);
                 command.ExecuteNonQuery();
 
                 //Annual sum data
-                sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputDataElements.Select(x => x.Name)) + " double)";
+                sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputDataElements.Where(j => j.IsSelected == true).Select(x => x.Name)) + " double)";
                // sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputIndicies) + " double)";
 
                 command = new SQLiteCommand(sql, SQLConn);
                 command.ExecuteNonQuery();
 
                 //Annual sum average data
-                sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputDataElements.Select(x => x.Name)) + " double)";
+                sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputDataElements.Where(j => j.IsSelected == true).Select(x => x.Name)) + " double)";
                // sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputIndicies) + " double)";
 
                 command = new SQLiteCommand(sql, SQLConn);
@@ -340,7 +360,7 @@ namespace HowLeaky
                 command.ExecuteNonQuery();
 
                 //Models
-                sql = "create table models (SimId int, Name string, InputType string)";
+                sql = "create table models (SimId int, Name string, InputType string, LongName string)";
 
                 command = new SQLiteCommand(sql, SQLConn);
                 command.ExecuteNonQuery();
@@ -386,9 +406,12 @@ namespace HowLeaky
                 }
             }
 
-            while(NoSimsComplete < Simulations.Count)
+            if (HasOwnExecutableSpace)
             {
-                System.Threading.Thread.Sleep(500);
+                while (NoSimsComplete < Simulations.Count)
+                {
+                    System.Threading.Thread.Sleep(500);
+                }
             }
         }
         /// <summary>
@@ -509,6 +532,14 @@ namespace HowLeaky
                 hlbw.Sim = nextSim;
                 //hlbw.RunWorkerAsync(new List<object>(new object[] { nextSim }));
                 hlbw.RunWorkerAsync();
+            }
+
+            if(NoSimsComplete == Simulations.Count)
+            {
+                if(OutputType == OutputType.SQLiteOutput)
+                {
+                    SQLConn.Close();
+                }
             }
         }
     }
