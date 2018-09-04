@@ -280,12 +280,14 @@ namespace HowLeaky
             Today = StartDate;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         void SetupOutput()
         {
             if(Project.OutputType == OutputType.CSVOutput)
             {
-                this.OutputModelController = new CSVOutputModelController(this, Project.OutputPath, Project.WriteMonthlyData, Project.WriteYearlyData, Project.AggregationType);
+                this.OutputModelController = new CSVOutputModelController(this, Project.OutputPath, Project.WriteMonthlyData, Project.WriteYearlyData);
             }
             else if (Project.OutputType == OutputType.SQLiteOutput)
             {
@@ -311,6 +313,7 @@ namespace HowLeaky
 
             this.OutputModelController.PrepareVariableNamesForOutput();
         }
+
         /// <summary>
         /// 
         /// </summary>

@@ -18,6 +18,7 @@ using System.IO;
 using HowLeaky.ModelControllers;
 using HowLeaky.OutputModels;
 using System.Text;
+using HowLeaky.CustomAttributes;
 
 namespace HowLeaky
 {
@@ -62,8 +63,6 @@ namespace HowLeaky
 
         public bool WriteMonthlyData = false;
         public bool WriteYearlyData = false;
-
-        public AggregationType AggregationType = AggregationType.Sum;
 
         /// <summary>
         /// Need default constructor for populating via Entity Framework 

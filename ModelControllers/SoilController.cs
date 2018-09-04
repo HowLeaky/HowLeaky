@@ -203,27 +203,27 @@ namespace HowLeaky.ModelControllers
 
         //Reportable Outputs
         //Water balance outputs
-        [Output("Irrigation amount (mm) as calcaulted in irrigation module", "mm")]
+        [Output("Irrigation amount (mm) as calcaulted in irrigation module", "mm", 1, AggregationTypeEnum.Sum)]
         public double Irrigation { get; set; }
-        [Output("Total Runoff amount (mm) - includes runoff from rainfall AND irrigation.", "mm")]
+        [Output("Total Runoff amount (mm) - includes runoff from rainfall AND irrigation.", "mm", 1, AggregationTypeEnum.Sum)]
         public double Runoff { get; set; }
-        [Output("Runoff amount from irrigation", "mm")]
+        [Output("Runoff amount from irrigation", "mm", 1, AggregationTypeEnum.Sum)]
         public double RunoffFromIrrigation { get; set; }
-        [Output("Runoff amount from rainfall", "mm")]
+        [Output("Runoff amount from rainfall", "mm", 1, AggregationTypeEnum.Sum)]
         public double RunoffFromRainfall { get; set; }
-        [Output("Soil evaporation", "mm")]
+        [Output("Soil evaporation", "mm", 1, AggregationTypeEnum.Sum)]
         public double SoilEvap { get; set; }
-        [Output("Potential soil evaporation", "mm")]
+        [Output("Potential soil evaporation", "mm", 1, AggregationTypeEnum.Sum)]
         public double PotSoilEvap { get; set; }
-        [Output("Transpiration calculated from current crop", "mm")]
+        [Output("Transpiration calculated from current crop", "mm", 1, AggregationTypeEnum.Sum)]
         public double Transpiration { get; set; }
-        [Output("Transpiration PLUS soil evaporation.", "mm")]
+        [Output("Transpiration PLUS soil evaporation.", "mm", 1, AggregationTypeEnum.Sum)]
         public double EvapoTransp { get; set; }
-        [Output("The amount of drainge out of the bottom layer", "mm")]
+        [Output("The amount of drainge out of the bottom layer", "mm", 1, AggregationTypeEnum.Sum)]
         public double DeepDrainage { get; set; }
-        [Output("Overflow", "mm")]
+        [Output("Overflow", "mm", 1, AggregationTypeEnum.Sum)]
         public double Overflow { get; set; }
-        [Output("Lateral flow", "mm")]
+        [Output("Lateral flow", "mm", 1, AggregationTypeEnum.Sum)]
         public double LateralFlow { get; set; }
         [Output("Volume Balance Error", "")]
         public double VBE { get; set; }
@@ -231,9 +231,9 @@ namespace HowLeaky.ModelControllers
         public double RunoffCurveNo { get; set; }
         [Output("Runoff retention number", "")]
         public double RunoffRetentionNo { get; set; }
-        [Output("Hillslope erorsion", "t/ha")]
+        [Output("Hillslope erorsion", "t/ha", 1, AggregationTypeEnum.Sum)]
         public double HillSlopeErosion { get; set; }
-        [Output("Offsite sediment deliver", "t/ha")]
+        [Output("Offsite sediment deliver", "t/ha", 1, AggregationTypeEnum.Sum)]
         public double OffSiteSedDelivery { get; set; }
         [Output("Sum of soil water in all layers", "mm")]
         public double TotalSoilWater { get; set; }
@@ -1073,7 +1073,7 @@ namespace HowLeaky.ModelControllers
             for (int i = 0; i < LayerCount; ++i)
             {
                 TotalSoilWater += SoilWaterRelWP[i];
-                
+
             }
 
             for (int i = 0; i < LayerCount; i++)

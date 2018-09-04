@@ -21,7 +21,7 @@ namespace HowLeaky.ModelControllers
         public double NitrateCumRain { get; set; } = 0;
 
         //Reportable Outputs
-        [Output("Dissolved N03 N In Runoff", "mg/L")]
+        [Output("Dissolved N03 N In Runoff", "mg/L",1, AggregationTypeEnum.Max)]
         public double N03NDissolvedInRunoff { get; set; }
         [Output("N03 Runoff Load", "kg/ha")]
         public double N03NRunoffLoad { get; set; }
