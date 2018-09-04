@@ -1,4 +1,5 @@
-﻿using HowLeaky.ModelControllers.Pesticide;
+﻿using HowLeaky.CustomAttributes;
+using HowLeaky.ModelControllers.Pesticide;
 using HowLeaky.OutputModels;
 using HowLeaky.Tools;
 using System;
@@ -33,7 +34,7 @@ namespace HowLeaky.ModelControllers
         }
     }
 
-    public enum AggregationType { Mean, Sum };
+    //public enum AggregationType { Mean, Sum };
 
     public class OutputModelController : HLController
     {
@@ -186,6 +187,7 @@ namespace HowLeaky.ModelControllers
             }
             return OutputDataElements;
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -204,7 +206,44 @@ namespace HowLeaky.ModelControllers
             }
             return propertyValues;
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="odm"></param>
+        /// <returns></returns>
+        public List<AggregationTypeEnum> GetAggregationTypes()
+        {
+            List<AggregationTypeEnum> AggregationTypes = new List<AggregationTypeEnum>();
+
+            foreach (OutputDataElement v in Outputs)
+            {
+                if (v.IsSelected)
+                {
+                    AggregationTypes.Add(v.Output.AggregationType);
+                }
+            }
+            return AggregationTypes;
+        }
+
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <returns></returns>
+        public List<AggregationSequenceEnum> GetAggregationSequenceTypes()
+        {
+            List<AggregationSequenceEnum> AggregationSequences = new List<AggregationSequenceEnum>();
+
+            foreach (OutputDataElement v in Outputs)
+            {
+                if (v.IsSelected)
+                {
+                    AggregationSequences.Add(v.Output.AggregationSequence);
+                }
+            }
+            return AggregationSequences;
+        }
+
         /// <summary>
         /// 
         /// </summary>

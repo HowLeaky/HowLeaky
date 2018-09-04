@@ -1,4 +1,5 @@
-﻿using HowLeaky.OutputModels;
+﻿using HowLeaky.CustomAttributes;
+using HowLeaky.OutputModels;
 using HowLeaky.Tools.ListExtensions;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace HowLeaky.ModelControllers.Outputs
 {
+    public enum SummaryTypeEnum { Monthly, Yearly };
+
     public class CSVOutputModelController : OutputModelController
     {
         //public override bool DateIsOutput { get; set; } = false;
@@ -23,21 +26,25 @@ namespace HowLeaky.ModelControllers.Outputs
 
         bool WriteMonthly;
         bool WriteYearly;
-        AggregationType AggregationType;
 
         List<double> currentMonthOutputData = null;
 
         List<double> currentYearOutputData = null;
 
+        List<AggregationTypeEnum> AggregationTypes = null;
+        List<AggregationSequenceEnum> AggregationSequences = null;
+
+        int MonthInCropCounter = 0;
+        int YearInCropCounter = 0;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="Sim"></param>
-        public CSVOutputModelController(Simulation Sim, string OutputPath, bool WriteMonthly = false, bool WriteYearly = false, AggregationType aggregationType = AggregationType.Sum) : base(Sim, false)
+        public CSVOutputModelController(Simulation Sim, string OutputPath, bool WriteMonthly = false, bool WriteYearly = false) : base(Sim, false)
         {
             this.WriteMonthly = WriteMonthly;
             this.WriteYearly = WriteYearly;
-            this.AggregationType = aggregationType;
 
             try
             {
@@ -89,13 +96,27 @@ namespace HowLeaky.ModelControllers.Outputs
             //Create a monthly output
             if (WriteMonthly)
             {
+                CheckAggregatorTypesFilled();
                 outWriterMonthly.WriteLine("Year,Month," + String.Join(",", outputHeaders.ToArray()));
             }
 
             //Create an annnual output
             if (WriteYearly)
             {
+                CheckAggregatorTypesFilled();
                 outWriterYearly.WriteLine("Year" + String.Join(",", outputHeaders.ToArray()));
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void CheckAggregatorTypesFilled()
+        {
+            if (AggregationTypes == null || AggregationSequences == null)
+            {
+                AggregationTypes = GetAggregationTypes();
+                AggregationSequences = GetAggregationSequenceTypes();
             }
         }
 
@@ -109,80 +130,111 @@ namespace HowLeaky.ModelControllers.Outputs
             //Do Daily output
             outWriter.WriteLine(Sim.Today.ToString("dd/MM/yyyy") + "," + String.Join(",", outputData.ToArray()));
 
-
-            //Check for do monthly output
             if (WriteMonthly == true)
             {
-                if (currentMonthOutputData == null)
-                {
-                    currentMonthOutputData = new List<double>(outputData.Count).Fill(0);
-                }
+                DateTime ReportDate = new DateTime(Sim.Today.Year, Sim.Today.Month, System.DateTime.DaysInMonth(Sim.Today.Year, Sim.Today.Month));
 
-                //Add todays data
-                for (int i = 0; i < currentMonthOutputData.Count; i++)
-                {
-                    currentMonthOutputData[i] += outputData[i];
-                }
-
-
-                if (Sim.Today.Day == System.DateTime.DaysInMonth(Sim.Today.Year, Sim.Today.Month) || Sim.Today == Sim.EndDate)
-                {
-                    //Do any aggregating
-                    if (AggregationType == AggregationType.Mean)
-                    {
-                        for (int i = 0; i < currentMonthOutputData.Count; i++)
-                        {
-                            currentMonthOutputData[i] /= Sim.Today.Day;
-                        }
-                    }
-
-                    outWriterMonthly.WriteLine(Sim.Today.Year + "," + Sim.Today.Month.ToString("00") + "," + String.Join(",", currentMonthOutputData.ToArray()));
-                    currentMonthOutputData = new List<double>(outputData.Count).Fill(0);
-                }
+                WriteSummaryData(outputData, ReportDate, ref MonthInCropCounter, ref currentMonthOutputData, outWriterMonthly, SummaryTypeEnum.Monthly);
             }
 
-            //Check for do annual output
             if (WriteYearly == true)
             {
-                if (currentYearOutputData == null)
-                {
-                    currentYearOutputData = new List<double>(outputData.Count).Fill(0);
-                }
+                DateTime ReportDate = new DateTime(Sim.Today.Year, 12, 31);
 
-                //Add todays data
-                for (int i = 0; i < currentYearOutputData.Count; i++)
-                {
-                    currentYearOutputData[i] += outputData[i];
-                }
+                WriteSummaryData(outputData, ReportDate, ref YearInCropCounter, ref currentYearOutputData, outWriterYearly, SummaryTypeEnum.Yearly);
+            }
 
+        }
 
-                if (Sim.Today == new DateTime(Sim.Today.Year, 12, 31) || Sim.Today == Sim.EndDate)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="outputData"></param>
+        /// <param name="ReportDate"></param>
+        /// <param name="counter"></param>
+        /// <param name="summaryOutputs"></param>
+        /// <param name="outWriter"></param>
+        /// <param name="summaryType"></param>
+        public void WriteSummaryData(List<double> outputData, DateTime ReportDate, ref int counter, ref List<double> summaryOutputs, StreamWriter outWriter, SummaryTypeEnum summaryType)
+        {
+
+            if (ReportDate > Sim.EndDate)
+            {
+                ReportDate = Sim.EndDate;
+            }
+
+            if (summaryOutputs == null)
+            {
+                summaryOutputs = new List<double>(outputData.Count).Fill(0);
+                counter = 0;
+            }
+
+            //Increment the incrop day counter
+            if (Sim.VegetationController.CurrentCrop.DaysSincePlanting != 0)
+            {
+                counter++;
+            }
+
+            //Add todays data
+            for (int i = 0; i < summaryOutputs.Count; i++)
+            {
+                if ((AggregationSequences[i] == AggregationSequenceEnum.InCrop && Sim.VegetationController.CurrentCrop.DaysSincePlanting > 0) ||
+                    AggregationSequences[i] == AggregationSequenceEnum.Always)
                 {
-                    //Do any aggregating
-                    if (AggregationType == AggregationType.Mean)
+                    if (AggregationTypes[i] == AggregationTypeEnum.Max && outputData[i] > summaryOutputs[i])
                     {
-                        for (int i = 0; i < currentYearOutputData.Count; i++)
-                        {
-                            currentYearOutputData[i] /= Sim.Today.DayOfYear;
-                        }
+                        summaryOutputs[i] = outputData[i];
                     }
-                    outWriterYearly.WriteLine(Sim.Today.Year + "," + String.Join(",", currentYearOutputData.ToArray()));
-                    currentYearOutputData = new List<double>(outputData.Count).Fill(0);
+                    else if (AggregationTypes[i] == AggregationTypeEnum.Current)
+                    {
+                        summaryOutputs[i] = outputData[i];
+                    }
+                    else
+                    {
+                        summaryOutputs[i] += outputData[i];
+                    }
                 }
             }
 
-            //foreach (OutputDataModel odm in OutputDataModels)
-            //{
-            //    string data = WriteData(odm);
+            if (Sim.Today == ReportDate)
+            {
+                //Do any averaging on reporting day
+                for (int i = 0; i < summaryOutputs.Count; i++)
+                {
+                    if (AggregationTypes[i] == AggregationTypeEnum.Mean)
+                    {
+                        if (AggregationSequences[i] == AggregationSequenceEnum.InCrop)
+                        {
+                            summaryOutputs[i] /= counter;
+                        }
+                        if (AggregationSequences[i] == AggregationSequenceEnum.Always)
+                        {
+                            if (summaryType == SummaryTypeEnum.Monthly)
+                            {
+                                summaryOutputs[i] /= Sim.Today.Day;
+                            }
+                            if (summaryType == SummaryTypeEnum.Yearly)
+                            {
+                                summaryOutputs[i] /= Sim.Today.DayOfYear;
+                            }
+                        }
+                    }
+                }
 
-            //    if (data != "")
-            //    {
-            //        outputData.Add(data);
-            //    }
-            //}
-
-            //Write the data
-
+                //Write file
+                if (summaryType == SummaryTypeEnum.Monthly)
+                {
+                    outWriter.WriteLine(Sim.Today.Year + "," + Sim.Today.Month.ToString("00") + "," + String.Join(",", summaryOutputs.ToArray()));
+                }
+                if (summaryType == SummaryTypeEnum.Yearly)
+                {
+                    outWriter.WriteLine(Sim.Today.Year + "," + String.Join(",", summaryOutputs.ToArray()));
+                }
+                
+                //Reset variables
+                summaryOutputs = new List<double>(outputData.Count).Fill(0);
+                counter = 0;
+            }
         }
 
         /// <summary>
@@ -237,7 +289,7 @@ namespace HowLeaky.ModelControllers.Outputs
         {
             outWriter.Close();
 
-            if(outWriterMonthly != null)
+            if (outWriterMonthly != null)
             {
                 outWriterMonthly.Close();
             }

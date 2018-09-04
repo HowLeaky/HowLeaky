@@ -1,4 +1,5 @@
 ﻿
+using HowLeaky.CustomAttributes;
 using HowLeaky.DataModels;
 using System;
 using System.Collections.Generic;
@@ -59,16 +60,6 @@ namespace HowLeaky
                 p.WriteYearlyData = true;
             }
 
-            if (argsList.Contains("-Sum"))
-            {
-                p.AggregationType = ModelControllers.AggregationType.Sum;
-            }
-
-            if (argsList.Contains("-Mean"))
-            {
-                p.AggregationType = ModelControllers.AggregationType.Mean;
-            }
-
             p.RunSimulations(numberOfCores);
 
             Console.WriteLine("Press any key to exit when sims completed...\n");
@@ -90,9 +81,6 @@ namespace HowLeaky
             Console.WriteLine("    -SQL                   | Output to SQL file");
             Console.WriteLine("    -M                     | Output Monthly summaries (CSV option only) [Not set by Default]");
             Console.WriteLine("    -Y                     | Output Annual summaries (CSV option only) [Not set by Default]");
-            Console.WriteLine("    -Sum                   | Aggregate annual and / or monthly summaries by Sum (CSV option only) [Default aggregation if none selected]");
-            Console.WriteLine("    -Mean                  | Aggregate annual and / or monthly summaries by Mean (CSV option only) [Not set by Default]");
-
             Console.WriteLine("");
         }
     }
