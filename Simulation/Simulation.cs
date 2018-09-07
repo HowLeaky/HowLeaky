@@ -93,7 +93,9 @@ namespace HowLeaky
                 return controllers;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public override string Name
         {
             get
@@ -133,7 +135,13 @@ namespace HowLeaky
 
         //public SimulationOutputModel Out { get; set; } = new SimulationOutputModel();
 
-        public int NumberOfDaysInSimulation { get; set; }
+        public int NumberOfDaysInSimulation
+        {
+            get
+            {
+                return StartDate < EndDate? (EndDate - StartDate).Days + 1 : 0;
+            }
+        }
 
         public string ControlError { get; set; }
 
@@ -285,7 +293,7 @@ namespace HowLeaky
         /// </summary>
         void SetupOutput()
         {
-            if(Project.OutputType == OutputType.CSVOutput)
+            if (Project.OutputType == OutputType.CSVOutput)
             {
                 this.OutputModelController = new CSVOutputModelController(this, Project.OutputPath, Project.WriteMonthlyData, Project.WriteYearlyData);
             }
@@ -346,7 +354,7 @@ namespace HowLeaky
 
             OutputModelController.Finalise();
 
-            
+
 
             //Do any necessary cleaup or output
 
@@ -386,7 +394,7 @@ namespace HowLeaky
                 if (!FReset) TryModelIrrigation();
                 if (!FReset) SoilController.TryModelSoilCracking();
                 if (!FReset) SoilController.CalculateRunoff();
-                
+
                 if (!FReset) SoilController.CalculatSoilEvaporation();
                 //
                 //if (!FReset) SoilController.UpdateWaterBalance();

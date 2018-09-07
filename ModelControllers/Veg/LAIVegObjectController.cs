@@ -108,6 +108,8 @@ namespace HowLeaky.ModelControllers.Veg
                     SimulateCropDeath();
                 }
             }
+
+            UpdateCropSummary();
         }
 
         /// <summary>
@@ -811,7 +813,7 @@ namespace HowLeaky.ModelControllers.Veg
             TodayIsHarvestDay = true;
             Sim.FManagementEvent = ManagementEvent.Harvest;
             Sim.UpdateManagementEventHistory(ManagementEvent.Harvest, Sim.VegetationController.GetCropIndex(this));
-            ++NumberOfHarvests;
+            ++HarvestCount;
 
             //	sim.days_since_harvest=0;    //should this also get reset at crop death
             //    soil_water_at_harvest=sim.total_soil_water;
@@ -850,7 +852,7 @@ namespace HowLeaky.ModelControllers.Veg
             ResidueAmount = ResidueAmount + (DryMatter - Yield) * 0.95;
             Sim.VegetationController.CalculateTotalResidue();
             WaterStressIndex = 1.0;
-            ++NumberOfCropsKilled;
+            ++CropDeathCount;
             Yield = 0;
             ResetParametersForEndOfCrop();
 
@@ -873,7 +875,7 @@ namespace HowLeaky.ModelControllers.Veg
         public void ResetParametersForEndOfCrop()
         {
             CropStatus = ModelControllers.CropStatus.Fallow;
-            ++NumberOfFallows;
+            ++FallowCount;
             SoilWaterAtHarvest = Sim.SoilController.TotalSoilWater;
             Sim.VegetationController.DaysSinceHarvest = 0;    //should this also get reset at crop death
             DaysSincePlanting = 0;
