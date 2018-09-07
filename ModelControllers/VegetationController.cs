@@ -79,7 +79,7 @@ namespace HowLeaky.ModelControllers
             TotalTranspiration = 0;
             TotalEvapotranspiration = 0;
 
-            foreach(HLController hlc in ChildControllers )
+            foreach (HLController hlc in ChildControllers)
             {
                 hlc.Initialise();
             }
@@ -179,6 +179,11 @@ namespace HowLeaky.ModelControllers
                     crop.CropRunoff = Sim.SoilController.Runoff;
                     crop.CropDrainage = Sim.SoilController.DeepDrainage; //As opposed to normal drainage
                     crop.SoilEvaporation = Sim.SoilController.SoilEvap;
+                    crop.CropLateralFlow = Sim.SoilController.LateralFlow;
+                    crop.CropOverflow = Sim.SoilController.Overflow;
+                    crop.CropSoilErosion = Sim.SoilController.HillSlopeErosion;
+                    crop.CropSedimentDelivery = Sim.SoilController.OffSiteSedDelivery;
+
                     crop.TotalEvapotranspiration = TotalEvapotranspiration;
                 }
                 else
@@ -187,6 +192,10 @@ namespace HowLeaky.ModelControllers
                     crop.CropDrainage = 0;
                     crop.SoilEvaporation = 0;
                     crop.TotalEvapotranspiration = 0;
+                    crop.CropLateralFlow = 0;
+                    crop.CropOverflow = 0;
+                    crop.CropSoilErosion = 0;
+                    crop.CropSedimentDelivery = 0;
                 }
             }
         }

@@ -190,7 +190,7 @@ namespace HowLeaky.DataModels
                             }
                             if (float.TryParse(items[1], out lon))
                             {
-                                Latitude = lon;
+                                Longitude = lon;
                             }
 
                             items.RemoveRange(0, 2);

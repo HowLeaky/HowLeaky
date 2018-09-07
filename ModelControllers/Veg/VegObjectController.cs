@@ -58,19 +58,21 @@ namespace HowLeaky.ModelControllers.Veg
         //public int DaysSincePlanting { get; set; }
         public int RotationCount { get; set; }
         public int MissedRotationCount { get; set; }
-        public int NumberOfPlantings { get; set; }
-        public int NumberOfHarvests { get; set; }
-        public int NumberOfCropsKilled { get; set; }
-        public int NumberOfFallows { get; set; }
+        //public int PlantingCount { get; set; }
+        //public int HarvestCount { get; set; }
+        //public int CropDeaths { get; set; }
+        //public int NumberOfFallows { get; set; }
         public int KillDays { get; set; }
         public double MaximumRootDepth { get; set; }
         public double TotalTranspiration { get; set; }
+
+        //These should be reported
         public double CropStage { get; set; }
         public double CropCover { get; set; }
         public double CropCoverPercent { get; set; }
         public double CropResidue { get; set; }
-        public double Runoff { get; set; }
-        public double Drainage { get; set; }
+        //public double Runoff { get; set; }
+        //public double Drainage { get; set; }
         public double TotalEvapotranspiration { get; set; }
         public double SoilWaterAtPlanting { get; set; }
         public double SoilWaterAtHarvest { get; set; }
@@ -78,15 +80,6 @@ namespace HowLeaky.ModelControllers.Veg
         public double AccumulatedCover { get; set; }
         public double AccumulatedResidue { get; set; }
         public double AccumulatedTranspiration { get; set; }
-        public double TotalCropPlantings { get; set; }
-        public double TotalCropHarvested { get; set; }
-        public double TotalCropKilled { get; set; }
-        public double AverageYieldPerHarvest { get; set; }
-        public double AverageYieldPerPlanting { get; set; }
-        public double AverageYieldPerYear { get; set; }
-        public double CropsHarvestedDivCropsPlanted { get; set; }
-        public double YieldDivTranspiration { get; set; }
-        public double ResidueCoverDivTranspiration { get; set; }
 
         //Reportable Outputs
         [Output(" Days since planting", "days", 1, AggregationTypeEnum.Current, AggregationSequenceEnum.InCrop)]
@@ -134,15 +127,19 @@ namespace HowLeaky.ModelControllers.Veg
         [Output("Crop Overflow", "mm", 1, AggregationTypeEnum.Sum)]
         public double CropOverflow { get; set; }
         [Output("Crop Soil Erosion", "t/h", 1, AggregationTypeEnum.Sum)]
-        public double CropSoilErrosion { get; set; }
+        public double CropSoilErosion { get; set; }
         [Output("Crop Off Site Sediment Delivery", "t/h", 1, AggregationTypeEnum.Sum)]
         public double CropSedimentDelivery { get; set; }
-        [Output("Crops Planted")]
+        [Output("Number of crops Planted")]
         public double PlantingCount { get; set; }
-        [Output("Crops Harvested")]
+        [Output("Number of crops Harvested")]
         public double HarvestCount { get; set; }
-        [Output("Crops Killed")]
-        public double CropDeaths { get; set; }
+        [Output("Number of crops Killed")]
+        public double CropDeathCount { get; set; }
+        [Output("Number of fallows")]
+        public double FallowCount { get; set; }
+
+        //Summary variables
         [Output("Avg. Yield per Harvest", "kg/ha/harvest")]
         public double YieldPerHarvest { get; set; }
         [Output("Avg. Yield per Planting", "kg/ha/plant")]
@@ -153,8 +150,10 @@ namespace HowLeaky.ModelControllers.Veg
         public double YieldDivTranspir { get; set; }
         [Output("Residue Cover/Transpiration", "%/mm")]
         public double ResidueCovDivTranspir { get; set; }
-        [Output("Potential Maximum LAI")]
-        public double PotMaxLAI { get; set; }
+        [Output("Crops Harvested / Crops Planted")]
+        public double CropsHarvestedDivCropsPlanted { get; set; }
+        //[Output("Potential Maximum LAI")]
+        //public double PotMaxLAI { get; set; } // Not wired up to anything
 
         //public VegObjectOutputModel Output { get; set; } = new VegObjectOutputModel();
         public VegObjectSummaryOutputModel SO;
@@ -436,7 +435,7 @@ namespace HowLeaky.ModelControllers.Veg
             }
 
             DaysSincePlanting = 0;
-            ++NumberOfPlantings;
+            ++PlantingCount;
             DryMatter = 0;
             DryMatter = 0;
             CropStage = 0;
@@ -471,15 +470,12 @@ namespace HowLeaky.ModelControllers.Veg
         /// </summary>
         public void InitialiseCropSummaryParameters()
         {
-            TotalCropPlantings = 0;
-            TotalCropHarvested = 0;
-            TotalCropKilled = 0;
-            AverageYieldPerHarvest = 0;
-            AverageYieldPerPlanting = 0;
-            AverageYieldPerYear = 0;
+            YieldPerHarvest = 0;
+            YieldPerPlant = 0;
+            YieldPerYear = 0;
             CropsHarvestedDivCropsPlanted = 0;
-            YieldDivTranspiration = 0;
-            ResidueCoverDivTranspiration = 0;
+            YieldDivTranspir = 0;
+            ResidueCovDivTranspir = 0;
         }
 
         /// <summary>
@@ -498,39 +494,36 @@ namespace HowLeaky.ModelControllers.Veg
         {
             double numyears = (double)(Sim.NumberOfDaysInSimulation / 365.0);
 
-            TotalCropPlantings = NumberOfPlantings;
-            TotalCropHarvested = NumberOfHarvests;
-            TotalCropKilled = NumberOfCropsKilled;
             //TODO: Should this be a double
-            if (!MathTools.DoublesAreEqual(TotalCropHarvested, 0))
+            if (!MathTools.DoublesAreEqual(HarvestCount, 0))
             {
-                AverageYieldPerHarvest = CumulativeYield / (double)TotalCropHarvested;
+                YieldPerHarvest = CumulativeYield / (double)HarvestCount;
             }
             else
             {
-                AverageYieldPerHarvest = 0;
+                YieldPerHarvest = 0;
             }
-            AverageYieldPerYear = CumulativeYield / numyears;
+            YieldPerYear = CumulativeYield / numyears;
 
-            if (!MathTools.DoublesAreEqual(TotalCropPlantings, 0))
+            if (!MathTools.DoublesAreEqual(PlantingCount, 0))
             {
-                CropsHarvestedDivCropsPlanted = TotalCropHarvested / (double)TotalCropPlantings * 100.0;
-                AverageYieldPerPlanting = CumulativeYield / (double)TotalCropPlantings;
+                CropsHarvestedDivCropsPlanted = HarvestCount / (double)PlantingCount * 100.0;
+                YieldPerPlant = CumulativeYield / (double)PlantingCount;
             }
             else
             {
                 CropsHarvestedDivCropsPlanted = 0;
-                AverageYieldPerPlanting = 0;
+                YieldPerPlant = 0;
             }
             if (!MathTools.DoublesAreEqual(AccumulatedTranspiration, 0))
             {
-                YieldDivTranspiration = CumulativeYield / AccumulatedTranspiration;
-                ResidueCoverDivTranspiration = AccumulatedResidue / AccumulatedTranspiration;
+                YieldDivTranspir = CumulativeYield / AccumulatedTranspiration;
+                ResidueCovDivTranspir = AccumulatedResidue / AccumulatedTranspiration;
             }
             else
             {
-                YieldDivTranspiration = 0;
-                ResidueCoverDivTranspiration = 0;
+                YieldDivTranspir = 0;
+                ResidueCovDivTranspir = 0;
             }
 
         }
@@ -576,7 +569,7 @@ namespace HowLeaky.ModelControllers.Veg
         /// </summary>
         public void CalculateSummaryOutputs()
         {
-            double denom = NumberOfPlantings;
+            double denom = PlantingCount;
             SO.AvgCropRainfall = MathTools.Divide(Sum.CropRainfall, denom);
             SO.AvgCropIrrigation = MathTools.Divide(Sum.CropIrrigation, denom);
             SO.AvgCropRunoff = MathTools.Divide(Sum.CropRunoff, denom);

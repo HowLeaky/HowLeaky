@@ -13,8 +13,8 @@ namespace HowLeaky.CustomAttributes
         public String Unit { get; set;}
         public double Scale { get; set; } = 1;
 
-        public AggregationTypeEnum AggregationType { get; set; }
-        public AggregationSequenceEnum AggregationSequence{ get; set; }
+        public AggregationTypeEnum AggregationType { get; set; } = AggregationTypeEnum.Mean;
+        public AggregationSequenceEnum AggregationSequence { get; set; } = AggregationSequenceEnum.Always;
 
         public Output() { }
 

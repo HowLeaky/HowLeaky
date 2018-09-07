@@ -104,7 +104,7 @@ namespace HowLeaky.ModelControllers.Outputs
             if (WriteYearly)
             {
                 CheckAggregatorTypesFilled();
-                outWriterYearly.WriteLine("Year" + String.Join(",", outputHeaders.ToArray()));
+                outWriterYearly.WriteLine("Year," + String.Join(",", outputHeaders.ToArray()));
             }
         }
 
@@ -205,7 +205,14 @@ namespace HowLeaky.ModelControllers.Outputs
                     {
                         if (AggregationSequences[i] == AggregationSequenceEnum.InCrop)
                         {
-                            summaryOutputs[i] /= counter;
+                            if(counter == 0)
+                            {
+                                summaryOutputs[i] = 0;
+                            }
+                            else
+                            {
+                                summaryOutputs[i] /= counter;
+                            }
                         }
                         if (AggregationSequences[i] == AggregationSequenceEnum.Always)
                         {

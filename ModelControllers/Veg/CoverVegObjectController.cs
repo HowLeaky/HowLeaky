@@ -39,7 +39,9 @@ namespace HowLeaky.ModelControllers.Veg
             CalculateMaxRootDepth();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public void CalculateMaxRootDepth()
         {
             //int max = 0;
@@ -100,6 +102,8 @@ namespace HowLeaky.ModelControllers.Veg
             {
                 CalculateYield();
             }
+
+            UpdateCropSummary();
         }
 
         /// <summary>
@@ -332,7 +336,7 @@ namespace HowLeaky.ModelControllers.Veg
             //REVIEW
             //Output.Yield = Yield / 1000.0;
             CumulativeYield += Yield;
-            ++NumberOfHarvests;
+            ++HarvestCount;
             CropStatus = ModelControllers.CropStatus.Fallow;
             DaysSincePlanting = 0;
         }
