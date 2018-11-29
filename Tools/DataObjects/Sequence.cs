@@ -27,6 +27,7 @@ namespace HowLeaky.Tools.DataObjects
         /// <summary>
         /// 
         /// </summary>
+        /// </summary>
         public Sequence()
         {
             Dates = new List<DateTime>();
@@ -52,6 +53,12 @@ namespace HowLeaky.Tools.DataObjects
         /// <returns></returns>
         public double ValueAtDate(DateTime date)
         {
+            int dateIndex = Dates.IndexOf(date);
+
+            if(dateIndex >= 0)
+            {
+                return Values[dateIndex];
+            }
             return 0;
         }
         /// <summary>

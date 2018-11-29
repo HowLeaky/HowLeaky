@@ -46,9 +46,9 @@ namespace HowLeaky.Factories
 
             XAttribute fileNameAttribute = element.Attribute("href");
 
-            string fileName = fileNameAttribute == null ? "" : fileNameAttribute.Value.ToString().Replace("\\","/");
+            string fileName = fileNameAttribute == null ? "" : fileNameAttribute.Value.ToString().Replace("\\", "/");
 
-            if(fileName.Contains("./"))
+            if (fileName.Contains("./"))
             {
                 fileName = homeDir + "/" + fileName;
             }
@@ -63,9 +63,26 @@ namespace HowLeaky.Factories
                 elementType = inputModelMap.FirstOrDefault(x => x.Key == childTypeName).Value;
             }
 
-            InputModel model = (InputModel)Serialiser.Deserialise<InputModel>(fileName, elementName, elementType);
+            InputModel model = (InputModel)Serialiser.Deserialise<InputModel>(fileName, elementType);
 
             model.FileName = fileName;
+
+            return model;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static InputModel GenerateRawInputModelFromContents(string contents, string type)
+        {
+
+            Type T = Type.GetType(type);
+
+            string elementName = "";
+
+            InputModel model = (InputModel)Serialiser.Deserialise<InputModel>(contents, T, false);
 
             return model;
         }
