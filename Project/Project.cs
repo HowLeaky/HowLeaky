@@ -85,8 +85,10 @@ namespace HowLeaky
 
             //Check that the data models are OK
 
+            //Write("d:/test.hlk");
+
             //Run the simulations
-            //RunSimulations();
+            RunSimulations();
         }
 
         /// <summary>
@@ -125,6 +127,305 @@ namespace HowLeaky
         public XmlSchema GetSchema()
         {
             throw new NotImplementedException();
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            XDocument doc = new XDocument();
+
+            doc.AddFirst(new XElement("Project",
+                 new XAttribute("CreatedBy", "Unknown Author"),
+                 new XAttribute("CreationDate", this.CreatedDate.ToString("dd/MM/yyyy")),
+                 new XAttribute("ContactDetails", "Unknown Contact Details"),
+                 new XAttribute("ModifiedBy", "How Leaky"),
+                 new XAttribute("minx", 0.0000),
+                 new XAttribute("maxx", 0.0000),
+                 new XAttribute("miny", 0.0000),
+                 new XAttribute("maxy", 0.000)));
+
+            XElement ModelElement = new XElement("ClimateData");
+            doc.Root.Add(ModelElement);
+
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(ClimateInputModel)))
+            {
+                XElement temp = new XElement("DataFile", new XAttribute("href", im.FileName), new XAttribute("text", im.Text == null ? "" : im.Text), new XAttribute("Description", im.Description == null ? "" : im.Description));
+                ModelElement.Add(temp);
+            }
+
+            ModelElement = new XElement("SoilTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(SoilInputModel)))
+            {
+                ModelElement.Add(new XElement("SoilType",
+                    new XAttribute("href", im.FileName),
+                    new XAttribute("text", im.Text == null ? "" : im.Text),
+                    new XAttribute("Description", im.Description == null ? "" : im.Description)));
+            }
+
+            ModelElement = new XElement("CropTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType().BaseType == typeof(VegInputModel)))
+            {
+                ModelElement.Add(new XElement("VegetationType",
+                    new XAttribute("href", im.FileName),
+                    new XAttribute("text", im.Text == null ? "" : im.Text),
+                    new XAttribute("Description", im.Description == null ? "" : im.Description),
+                    new XElement("ModelType", new XAttribute("index", im.GetType() == typeof(LAIVegInputModel) ? 1 : 0))
+                    ));
+            }
+
+            ModelElement = new XElement("TillageTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(TillageInputModel)))
+            {
+                ModelElement.Add(new XElement("TillageType", new XAttribute("href", im.FileName), new XAttribute("text", im.Text == null ? "" : im.Text), new XAttribute("Description", im.Description == null ? "" : im.Description)));
+            }
+
+            ModelElement = new XElement("IrrigationTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(IrrigationInputModel)))
+            {
+                ModelElement.Add(new XElement("IrrigationType", new XAttribute("href", im.FileName), new XAttribute("text", im.Text == null ? "" : im.Text), new XAttribute("Description", im.Description == null ? "" : im.Description)));
+            }
+
+            ModelElement = new XElement("PesticideTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(PesticideInputModel)))
+            {
+                ModelElement.Add(new XElement("PesticideType", new XAttribute("href", im.FileName), new XAttribute("text", im.Text == null ? "" : im.Text), new XAttribute("Description", im.Description == null ? "" : im.Description)));
+            }
+
+            ModelElement = new XElement("PhosphorusTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(PhosphorusInputModel)))
+            {
+                ModelElement.Add(new XElement("SoilType", new XAttribute("href", im.FileName), new XAttribute("text", im.Text == null ? "" : im.Text), new XAttribute("Description", im.Description == null ? "" : im.Description)));
+            }
+
+            ModelElement = new XElement("NitratesTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(NitrateInputModel)))
+            {
+                ModelElement.Add(new XElement("NitratesType", new XAttribute("href", im.FileName), new XAttribute("text", im.Text == null ? "" : im.Text), new XAttribute("Description", im.Description == null ? "" : im.Description)));
+            }
+
+            ModelElement = new XElement("SolutesTemplates");
+            doc.Root.Add(ModelElement);
+            foreach (InputModel im in this.InputDataModels.Where(x => x.GetType() == typeof(SolutesInputModel)))
+            {
+                ModelElement.Add(new XElement("SolutesType", new XAttribute("href", im.FileName), new XAttribute("text", im.Text == null ? "" : im.Text), new XAttribute("Description", im.Description == null ? "" : im.Description)));
+            }
+
+
+            ModelElement = new XElement("Simulations");
+            doc.Root.Add(ModelElement);
+            int count = 1;
+            foreach (Simulation sim in this.Simulations)
+            {
+                XElement simElement = new XElement("SimulationObject", new XAttribute("Active", true), new XAttribute("ID", count));
+                ModelElement.Add(simElement);
+                count++;
+
+                //Add the climate
+                ClimateController c = (ClimateController)sim.ClimateController;
+                XElement ClimateElement = new XElement("ptrStation", new XAttribute("href", c.GetInputModel().FileName));
+                simElement.Add(ClimateElement);
+                for (int i = 0; i < c.InputModel.Overrides.Count; i++)
+                {
+                    if (c.InputModel.Overrides.Keys.ElementAt(i).ToString() == "EvaporationInputOptions")
+                    {
+                        ClimateElement.Add(new XElement(c.InputModel.Overrides.Keys.ElementAt(i).ToString(),
+                            new XAttribute("index", c.InputModel.Overrides.Values.ElementAt(i)),
+                            new XAttribute("text", "Use EPan")));
+                    }
+                    else
+                    {
+                        ClimateElement.Add(new XElement(c.InputModel.Overrides.Keys.ElementAt(i).ToString(), c.InputModel.Overrides.Values.ElementAt(i)));
+                    }
+                }
+                //Add the soil
+                XElement SoilElement = new XElement("ptrSoilType", new XAttribute("href", sim.SoilController.GetInputModel().FileName));
+                simElement.Add(SoilElement);
+                for (int i = 0; i < sim.SoilController.InputModel.Overrides.Count; i++)
+                {
+                    SoilElement.Add(new XElement("OverrideParameter",
+                        new XAttribute("Keyword", sim.SoilController.InputModel.Overrides.Keys.ElementAt(i)),
+                        new XAttribute("Active", "true")));
+                }
+
+                //Add the crops
+                int cropIndex = 1;
+                foreach (HLController hlo in sim.VegetationController.ChildControllers)
+                {
+                    XElement CropElement = new XElement("ptrVegeOption" + cropIndex.ToString(), new XAttribute("href", hlo.GetInputModel().FileName));
+                    simElement.Add(CropElement);
+                    for (int i = 0; i < hlo.GetInputModel().Overrides.Count; i++)
+                    {
+                        CropElement.Add(new XElement("OverrideParameter",
+                            new XAttribute("Keyword", hlo.GetInputModel().Overrides.Values.ElementAt(i)),
+                            new XAttribute("Active", "true")));
+                    }
+
+                    cropIndex++;
+                }
+
+                //Add the tillage
+                int tillageIndex = 1;
+                if (sim.TillageController != null)
+                {
+                    foreach (HLController hlo in sim.TillageController.ChildControllers)
+                    {
+                        XElement tillageElement = new XElement("ptrTillageOption" + tillageIndex.ToString(), new XAttribute("href", hlo.GetInputModel().FileName));
+                        simElement.Add(tillageElement);
+                        for (int i = 0; i < hlo.GetInputModel().Overrides.Count; i++)
+                        {
+                            tillageElement.Add(new XElement("OverrideParameter",
+                                new XAttribute("Keyword", hlo.GetInputModel().Overrides.Values.ElementAt(i)),
+                                new XAttribute("Active", "true")));
+                        }
+
+                        tillageIndex++;
+                    }
+                }
+
+                //Add the pest
+                int pestIndex = 1;
+                if (sim.PesticideController != null)
+                {
+                    foreach (HLController hlo in sim.PesticideController.ChildControllers)
+                    {
+                        XElement pestElement = new XElement("ptrPestOption" + pestIndex.ToString(), new XAttribute("href", hlo.GetInputModel().FileName));
+                        simElement.Add(pestElement);
+                        for (int i = 0; i < hlo.GetInputModel().Overrides.Count; i++)
+                        {
+                            pestElement.Add(new XElement("OverrideParameter",
+                                new XAttribute("Keyword", hlo.GetInputModel().Overrides.Values.ElementAt(i)),
+                                new XAttribute("Active", "true")));
+                        }
+
+                        pestIndex++;
+                    }
+                }
+               
+                if(sim.PhosphorusController!= null)
+                {
+                    XElement PhosphorusElement = new XElement("ptrPhosphorus", new XAttribute("href", sim.PhosphorusController.GetInputModel().FileName));
+                    simElement.Add(PhosphorusElement);
+                    for (int i = 0; i < sim.PhosphorusController.InputModel.Overrides.Count; i++)
+                    {
+                        PhosphorusElement.Add(new XElement("OverrideParameter",
+                            new XAttribute("Keyword", sim.PhosphorusController.InputModel.Overrides.Keys.ElementAt(i)),
+                            new XAttribute("Active", "true")));
+                    }
+                }
+
+                if (sim.IrrigationController != null)
+                {
+                    XElement IrrigationElement = new XElement("ptrIrrigation", new XAttribute("href", sim.IrrigationController.GetInputModel().FileName));
+                    simElement.Add(IrrigationElement);
+                    for (int i = 0; i < sim.IrrigationController.InputModel.Overrides.Count; i++)
+                    {
+                        IrrigationElement.Add(new XElement("OverrideParameter",
+                            new XAttribute("Keyword", sim.IrrigationController.InputModel.Overrides.Keys.ElementAt(i)),
+                            new XAttribute("Active", "true")));
+                    }
+                }
+
+                if (sim.NitrateController != null)
+                {
+                    XElement NitrateElement = new XElement("ptrNitrate", new XAttribute("href", sim.NitrateController.GetInputModel().FileName));
+                    simElement.Add(NitrateElement);
+                    for (int i = 0; i < sim.NitrateController.InputModel.Overrides.Count; i++)
+                    {
+                        NitrateElement.Add(new XElement("OverrideParameter",
+                            new XAttribute("Keyword", sim.NitrateController.InputModel.Overrides.Keys.ElementAt(i)),
+                            new XAttribute("Active", "true")));
+                    }
+                }
+
+                if (sim.SolutesController != null)
+                {
+                    XElement SolutesElement = new XElement("ptrNitrate", new XAttribute("href", sim.SolutesController.GetInputModel().FileName));
+                    simElement.Add(SolutesElement);
+                    for (int i = 0; i < sim.NitrateController.InputModel.Overrides.Count; i++)
+                    {
+                        SolutesElement.Add(new XElement("OverrideParameter",
+                            new XAttribute("Keyword", sim.SolutesController.InputModel.Overrides.Keys.ElementAt(i)),
+                            new XAttribute("Active", "true")));
+                    }
+                }
+            }
+            //Name = projectElement.Element("Name").Value.ToString();
+
+            ////Read all of the climate data models
+            //List<XElement> ClimateDatalements = new List<XElement>(projectElement.Elements("ClimateData").Elements("DataFile"));
+
+            ////Read all of the models
+            //List<XElement> TemplateElements = new List<XElement>(projectElement.Elements().Where(x => x.Name.ToString().Contains("Templates")));
+            ////List<XElement> TypeElements = new List<XElement>();
+            //TypeElements = new List<XElement>();
+
+            //foreach (XElement te in TemplateElements)
+            //{
+            //    foreach (XElement xe in te.Elements())
+            //    {
+            //        TypeElements.Add(xe);
+            //    }
+            //}
+            ////Read all of the simualtions
+            //SimulationElements = new List<XElement>();
+
+            //foreach (XElement simChild in projectElement.Elements("Simulations").Elements())
+            //{
+            //    if (simChild.Name.ToString() == "SimulationObject")
+            //    {
+            //        SimulationElements.Add(simChild);
+            //    }
+            //    else if (simChild.Name.ToString() == "Folder")
+            //    {
+            //        SimulationElements.AddRange(simChild.Elements("SimulationObject"));
+            //    }
+            //}
+
+            //InputDataModels = new List<InputModel>();
+
+            ////Create input models from the xml elements
+            //foreach (XElement xe in TypeElements)
+            //{
+            //    InputDataModels.Add(RawInputModelFactory.GenerateRawInputModel(Path.GetDirectoryName(FileName).Replace("\\", "/"), xe));
+            //}
+
+            ////Create the Climate models - these aren't deserialised so don't come out of the factory
+            //foreach (XElement xe in ClimateDatalements)
+            //{
+            //    ClimateInputModel cim = new ClimateInputModel();
+            //    cim.FileName = xe.Attribute("href").Value.ToString().Replace("\\", "/");
+
+            //    if (cim.FileName.Contains("./"))
+            //    {
+            //        cim.FileName = (Path.GetDirectoryName(FileName).Replace("\\", "/") + "/" + cim.FileName);
+            //    }
+
+            //    InputDataModels.Add(cim);
+            //}
+
+            ////Initialise the models
+            //foreach (InputModel im in InputDataModels)
+            //{
+            //    im.Init();
+            //}
+
+            ////Create the simualtions
+            //foreach (XElement xe in SimulationElements)
+            //{
+            //    //For Testing
+            //    //if(xe == SimulationElements[0])
+            //    //
+            //    Simulations.Add(SimulationFactory.GenerateSimulationXML(this, xe, InputDataModels));
+            //}
+
+            //OutputDataElements = OutputModelController.GetProjectOutputs(this);
+            doc.WriteTo(writer);
         }
 
         /// <summary>
@@ -192,9 +493,9 @@ namespace HowLeaky
                 ClimateInputModel cim = new ClimateInputModel();
                 cim.FileName = xe.Attribute("href").Value.ToString().Replace("\\", "/");
 
-                if(cim.FileName.Contains("./"))
+                if (cim.FileName.Contains("./"))
                 {
-                    cim.FileName =(Path.GetDirectoryName(FileName).Replace("\\", "/") + "/" + cim.FileName);
+                    cim.FileName = (Path.GetDirectoryName(FileName).Replace("\\", "/") + "/" + cim.FileName);
                 }
 
                 InputDataModels.Add(cim);
@@ -217,15 +518,7 @@ namespace HowLeaky
 
             OutputDataElements = OutputModelController.GetProjectOutputs(this);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteXml(XmlWriter writer)
-        {
-            //This will output the models to a project directory
-            throw new NotImplementedException();
-        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -235,7 +528,7 @@ namespace HowLeaky
             int noCoresToUse = numberOfThreads;
             int noCores = Environment.ProcessorCount;
 
-            if(noCoresToUse <= 0)
+            if (noCoresToUse <= 0)
             {
                 noCoresToUse += noCores;
             }
@@ -247,7 +540,7 @@ namespace HowLeaky
 
                 if (OutputPath == null)
                 {
-                    OutputPath = hlkFile.Directory.FullName.Replace("\\","/");
+                    OutputPath = hlkFile.Directory.FullName.Replace("\\", "/");
                 }
 
                 if (!OutputPath.Contains(":") || OutputPath.Contains("./"))
@@ -288,10 +581,10 @@ namespace HowLeaky
                 if (SQLConn != null && SQLConn.State == System.Data.ConnectionState.Open)
                 {
                     SQLConn.Close();
-                    
+
                 }
 
-                if(File.Exists(OutputPath))
+                if (File.Exists(OutputPath))
                 {
                     File.Delete(OutputPath);
                 }
@@ -303,22 +596,22 @@ namespace HowLeaky
 
                 //Will need to create tables
                 //Data
-                string sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputDataElements.Where(j=>j.IsSelected==true).Select(x=>x.Name)) + " double)";
-               // sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputIndicies) + " double)";
+                string sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputDataElements.Where(j => j.IsSelected == true).Select(x => x.Name)) + " double)";
+                // sql = "create table data (SimId int, Day int," + String.Join(" double,", OutputIndicies) + " double)";
 
                 SQLiteCommand command = new SQLiteCommand(sql, SQLConn);
                 command.ExecuteNonQuery();
 
                 //Annual sum data
                 sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputDataElements.Where(j => j.IsSelected == true).Select(x => x.Name)) + " double)";
-               // sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputIndicies) + " double)";
+                // sql = "create table annualdata (SimId int, Year int," + String.Join(" double,", OutputIndicies) + " double)";
 
                 command = new SQLiteCommand(sql, SQLConn);
                 command.ExecuteNonQuery();
 
                 //Annual sum average data
                 sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputDataElements.Where(j => j.IsSelected == true).Select(x => x.Name)) + " double)";
-               // sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputIndicies) + " double)";
+                // sql = "create table annualaveragedata (SimId int," + String.Join(" double,", OutputIndicies) + " double)";
 
                 command = new SQLiteCommand(sql, SQLConn);
                 command.ExecuteNonQuery();
@@ -337,7 +630,7 @@ namespace HowLeaky
                 {
                     string comma = ",";
 
-                    if(ode == OutputDataElements.First())
+                    if (ode == OutputDataElements.First())
                     {
                         comma = "";
                     }
@@ -350,7 +643,7 @@ namespace HowLeaky
                 command = new SQLiteCommand(sql, SQLConn);
                 command.ExecuteNonQuery();
 
-                
+
 
                 //Simulations
                 sql = "create table simulations (Id int, Name string, StartDate DATETIME, EndDate DATETIME)";
@@ -401,7 +694,7 @@ namespace HowLeaky
                     // BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { xe, handler }));
                     //BackgroundWorkers[i].RunWorkerAsync(new List<object>(new object[] { sim }));
                     BackgroundWorkers[i].RunWorkerAsync();
-                
+
                 }
             }
 
@@ -427,11 +720,25 @@ namespace HowLeaky
                 CurrentSimIndex++;
             }
 
-            if(result !=null)
+            if (result != null)
             {
                 result.Index = Simulations.IndexOf(result) + 1;
             }
             return result;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void Write(string fileName)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings { Indent = true };
+
+            XmlWriter xmlWriter = XmlWriter.Create(fileName, settings);
+
+            WriteXml(xmlWriter);
+
+            xmlWriter.Close();
         }
 
         /// <summary>
@@ -470,7 +777,7 @@ namespace HowLeaky
             {
                 hlbw.Sim.Run();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -504,7 +811,7 @@ namespace HowLeaky
             HLBackGroundWorker hlbw = (HLBackGroundWorker)sender;
 
             //hlbw.Sim.OutputModelController.Finalise();
-            
+
             NoSimsComplete++;
 
             //Update Progress
@@ -533,9 +840,9 @@ namespace HowLeaky
                 hlbw.RunWorkerAsync();
             }
 
-            if(NoSimsComplete == Simulations.Count)
+            if (NoSimsComplete == Simulations.Count)
             {
-                if(OutputType == OutputType.SQLiteOutput)
+                if (OutputType == OutputType.SQLiteOutput)
                 {
                     SQLConn.Close();
                 }
