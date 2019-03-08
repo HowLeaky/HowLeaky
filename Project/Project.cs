@@ -47,7 +47,7 @@ namespace HowLeaky
 
         public bool HasOwnExecutableSpace = true;
 
-        public OutputType OutputType = OutputType.SQLiteOutput;
+        public OutputType OutputType = OutputType.CSVOutput;
         //public OutputType OutputType = OutputType.NetCDF;
 
         public delegate void SimCompleteNotifier();
@@ -128,7 +128,10 @@ namespace HowLeaky
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteXml(XmlWriter writer)
         {
             XDocument doc = new XDocument();
