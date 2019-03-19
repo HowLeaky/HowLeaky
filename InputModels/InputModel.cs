@@ -19,6 +19,48 @@ namespace HowLeaky.DataModels
         [XmlAttribute("text")]
         public string Text { get; set; }
         public string Description { get; set; }
+
+        public string InputModelComments { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public List<Dictionary<string, object>> ListInputs()
+        {
+            List<Dictionary<string, object>> Props = new List<Dictionary<string, object>>();
+
+            //Get the type of the model this is being called on
+            //Type modelType = MethodBase.GetCurrentMethod().DeclaringType;
+            Type modelType = this.GetType();
+
+            Type inputType = Type.GetType("HowLeaky.CustomAttributes.Input");
+
+            foreach (PropertyInfo p in modelType.GetProperties())
+            {
+                Dictionary<string, object> PropAttributes = new Dictionary<string, object>();
+
+                PropAttributes.Add("name", p.Name);
+                PropAttributes.Add("type", p.PropertyType.ToString());
+                PropAttributes.Add("value", p.GetValue(this));
+
+                foreach (Attribute a in p.GetCustomAttributes())
+                {
+                    if (a.GetType() == typeof(Input))
+                    {
+                        foreach (PropertyInfo inputProperty in a.GetType().GetRuntimeProperties())
+                        {
+                            PropAttributes.Add(inputProperty.Name, inputProperty.GetValue(a) != null ? inputProperty.GetValue(a).ToString() : "");
+                        }
+                    }
+                }
+
+                Props.Add(PropAttributes);
+            }
+
+            return Props;
+        }
+
         [XmlIgnore]
         public Dictionary<string, object> Overrides { get; set; }
         public string LongName { get; set; }

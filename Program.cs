@@ -10,11 +10,6 @@ namespace HowLeaky
     {
         static void Main(string[] args)
         {
-            //Project p = new Project(@"C:\projects\HLTest\Banana_reeftool.hlk");
-
-            //Project p = new Project(@"C:\projects\HLTest\Compare\Model test.hlk");
-            //p.RunSimulations()
-
             List<string> argsList = new List<string>(args);
 
             if(argsList.Contains("-h"))
