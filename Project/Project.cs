@@ -83,10 +83,6 @@ namespace HowLeaky
             //Assume this a a legitimate hlk file
             ReadXml(XmlReader.Create(fileName));
 
-            //Check that the data models are OK
-
-            Write("d:/test.hlk");
-
             //Run the simulations
             //RunSimulations();
         }
