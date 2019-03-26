@@ -63,6 +63,14 @@ namespace HowLeaky.DataModels
         /// </summary>
         public ClimateInputModel()
         {
+            InitArrays();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void InitArrays()
+        {
             Rain = new List<double>();
             MaxT = new List<double>();
             MinT = new List<double>();
@@ -127,6 +135,7 @@ namespace HowLeaky.DataModels
         /// <param name="fileName"></param>
         public ClimateInputModel(string fileName, string userName) : base(Guid.NewGuid(), fileName, userName, DateTime.UtcNow)
         {
+            InitArrays();
             LoadMetaData(fileName);
         }
 
