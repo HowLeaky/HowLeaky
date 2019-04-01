@@ -105,8 +105,6 @@ namespace HowLeaky
 
             //Load the simulations - lazy load using string paths
 
-            //Just run at the moment - Threading to come later
-
             //Pop the top simulation from the simulation elements
             foreach (XElement xe in SimulationElements)
             {

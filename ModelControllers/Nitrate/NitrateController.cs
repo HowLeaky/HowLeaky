@@ -21,28 +21,28 @@ namespace HowLeaky.ModelControllers
         public double NitrateCumRain { get; set; } = 0;
 
         //Reportable Outputs
-        [Output("Dissolved N03 N In Runoff", "mg/L",1, AggregationTypeEnum.Max)]
-        public double N03NDissolvedInRunoff { get; set; }
-        [Output("N03 Runoff Load", "kg/ha")]
-        public double N03NRunoffLoad { get; set; }
-        [Output("Dissolved N03 N In Leaching", "mg/L")]
-        public double N03NDissolvedLeaching { get; set; }
-        [Output("N03 N Leaching Load", "kg/ha")]
-        public double N03NLeachingLoad { get; set; }
+        [Output("Dissolved NO3 N In Runoff", "mg/L",1, AggregationTypeEnum.Max)]
+        public double NO3NDissolvedInRunoff { get; set; }
+        [Output("NO3 Runoff Load", "kg/ha")]
+        public double NO3NRunoffLoad { get; set; }
+        [Output("Dissolved NO3 N In Leaching", "mg/L")]
+        public double NO3NDissolvedLeaching { get; set; }
+        [Output("NO3 N Leaching Load", "kg/ha")]
+        public double NO3NLeachingLoad { get; set; }
         [Output("Particulate N in Runoff", "kg/ha")]
         public double ParticNInRunoff { get; set; }
-        [Output("N03 N Store in top layer", "kg/ha")]
-        public double N03NStoreTopLayer { get; set; }
-        [Output("N03 N Store in bot layer", "kg/ha")]
-        public double N03NStoreBotLayer { get; set; }
+        [Output("NO3 N Store in top layer", "kg/ha")]
+        public double NO3NStoreTopLayer { get; set; }
+        [Output("NO3 N Store in bot layer", "kg/ha")]
+        public double NO3NStoreBotLayer { get; set; }
         [Output("Total N Store in top layer", "kg/ha")]
         public double TotalNStoreTopLayer { get; set; }
         [Output("PNHLC", "kg/ha")]
         public double PNHLCa { get; set; }
         [Output("", "")]
-        public double DrainageInN03Period { get; set; }
+        public double DrainageInNO3Period { get; set; }
         [Output("", "")]
-        public double RunoffInN03Period { get; set; }
+        public double RunoffInNO3Period { get; set; }
 
         /// <summary>                                                     
         /// 
@@ -155,7 +155,7 @@ namespace HowLeaky.ModelControllers
         //{
         //	try
         //	{
-        //		double NL_kg_ha = GetN03_N_Store_TopLayer_kg_per_ha();  //Nitrate load in surface layer (From Dairymod)
+        //		double NL_kg_ha = GetNO3_N_Store_TopLayer_kg_per_ha();  //Nitrate load in surface layer (From Dairymod)
         //		if(NL_kg_ha!=-32768)
         //		{
         //			NL_kg_ha=NL_kg_ha* SoilNitrateLoadWeighting1;
@@ -172,15 +172,15 @@ namespace HowLeaky.ModelControllers
         //        double DN = NSoil * k * (1 - exp(-cv * Q));
         //        double DL = DN * Q / 100.0;
 
-        //        N03_N_Store_TopLayer_kg_per_ha=NL_kg_ha;
-        //			N03_N_Dissolved_Runoff_mg_per_L=DN;
-        //			N03_N_Load_Runoff_kg_per_ha=DL;
+        //        NO3_N_Store_TopLayer_kg_per_ha=NL_kg_ha;
+        //			NO3_N_Dissolved_Runoff_mg_per_L=DN;
+        //			NO3_N_Load_Runoff_kg_per_ha=DL;
         //		}
         //		else
         //		{
-        //			N03_N_Store_TopLayer_kg_per_ha	=-32768;
-        //			N03_N_Dissolved_Runoff_mg_per_L	=-32768;
-        //			N03_N_Load_Runoff_kg_per_ha		=-32768;
+        //			NO3_N_Store_TopLayer_kg_per_ha	=-32768;
+        //			NO3_N_Dissolved_Runoff_mg_per_L	=-32768;
+        //			NO3_N_Load_Runoff_kg_per_ha		=-32768;
         //		}
         //	}
         //	catch(...)
@@ -194,7 +194,7 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                double NLKgHa = GetN03NStoreTopLayerkgPerha();  //Nitrate load in surface layer (From Dairymod)
+                double NLKgHa = GetNO3NStoreTopLayerkgPerha();  //Nitrate load in surface layer (From Dairymod)
                 if (NLKgHa != MathTools.MISSING_DATA_VALUE)
                 {
                     double a = InputModel.DissolvedNinRunoff.N_DanRat_Alpha;
@@ -228,15 +228,15 @@ namespace HowLeaky.ModelControllers
                         DINMgPerL = Math.Min(maxconc, Math.Max(minconc, DINMgPerL));
                     }
 
-                    N03NStoreTopLayer = MathTools.MISSING_DATA_VALUE;
-                    N03NDissolvedInRunoff = DINMgPerL;
-                    N03NRunoffLoad = MathTools.MISSING_DATA_VALUE;
+                    NO3NStoreTopLayer = MathTools.MISSING_DATA_VALUE;
+                    NO3NDissolvedInRunoff = DINMgPerL;
+                    NO3NRunoffLoad = MathTools.MISSING_DATA_VALUE;
                 }
                 else
                 {
-                    N03NStoreTopLayer = MathTools.MISSING_DATA_VALUE;
-                    N03NDissolvedInRunoff = MathTools.MISSING_DATA_VALUE;
-                    N03NRunoffLoad = MathTools.MISSING_DATA_VALUE;
+                    NO3NStoreTopLayer = MathTools.MISSING_DATA_VALUE;
+                    NO3NDissolvedInRunoff = MathTools.MISSING_DATA_VALUE;
+                    NO3NRunoffLoad = MathTools.MISSING_DATA_VALUE;
                 }
             }
             catch (Exception ex)
@@ -249,7 +249,7 @@ namespace HowLeaky.ModelControllers
         //{
         //	try
         //	{
-        //		double NL_kg_ha = GetN03_N_Store_TopLayer_kg_per_ha();  //Nitrate load in surface layer (From Dairymod)
+        //		double NL_kg_ha = GetNO3_N_Store_TopLayer_kg_per_ha();  //Nitrate load in surface layer (From Dairymod)
         //		if(NL_kg_ha!=-32768)
         //		{
         //			double invk = 1.0 / Nk;
@@ -262,16 +262,16 @@ namespace HowLeaky.ModelControllers
 
         //double solid = DINinput + GetMaximum(lowlimit, solid_yesterday - GetMaximum(solid_yesterday * DL, effective_rain * RL));
 
-        //N03_N_Store_TopLayer_kg_per_ha=0;
-        //			N03_N_Dissolved_Runoff_mg_per_L=solid;
-        //			N03_N_Load_Runoff_kg_per_ha=0;
+        //NO3_N_Store_TopLayer_kg_per_ha=0;
+        //			NO3_N_Dissolved_Runoff_mg_per_L=solid;
+        //			NO3_N_Load_Runoff_kg_per_ha=0;
         //			solid_yesterday=solid;
         //		}
         //		else
         //		{
-        //			N03_N_Store_TopLayer_kg_per_ha	=-32768;
-        //			N03_N_Dissolved_Runoff_mg_per_L	=-32768;
-        //			N03_N_Load_Runoff_kg_per_ha		=-32768;
+        //			NO3_N_Store_TopLayer_kg_per_ha	=-32768;
+        //			NO3_N_Dissolved_Runoff_mg_per_L	=-32768;
+        //			NO3_N_Load_Runoff_kg_per_ha		=-32768;
         //		}
         //	}
         //	catch(...)
@@ -348,7 +348,7 @@ namespace HowLeaky.ModelControllers
 
             try
             {
-                double NLKgHa = GetN03NStoreTopLayerkgPerha();  //Nitrate load in surface layer (From Dairymod)
+                double NLKgHa = GetNO3NStoreTopLayerkgPerha();  //Nitrate load in surface layer (From Dairymod)
                 if (!MathTools.DoublesAreEqual(NLKgHa, MathTools.MISSING_DATA_VALUE))
                 {
                     NLKgHa = NLKgHa * InputModel.DissolvedNinRunoff.SoilNitrateLoadWeighting1;
@@ -361,15 +361,15 @@ namespace HowLeaky.ModelControllers
                     double DN = NSoil * k * (1 - Math.Exp(-cv * Q));
                     double DL = DN * Q / 100.0;
 
-                    N03NStoreTopLayer = NLKgHa;
-                    N03NDissolvedInRunoff = DN;
-                    N03NRunoffLoad = DL;
+                    NO3NStoreTopLayer = NLKgHa;
+                    NO3NDissolvedInRunoff = DN;
+                    NO3NRunoffLoad = DL;
                 }
                 else
                 {
-                    N03NStoreTopLayer = MathTools.MISSING_DATA_VALUE;
-                    N03NDissolvedInRunoff = MathTools.MISSING_DATA_VALUE;
-                    N03NRunoffLoad = MathTools.MISSING_DATA_VALUE;
+                    NO3NStoreTopLayer = MathTools.MISSING_DATA_VALUE;
+                    NO3NDissolvedInRunoff = MathTools.MISSING_DATA_VALUE;
+                    NO3NRunoffLoad = MathTools.MISSING_DATA_VALUE;
                 }
             }
             catch (Exception e)
@@ -397,7 +397,7 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                double NSoilKgPerHa = GetN03NStoreBotLayerkgPerha();       //nitrate concentrate in the soil (kg/ha)
+                double NSoilKgPerHa = GetNO3NStoreBotLayerkgPerha();       //nitrate concentrate in the soil (kg/ha)
                 if (!MathTools.DoublesAreEqual(NSoilKgPerHa, MathTools.MISSING_DATA_VALUE))
                 {
                     NSoilKgPerHa = NSoilKgPerHa * InputModel.DissolvedNinLeaching.SoilNitrateLoadWeighting2;
@@ -410,22 +410,22 @@ namespace HowLeaky.ModelControllers
                         double LN = NSoilKgPerHa * 1000000.0 / (soilwater * 10000.0);
                         double LL = (LN / 1000000.0) * D * 10000.0 * LE;
 
-                        N03NStoreBotLayer = NSoilKgPerHa;
-                        N03NDissolvedLeaching = LN;
-                        N03NLeachingLoad = LL;
+                        NO3NStoreBotLayer = NSoilKgPerHa;
+                        NO3NDissolvedLeaching = LN;
+                        NO3NLeachingLoad = LL;
                     }
                     else
                     {
-                        N03NStoreBotLayer = MathTools.MISSING_DATA_VALUE;
-                        N03NDissolvedLeaching = MathTools.MISSING_DATA_VALUE;
-                        N03NLeachingLoad = MathTools.MISSING_DATA_VALUE;
+                        NO3NStoreBotLayer = MathTools.MISSING_DATA_VALUE;
+                        NO3NDissolvedLeaching = MathTools.MISSING_DATA_VALUE;
+                        NO3NLeachingLoad = MathTools.MISSING_DATA_VALUE;
                     }
                 }
                 else
                 {
-                    N03NStoreBotLayer = MathTools.MISSING_DATA_VALUE;
-                    N03NDissolvedLeaching = MathTools.MISSING_DATA_VALUE;
-                    N03NLeachingLoad = MathTools.MISSING_DATA_VALUE;
+                    NO3NStoreBotLayer = MathTools.MISSING_DATA_VALUE;
+                    NO3NDissolvedLeaching = MathTools.MISSING_DATA_VALUE;
+                    NO3NLeachingLoad = MathTools.MISSING_DATA_VALUE;
                 }
             }
             catch (Exception e)
@@ -494,7 +494,7 @@ namespace HowLeaky.ModelControllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public double GetN03NStoreTopLayerkgPerha()
+        public double GetNO3NStoreTopLayerkgPerha()
         {
             try
             {
@@ -522,7 +522,7 @@ namespace HowLeaky.ModelControllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public double GetN03NStoreBotLayerkgPerha()
+        public double GetNO3NStoreBotLayerkgPerha()
         {
             try
             {
