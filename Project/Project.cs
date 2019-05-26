@@ -64,6 +64,8 @@ namespace HowLeaky
         public bool WriteMonthlyData = false;
         public bool WriteYearlyData = false;
 
+        public bool QuietOutput = false;
+
         /// <summary>
         /// Need default constructor for populating via Entity Framework 
         /// </summary>
@@ -812,16 +814,19 @@ namespace HowLeaky
             NoSimsComplete++;
 
             //Update Progress
-            Console.Write("\r{0} % Done.", ((double)NoSimsComplete / SimulationElements.Count * 100).ToString("0.00"));
-
-
-            if (NoSimsComplete > Simulations.Count)
+            if (this.QuietOutput == false)
             {
-                DateTime end = DateTime.Now;
+                Console.Write("\r{0} % Done.", ((double)NoSimsComplete / SimulationElements.Count * 100).ToString("0.00"));
 
-                TimeSpan ts = end - StartRunTime;
 
-                Console.WriteLine(ts);
+                if (NoSimsComplete > Simulations.Count)
+                {
+                    DateTime end = DateTime.Now;
+
+                    TimeSpan ts = end - StartRunTime;
+
+                    Console.WriteLine(ts);
+                }
             }
 
             Simulation nextSim = GetSimulationElement();

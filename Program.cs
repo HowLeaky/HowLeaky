@@ -55,6 +55,11 @@ namespace HowLeaky
                 p.WriteYearlyData = true;
             }
 
+            if (argsList.Contains("-Q"))
+            {
+                p.WriteYearlyData = true;
+            }
+
             p.RunSimulations(numberOfCores);
 
             Console.WriteLine("Press any key to exit when sims completed...\n");
@@ -76,6 +81,7 @@ namespace HowLeaky
             Console.WriteLine("    -SQL                   | Output to SQL file");
             Console.WriteLine("    -M                     | Output Monthly summaries (CSV option only) [Not set by Default]");
             Console.WriteLine("    -Y                     | Output Annual summaries (CSV option only) [Not set by Default]");
+            Console.WriteLine("    -Q                     | Quiet mode [Not set by Default]");
             Console.WriteLine("");
         }
     }
