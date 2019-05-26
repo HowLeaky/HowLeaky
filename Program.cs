@@ -57,7 +57,7 @@ namespace HowLeaky
 
             if (argsList.Contains("-Q"))
             {
-                p.WriteYearlyData = true;
+                p.QuietOutput = true;
             }
 
             p.RunSimulations(numberOfCores);
