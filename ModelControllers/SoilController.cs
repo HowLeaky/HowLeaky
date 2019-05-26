@@ -311,7 +311,7 @@ namespace HowLeaky.ModelControllers
         {
             try
             {
-                EffectiveRain = Sim.ClimateController.Rain;
+                EffectiveRain = Sim.ClimateController.Rain * 0.1;
                 SoilWaterDeficit = 0;
                 Satd = 0;
                 for (int i = 0; i < LayerCount; ++i)
