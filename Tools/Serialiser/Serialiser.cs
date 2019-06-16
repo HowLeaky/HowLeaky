@@ -21,7 +21,7 @@ namespace HowLeaky.Tools.Serialiser
         static public string Serialise<T>(T obj)
         where T : class
         {
-            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(T));
+            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(obj.GetType());
 
             using (StringWriter output = new StringWriter())
             {

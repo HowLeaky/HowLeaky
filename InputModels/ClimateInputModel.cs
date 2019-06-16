@@ -160,7 +160,6 @@ namespace HowLeaky.DataModels
                 //Just throw for now
                 throw (new Exception(ex.Message));
             }
-
         }
 
         /// <summary>

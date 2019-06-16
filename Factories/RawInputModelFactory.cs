@@ -77,14 +77,25 @@ namespace HowLeaky.Factories
         /// <returns></returns>
         public static InputModel GenerateRawInputModelFromContents(string contents, string type)
         {
-
             Type T = Type.GetType(type);
-
-            string elementName = "";
 
             InputModel model = (InputModel)Serialiser.Deserialise<InputModel>(contents, T, false);
 
             return model;
+        }
+
+        
+        public static string GenerateContentsFromRawInputModel(InputModel model, string type)
+        {
+            Type T = Type.GetType(type);
+
+            string elementName = inputModelMap.FirstOrDefault(x =>x.Value == T).Key;
+
+            XDocument xml = new XDocument(new XElement(elementName));
+
+            xml.Root.Add(new XDocument(Serialiser.Serialise<InputModel>(model)));
+
+           return xml.ToString();
         }
     }
 }

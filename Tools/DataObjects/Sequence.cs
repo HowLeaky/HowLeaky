@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace HowLeaky.Tools.DataObjects
         [XmlIgnore]
         public List<double> Values { get; set; }
         [XmlText]
-        public String Value
+        public string Value
         {
             get { return _Value; }
             set
@@ -24,7 +25,7 @@ namespace HowLeaky.Tools.DataObjects
                 parseStringValue();
             }
         }
-        /// <summary>
+        ///// <summary>
         /// 
         /// </summary>
         /// </summary>
@@ -32,6 +33,8 @@ namespace HowLeaky.Tools.DataObjects
         {
             Dates = new List<DateTime>();
             Values = new List<double>();
+
+            Value = "";
         }
         /// <summary>
         /// 
