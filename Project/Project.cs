@@ -88,6 +88,17 @@ namespace HowLeaky
             //Run the simulations
             //RunSimulations();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static Project ReadProject(string filename)
+        {
+            Project p = new Project(filename);
+
+            return p;
+        }
 
         /// <summary>
         /// 
